@@ -1,9 +1,17 @@
 // noinspection JSUnusedGlobalSymbols
+/**
+ * Weak True items
+ * */
+export const StorageTypeItems = ['array', 'list', 'map', 'set'] as const;
+/**
+ * Storage type literal, as an enum
+ * */
+export type StorageType = typeof StorageTypeItems[number];
 
 /**
  * Weak True items
  * */
-export const PrimitiveItems = ['string', 'number', 'bigint', 'boolean'] as const;
+export const PrimitiveItems = ['string', 'number', 'boolean'] as const;
 /**
  * Weak True
  * */

@@ -73,7 +73,7 @@ export class CommonCallbackImpl implements CommonCallback, CommonCallbackSecure 
      * Because the expected callback may not be defined
      * */
     private _clearPending(): void {
-        for (const [name, ] of this._waitingForCallbacks.entries()) {
+        for (const [name,] of this._waitingForCallbacks.entries()) {
             const rec = this._attachedCallbacks.get(name);
             if (rec && !rec.initialization) {
                 continue;
@@ -103,6 +103,7 @@ export class CommonCallbackImpl implements CommonCallback, CommonCallbackSecure 
             this._waitingForCallbacks.delete(name);
         }
     }
+
     queueForCallback(name: string, ...args: Arr): boolean {
         if (!name || typeof name !== 'string') {
             throw new Error(`callback.invalid.name => {type: ${typeof name}}`);

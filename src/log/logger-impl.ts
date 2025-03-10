@@ -1,7 +1,8 @@
-import {CommonLog, Logger, LoggerLambda, LoggerSecure, LogMethod} from "./index-types";
+import {CommonLog, Logger, LoggerLambda, LoggerSecure} from "./index-types";
 import {DeveloperException} from "../error";
 import {CommonCallback} from "../callback";
 import {Leyyo} from "../leyyo";
+import {Severity} from "../literals";
 
 // noinspection JSUnusedLocalSymbols
 export class LoggerImpl implements Logger, LoggerSecure {
@@ -11,7 +12,7 @@ export class LoggerImpl implements Logger, LoggerSecure {
     private static _callback: CommonCallback;
     private static _log: CommonLog;
 
-    constructor(value: Object|Function|string) {
+    constructor(value: Object | Function | string) {
         switch (typeof value) {
             case "function":
                 this._clazz = value;
@@ -57,12 +58,15 @@ export class LoggerImpl implements Logger, LoggerSecure {
     get $back(): Logger {
         return this;
     }
+
     get $secure(): LoggerSecure {
         return this;
     }
+
     get $clazz(): Function {
         return this._clazz;
     }
+
     get $name(): string {
         return this._name;
     }
@@ -71,20 +75,22 @@ export class LoggerImpl implements Logger, LoggerSecure {
         this._callback = leyyo.callback;
         this._log = leyyo.log;
     }
+
     $setName(name: string): void {
         this._name = name;
     }
 
-    $setMethod(method: LogMethod, lambda?: LoggerLambda): void {
+    $setMethod(method: Severity, lambda?: LoggerLambda): void {
         if (typeof lambda === 'function') {
             this[method] = lambda;
-        }
-        else {
-            this[method] = () => {};
+        } else {
+            this[method] = () => {
+            };
         }
     }
 
     $assert(error: Error, indicator: string, params?: unknown): void {
     }
+
     // endregion secure
 }

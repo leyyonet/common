@@ -1,11 +1,12 @@
 import {
-    CommonTo, CommonToSecure,
-    TypeArrayOpt,
-    TypeChildOpt,
-    TypeEnumOpt,
-    TypeFnLambda,
-    TypeObjectOpt,
-    TypeOpt
+    CommonTo,
+    CommonToSecure,
+    ToTypeArrayOpt,
+    ToTypeChildOpt,
+    ToTypeEnumOpt,
+    ToTypeFnLambda,
+    ToTypeObjectOpt,
+    ToTypeOpt
 } from "./index-types";
 import {Arr, Dict, KeyValue, OneOrMore, Pair} from "../aliases";
 import {WeakFalse, WeakFalseItems, WeakTrue, WeakTrueItems} from "../literals";
@@ -65,6 +66,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return null;
     }
+
     private _enumInArray<T extends KeyValue = KeyValue>(value: unknown, arr: Array<T>): T {
         // regular, in values
         if (arr.includes(value as T)) {
@@ -93,6 +95,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return null;
     }
+
     // noinspection JSMethodCanBeStatic
     private _enumInAlteration<T extends KeyValue = KeyValue>(value: unknown, alt: Dict<T>): T {
         // ir-regular, in keys
@@ -122,10 +125,11 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return null;
     }
+
     // endregion private
 
     // region utility
-    runFn<T = unknown>(fn: Function, value: Function, opt?: TypeOpt): T {
+    runFn<T = unknown>(fn: Function, value: Function, opt?: ToTypeOpt): T {
         try {
             return fn(value()) as T;
         } catch (e) {
@@ -134,8 +138,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
                 let indicator: string;
                 if (opt.indicator !== undefined) {
                     indicator = opt.indicator;
-                }
-                else {
+                } else {
                     indicator = 'assertion.error'
                 }
                 this.assertion.raise(opt, value.name, indicator);
@@ -143,7 +146,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return null;
     }
-    runSave<T = unknown>(fn: Function, value: unknown, opt?: TypeOpt): T {
+
+    runSave<T = unknown>(fn: Function, value: unknown, opt?: ToTypeOpt): T {
         try {
             return fn(value) as T;
         } catch (e) {
@@ -151,12 +155,12 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return null;
     }
-    raiseInvalidValue<T = unknown>(value: unknown, expected: OneOrMore<string>, opt?: TypeOpt, params?: Dict): T {
+
+    raiseInvalidValue<T = unknown>(value: unknown, expected: OneOrMore<string>, opt?: ToTypeOpt, params?: Dict): T {
         let indicator: string;
         if (opt.indicator !== undefined) {
             indicator = opt.indicator;
-        }
-        else {
+        } else {
             indicator = 'type.invalid-value';
         }
         opt = {...opt, ...params, expected, value};
@@ -165,10 +169,11 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
             .raise(!opt?.silent);
         return null;
     }
+
     // endregion utility
 
     // region types
-    any(value: unknown, opt?: TypeOpt): unknown {
+    any(value: unknown, opt?: ToTypeOpt): unknown {
         if (this.is.empty(value)) {
             return null;
         }
@@ -185,7 +190,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_ANY, opt);
     }
-    array<T = unknown>(value: unknown, opt?: TypeArrayOpt): Array<T> {
+
+    array<T = unknown>(value: unknown, opt?: ToTypeArrayOpt): Array<T> {
         if (this.is.empty(value)) {
             return null;
         }
@@ -197,9 +203,9 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
                 return this.array([value], opt);
             case 'object':
                 if (Array.isArray(value)) {
-                    opt = opt ?? {} as TypeArrayOpt;
+                    opt = opt ?? {} as ToTypeArrayOpt;
                     const result = [] as Array<T>;
-                    const valueFn = opt?.children?.value?.fn as TypeFnLambda<T>;
+                    const valueFn = opt?.children?.value?.fn as ToTypeFnLambda<T>;
                     if (typeof valueFn !== "function") {
                         result.push(...value);
                     } else {
@@ -222,7 +228,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_ARRAY, opt);
     }
-    boolean(value: unknown, opt?: TypeOpt): boolean {
+
+    boolean(value: unknown, opt?: ToTypeOpt): boolean {
         if (this.is.empty(value)) {
             return null;
         }
@@ -253,7 +260,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_BOOL, opt);
     }
-    clazz(value: unknown, opt?: TypeOpt): string {
+
+    clazz(value: unknown, opt?: ToTypeOpt): string {
         if (this.is.empty(value)) {
             return null;
         }
@@ -270,7 +278,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_CLASS, opt);
     }
-    date(value: unknown, opt?: TypeOpt): Date {
+
+    date(value: unknown, opt?: ToTypeOpt): Date {
         if (this.is.empty(value)) {
             return null;
         }
@@ -307,12 +316,13 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_DATE, opt);
     }
-    enumeration<T extends KeyValue = KeyValue>(value: unknown, opt?: TypeEnumOpt<T>): T {
+
+    enumeration<T extends KeyValue = KeyValue>(value: unknown, opt?: ToTypeEnumOpt<T>): T {
         if (this.is.empty(value)) {
             return null;
         }
-        opt = opt ?? {} as TypeEnumOpt<T>;
-        let mapType: 'object'|'array' = null;
+        opt = opt ?? {} as ToTypeEnumOpt<T>;
+        let mapType: 'object' | 'array' = null;
         if (this.is.object(opt.map)) {
             mapType = 'object';
         } else if (this.is.array(opt.map)) {
@@ -373,7 +383,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_ENUM, opt);
     }
-    float(value: unknown, opt?: TypeOpt): number|null {
+
+    float(value: unknown, opt?: ToTypeOpt): number | null {
         if (this.is.empty(value)) {
             return null;
         }
@@ -396,7 +407,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_NUMBER, opt);
     }
-    func<T = Function>(value: unknown, opt?: TypeOpt): T|null {
+
+    func<T = Function>(value: unknown, opt?: ToTypeOpt): T | null {
         if (this.is.empty(value)) {
             return null;
         }
@@ -411,7 +423,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, ['function'], opt);
     }
-    integer(value: unknown, opt?: TypeOpt): number|null {
+
+    integer(value: unknown, opt?: ToTypeOpt): number | null {
         if (this.is.empty(value)) {
             return null;
         }
@@ -438,10 +451,12 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_NUMBER, opt);
     }
-    object<T = unknown>(value: unknown, opt?: TypeObjectOpt): Dict<T> {
+
+    object<T = unknown>(value: unknown, opt?: ToTypeObjectOpt): Dict<T> {
         return this.dict(value, opt);
     }
-    dict<T = unknown>(value: unknown, opt?: TypeObjectOpt): Dict<T> {
+
+    dict<T = unknown>(value: unknown, opt?: ToTypeObjectOpt): Dict<T> {
         if (this.is.empty(value)) {
             return null;
         }
@@ -452,8 +467,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
                         return this.object(value[0], opt);
                     }
                 } else {
-                    opt = opt ?? {} as TypeObjectOpt;
-                    const keyOpt = {...(opt?.children?.key ?? {}), ...opt} as TypeChildOpt<KeyValue>;
+                    opt = opt ?? {} as ToTypeObjectOpt;
+                    const keyOpt = {...(opt?.children?.key ?? {}), ...opt} as ToTypeChildOpt<KeyValue>;
                     if (typeof keyOpt.fn !== 'function') {
                         keyOpt.fn = (k, o) => {
                             if (!this.is.key(k)) {
@@ -462,7 +477,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
                             return k as KeyValue;
                         }
                     }
-                    const valueOpt = {...(opt?.children?.value ?? {}), ...opt} as TypeChildOpt<T>;
+                    const valueOpt = {...(opt?.children?.value ?? {}), ...opt} as ToTypeChildOpt<T>;
                     if (typeof valueOpt.fn !== 'function') {
                         valueOpt.fn = (v) => {
                             return v as T;
@@ -487,7 +502,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, ['object'], opt);
     }
-    string(value: unknown, opt?: TypeOpt): string {
+
+    string(value: unknown, opt?: ToTypeOpt): string {
         if (this.is.empty(value)) {
             return null;
         }
@@ -511,7 +527,8 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_STRING, opt);
     }
-    text(value: unknown, opt?: TypeOpt): string {
+
+    text(value: unknown, opt?: ToTypeOpt): string {
         if (this.is.empty(value)) {
             return null;
         }
@@ -536,6 +553,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
         }
         return this.raiseInvalidValue(value, this._EXPECTED_STRING, opt);
     }
+
     // endregion types
 
     // region secure
@@ -552,6 +570,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
     get $secure(): CommonToSecure {
         return this;
     }
+
     // endregion secure
 
 }

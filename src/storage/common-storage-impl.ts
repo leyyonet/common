@@ -1,6 +1,7 @@
 import {List} from "./list";
-import {CommonStorage, CommonStorageSecure, StorageDetail, StorageItem, StorageType} from "./index-types";
+import {CommonStorage, CommonStorageSecure, StorageDetail, StorageItem} from "./index-types";
 import {Leyyo} from "../leyyo";
+import {StorageType} from "../literals";
 
 // noinspection JSUnusedLocalSymbols
 /** @inheritDoc */
@@ -22,6 +23,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
         this._maps = new Map<string, Map<string, any>>();
         this._sets = new Map<string, Set<any>>();
     }
+
     $init(leyyo: Leyyo): void {
 
     }
@@ -97,6 +99,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
     getList<V>(name: string): List<V> {
         return this._lists.get(name);
     }
+
     // endregion list
 
     // region array
@@ -126,6 +129,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
     getMap<V>(name: string): Map<string, V> {
         return this._maps.get(name);
     }
+
     // endregion map
 
     // region set
@@ -140,6 +144,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
     getSet<V>(name: string): Set<V> {
         return this._sets.get(name);
     }
+
     // endregion set
 
 
@@ -149,8 +154,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
         if (type) {
             result[type] = this.detailItem(type, name);
             return result;
-        }
-        else {
+        } else {
             result['array'] = this.detailItem('array', name);
             result['list'] = this.detailItem('list', name);
             result['map'] = this.detailItem('map', name);

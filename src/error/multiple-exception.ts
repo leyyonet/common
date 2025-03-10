@@ -11,6 +11,7 @@ export class MultipleException extends Exception {
         this._errors = [];
         this.push(...errors);
     }
+
     push(...errors: Array<Error>): this {
         errors.forEach(e => {
             if (e instanceof MultipleException) {
@@ -23,6 +24,7 @@ export class MultipleException extends Exception {
         })
         return this;
     }
+
     // noinspection JSUnusedGlobalSymbols
     get errors(): Array<ExceptionLike> {
         return [...this._errors]; // cloned response

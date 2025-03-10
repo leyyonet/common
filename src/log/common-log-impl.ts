@@ -42,6 +42,7 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
             });
         });
     }
+
     create(clazz: Object | Function | string): Logger {
         const ins = new LoggerImpl(clazz);
         this.callback.queueForCallback(LY_PENDING_LOG_REGISTER, ins, clazz);

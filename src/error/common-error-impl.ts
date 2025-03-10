@@ -56,13 +56,11 @@ export class CommonErrorImpl implements CommonError, CommonErrorSecure {
     build(e: Error | string): ExceptionLike {
         if (e instanceof Exception) {
             return e;
-        }
-        else if (e instanceof Error) {
+        } else if (e instanceof Error) {
             const err = new Exception(e.message, this.toObject(e, 'message', 'stack'));
             this.copyStack(err, e);
             return err;
-        }
-        else if (typeof e === 'string') {
+        } else if (typeof e === 'string') {
             return new Exception(e);
         }
         return new Exception(`Unknown error`, {...this.toObject(e), type: typeof e});
@@ -70,6 +68,7 @@ export class CommonErrorImpl implements CommonError, CommonErrorSecure {
 
     buildStack(e: Error): void {
     }
+
     copyStack(exception: Exception, error: Error): void {
     }
 
@@ -108,5 +107,5 @@ export class CommonErrorImpl implements CommonError, CommonErrorSecure {
     toObject(e: Error, ...omittedFields: Array<string>): Dict {
         return undefined;
     }
-    
+
 }

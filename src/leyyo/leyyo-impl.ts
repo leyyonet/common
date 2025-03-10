@@ -1,6 +1,6 @@
 import {CommonCallback, CommonCallbackImpl} from "../callback";
 import {Leyyo} from "./index-types";
-import {CommonIsImpl, CommonIs} from "../is";
+import {CommonIs, CommonIsImpl} from "../is";
 import {$$setLeyyo, assert, CommonAssertion, CommonAssertionImpl} from "../assertion";
 import {
     AssertionException,
@@ -8,7 +8,8 @@ import {
     CommonError,
     CommonErrorImpl,
     DeveloperException,
-    Exception, MultipleException
+    Exception,
+    MultipleException
 } from "../error";
 import {CommonLog, CommonLogImpl, LoggerImpl} from "../log";
 import {CommonStorage, CommonStorageImpl, List} from "../storage";
@@ -18,10 +19,15 @@ import {FQN_PCK} from "../internal";
 import {
     CountryCodeItems,
     EnvironmentItems,
-    HttpMethodItems, HttpPlaceItems,
-    KeyValueItems, LanguageCodeItems, LocaleCodeItems,
+    HttpMethodItems,
+    HttpPlaceItems,
+    KeyValueItems,
+    LanguageCodeItems,
+    LocaleCodeItems,
     PrimitiveItems,
-    RealValueItems, SeverityItems,
+    RealValueItems,
+    SeverityItems,
+    StorageTypeItems,
     WeakFalseItems,
     WeakTrueItems
 } from "../literals";
@@ -60,6 +66,7 @@ export class LeyyoImpl implements Leyyo {
         this.assertion.$secure.$init(this);
         this.to.$secure.$init(this);
     }
+
     private postInit() {
         $$setLeyyo(this);
         LoggerImpl.$setLeyyo(this);
@@ -80,14 +87,16 @@ export class LeyyoImpl implements Leyyo {
         this.callback.queueForCallback(LY_PENDING_FQN_REGISTER, assert, 'function', FQN_PCK);
 
     }
+
     private initErrorRegister() {
         [Exception, AssertionException, CausedException, DeveloperException, MultipleException].forEach(cls => {
             this.callback.queueForCallback(LY_PENDING_FQN_REGISTER, cls, 'class', FQN_PCK);
             this.callback.queueForCallback(LY_PENDING_ERROR_REGISTER, cls);
         });
     }
+
     private initEnumRegister() {
-        [PrimitiveItems, RealValueItems, KeyValueItems, WeakTrueItems, WeakFalseItems,
+        [PrimitiveItems, StorageTypeItems, RealValueItems, KeyValueItems, WeakTrueItems, WeakFalseItems,
             HttpMethodItems, HttpPlaceItems, SeverityItems, EnvironmentItems,
             CountryCodeItems, LanguageCodeItems, LocaleCodeItems].forEach(enm => {
             this.callback.queueForCallback(LY_PENDING_FQN_REGISTER, enm, 'enum', FQN_PCK);
@@ -97,4 +106,5 @@ export class LeyyoImpl implements Leyyo {
 
     }
 }
+
 export const leyyo: Leyyo = new LeyyoImpl();

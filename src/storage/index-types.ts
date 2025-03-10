@@ -1,13 +1,13 @@
 import {List} from "./list";
-import {Dict, ShiftMain, ShiftSecure} from "../aliases";
-import {Leyyo} from "../leyyo";
+import {Dict, InitLike, ShiftMain, ShiftSecure} from "../aliases";
+import {StorageType} from "../literals";
 
 /**
  * Storage factory
  *
  * Purpose, unify all iteration based data in some place to track memory usage in your applications
  * */
-export interface CommonStorage extends ShiftSecure<CommonStorageSecure>{
+export interface CommonStorage extends ShiftSecure<CommonStorageSecure> {
     // region array
     /**
      * Creates new array
@@ -27,6 +27,7 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure>{
      * If the array does not exist than it returns null
      * */
     getArray<V>(name: string): Array<V>;
+
     // endregion array
 
     // region list
@@ -48,6 +49,7 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure>{
      * If the list does not exist than it returns null
      * */
     getList<V>(name: string): List<V>;
+
     // endregion list
 
     // region map
@@ -70,6 +72,7 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure>{
      * If the map does not exist than it returns null
      * */
     getMap<V>(name: string): Map<string, V>;
+
     // endregion map
 
     // region set
@@ -91,6 +94,7 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure>{
      * If the set does not exist than it returns null
      * */
     getSet<V>(name: string): Set<V>;
+
     // endregion set
 
     /**
@@ -103,13 +107,9 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure>{
      * */
     details(type?: StorageType, name?: string): StorageDetail;
 }
-export interface CommonStorageSecure extends ShiftMain<CommonStorage> {
-    $init(leyyo: Leyyo): void;
+
+export interface CommonStorageSecure extends ShiftMain<CommonStorage>, InitLike {
 }
-/**
- * Storage type literal, as an enum
- * */
-export type StorageType = 'array'|'list'|'map'|'set';
 
 /**
  * Storage size dictionary which in corresponding type

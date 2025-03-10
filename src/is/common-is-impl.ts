@@ -3,7 +3,9 @@ import {
     Primitive,
     PrimitiveItems,
     RealValue,
-    RealValueItems, WeakFalse, WeakFalseItems,
+    RealValueItems,
+    WeakFalse,
+    WeakFalseItems,
     WeakTrue,
     WeakTrueItems
 } from "../literals";
@@ -11,68 +13,111 @@ import {CommonIs, CommonIsSecure} from "./index-types";
 import {Leyyo} from "../leyyo";
 
 // noinspection JSUnusedGlobalSymbols, JSUnusedLocalSymbols
+/** @inheritDoc */
 export class CommonIsImpl implements CommonIs, CommonIsSecure {
 
-    $init(leyyo: Leyyo): void {
+    // region is
+    /** @inheritDoc */
+    empty(value: any): boolean {
+        return (value === undefined || value === null || (typeof value === 'string' && value.trim() === ''));
     }
 
-    // region is
-    empty(value: unknown): boolean {
-        return (value === undefined || value === null);
-    }
-    primitive(value: unknown): boolean {
+    /** @inheritDoc */
+    primitive(value: any): boolean {
         return PrimitiveItems.includes((typeof value) as Primitive);
     }
-    value(value: unknown): boolean {
+
+    /** @inheritDoc */
+    realValue(value: any): boolean {
         return RealValueItems.includes((typeof value) as RealValue);
     }
-    key(value: unknown): boolean {
+
+    /** @inheritDoc */
+    key(value: any): boolean {
         return KeyValueItems.includes((typeof value) as 'string');
     }
-    object(value: unknown): boolean {
+
+    /** @inheritDoc */
+    object(value: any): boolean {
         return value && typeof value === 'object' && !Array.isArray(value);
     }
-    array(value: unknown): boolean {
+
+    /** @inheritDoc */
+    array(value: any): boolean {
         return value && typeof value === 'object' && Array.isArray(value);
     }
-    func(value: unknown): boolean {
+
+    /** @inheritDoc */
+    func(value: any): boolean {
         return typeof value === 'function';
     }
-    number(value: unknown): boolean {
+
+    /** @inheritDoc */
+    number(value: any): boolean {
         return (typeof value === 'number') && !isNaN(value) && isFinite(value);
     }
-    integer(value: unknown): boolean {
+
+    /** @inheritDoc */
+    integer(value: any): boolean {
+        return this.number(value) && Number.isInteger(value);
+    }
+
+    /** @inheritDoc */
+    safeInteger(value: any): boolean {
         return this.number(value) && Number.isSafeInteger(value);
     }
-    string(value: unknown): boolean {
+
+    /** @inheritDoc */
+    string(value: any): boolean {
         return typeof value === 'string';
     }
-    text(value: unknown): boolean {
+
+    /** @inheritDoc */
+    text(value: any): boolean {
         return this.string(value) && (value as string).trim() !== '';
     }
-    clazz(value: unknown): boolean {
+
+    /** @inheritDoc */
+    clazz(value: any): boolean {
         return this.text(value) || this.func(value) || this.object(value);
     }
-    boolean(value: unknown): boolean {
+
+    /** @inheritDoc */
+    boolean(value: any): boolean {
         return (typeof value === 'boolean');
     }
-    true(value: unknown): boolean {
+
+    /** @inheritDoc */
+    true(value: any): boolean {
         return (value === true) ||
             (this.text(value) && WeakTrueItems.includes((value as string).toLowerCase() as WeakTrue)) ||
             (this.number(value) && (value as number) > 0);
     }
-    false(value: unknown): boolean {
+
+    /** @inheritDoc */
+    false(value: any): boolean {
         return (value === false) ||
             (this.text(value) && WeakFalseItems.includes((value as string).toLowerCase() as WeakFalse)) ||
             (this.number(value) && (value as number) <= 0);
     }
 
+    // endregion is
+
+    // region secure
+    /** @inheritDoc */
+    $init(leyyo: Leyyo): void {
+    }
+
+    /** @inheritDoc */
     get $back(): CommonIs {
         return this;
     }
 
+    /** @inheritDoc */
     get $secure(): CommonIsSecure {
         return this;
     }
-    // endregion is
+
+    // endregion secure
+
 }

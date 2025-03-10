@@ -3,10 +3,10 @@
 import {LanguageCode, LocaleCode} from "./literals";
 
 // region basic
-export type BasicType = 'undefined'|'string'|'object'|'number'|'boolean'|'function'|'symbol'|'bigint';
+export type BasicType = 'undefined' | 'string' | 'object' | 'number' | 'boolean' | 'function' | 'symbol' | 'bigint';
 export type Dict<T = any> = Record<KeyValue, T>;
 export type Arr<T = any> = Array<T>;
-export type KeyValue = string|number;
+export type KeyValue = string | number;
 
 export type Id = string | number;
 export type Unknown = unknown;
@@ -36,23 +36,29 @@ export type IsoTime = string; // hh:mm:ii.eeeZ
 interface _Func {
     readonly name?: string;
     readonly length?: number;
+
     bind(thisArg: any, ...args: Array<any>): any;
+
     apply(thisArg: any, args: Array<any>): any;
+
     call(thisArg: any, ...args: Array<any>): any;
 }
 
 export interface Fnc<R = any> extends _Func {
     (...args: Array<any>): R;
 }
+
 export interface AsyncFnc<R = any> extends _Func {
     (...args: Array<any>): Promise<R>;
 }
+
 export type Func<R = any> = Function | Fnc<R>;
 export type Async<R = any> = Function | AsyncFnc<R>;
 
 export interface ClassLike<T = {}> extends _Func {
     new(...args: Array<any>): T;
 }
+
 /**
  * Serialized version of another type
  */
@@ -65,6 +71,7 @@ export type FuncOrName = Function | string;
  * Referenced from Object
  * */
 export type Obj = Object & {};
+
 export interface Abstract<T> extends Function {
     prototype: T;
 }
@@ -77,6 +84,7 @@ declare namespace Express {
     export interface Request {
         custom?: Dict;
     }
+
     export interface Response {
         custom?: Dict;
     }
@@ -91,6 +99,7 @@ export interface Entity<I extends Id = Uuid> {
 export interface Pair<I extends Id = Uuid> extends Entity<I> {
     name?: string;
 }
+
 // endregion entity
 
 
@@ -120,21 +129,54 @@ type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
 // endregion utility
 
 // region shift
+/**
+ * An interface which contains secure mode members and provides to shift to main mode
+ * */
 export interface ShiftSecure<S extends ShiftMain<any>> {
+
+    /**
+     * Shifts to secure mode
+     * */
     get $secure(): S;
 }
 
-export interface ShiftFlat<D> {
-    get $flat(): D;
-}
-
+/**
+ * An interface which contains main mode members and provides to shift to secure mode
+ *
+ * IT's so useful to hide some public members
+ * - to see clean auto-completed members in IDE
+ * - to indicated that secure mode members should be used in special cases
+ * */
 export interface ShiftMain<M extends ShiftSecure<any>> {
+
+    /**
+     * Shifts to main mode
+     * */
     get $back(): M;
 }
 
+/**
+ * An interface which provides to flat generic interfaces/classes to prevent verbose casting commands
+ * */
+export interface ShiftFlat<D> {
+
+    /**
+     * Flats current classes, or eliminate generic parameters
+     * */
+    get $flat(): D;
+}
+
+/**
+ * Useful interface which provides initialization state for instances
+ * */
 export interface InitLike {
+
+    /**
+     * Initializes the instance
+     * */
     $init(...args: Arr): void;
 }
+
 // endregion shift
 
 

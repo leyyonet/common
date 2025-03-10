@@ -1,10 +1,9 @@
-import {Arr, ShiftMain, ShiftSecure} from "../aliases";
-import { Leyyo } from "../leyyo";
+import {Arr, InitLike, ShiftMain, ShiftSecure} from "../aliases";
 
 /**
  * Callback repository, it collects all jobs and fire them when callback is defined
  * */
-export interface CommonCallback extends ShiftSecure<CommonCallbackSecure>{
+export interface CommonCallback extends ShiftSecure<CommonCallbackSecure> {
 
     /**
      * Attach a callback
@@ -17,6 +16,7 @@ export interface CommonCallback extends ShiftSecure<CommonCallbackSecure>{
      * - After attached, it should call all waiting calls in the queue
      * */
     attachCallback(name: string, fn: Function): void;
+
     /**
      * Add a call into queue, which to be executed by appropriate callback
      *
@@ -59,24 +59,28 @@ export interface CommonCallback extends ShiftSecure<CommonCallbackSecure>{
     defineProvider<T extends CommonCallbackDefined = CommonCallbackDefined>(name: string, producer: Function, instance: T): void;
 
 }
-export interface CommonCallbackSecure extends ShiftMain<CommonCallback> {
-    $init(leyyo: Leyyo): void;
+
+export interface CommonCallbackSecure extends ShiftMain<CommonCallback>, InitLike {
 }
+
 export interface CallbackRec {
     initialization?: true,
     fn: Function;
 }
 
-export interface CommonCallbackDefinedInternal extends CommonCallbackDefined{
+export interface CommonCallbackDefinedInternal extends CommonCallbackDefined {
     producer: Function;
 }
+
 export interface CommonCallbackDefined {
     proper: boolean;
 }
+
 export interface CommonCallbackDefinedItem {
     consumer: Function;
     callback: CallbackWhenDefinedLambda;
 }
+
 export interface CommonFqnCb extends CommonCallbackDefined {
     name(value: any): string;
 }
