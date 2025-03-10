@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import {LanguageCode, LocaleCode} from "./literals";
+import {LanguageCode, LocaleCode} from "../literal";
 
 // region basic
 export type BasicType = 'undefined' | 'string' | 'object' | 'number' | 'boolean' | 'function' | 'symbol' | 'bigint';

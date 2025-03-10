@@ -1,22 +1,16 @@
-import {
-    AssertionBuiltResult,
-    AssertionCallback,
-    AssertionOpt,
-    CommonAssertion,
-    CommonAssertionSecure
-} from "./index-types";
+import {CommonAssertion, CommonAssertionSecure} from "./index-types";
 import {Leyyo} from "../leyyo";
 import {CommonIs} from "../is";
-import {AssertionException} from "../error";
-import {CommonCallback} from "../callback";
-import {ToTypeOpt} from "../to";
-import {Arr, Obj} from "../aliases";
+import {Arr, AssertionBuiltResult, AssertionCallback, AssertionOpt, Obj, ToTypeOpt} from "../shared";
+import {AssertionException} from "../exception";
+import {CommonFqn} from "../fqn";
 
+// noinspection JSUnusedGlobalSymbols
 /** @inheritDoc */
 export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecure {
     // region properties
     private is: CommonIs;
-    private callback: CommonCallback;
+    private fqn: CommonFqn;
 
     // endregion properties
 
@@ -67,10 +61,10 @@ export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecu
         switch (typeof value) {
             case 'object':
                 if (set.has(value)) {
-                    return `<circular>${this.callback.fqnName(value?.constructor)}`;
+                    return `<circular>${this.fqn.name(value?.constructor)}`;
                 }
                 if (level >= 10) {
-                    return `<max-depth>${this.callback.fqnName(value?.constructor)}`;
+                    return `<max-depth>${this.fqn.name(value?.constructor)}`;
                 }
                 set.add(value);
                 if (Array.isArray(value)) {
@@ -90,7 +84,7 @@ export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecu
                 }
                 return obj;
             case 'function':
-                return `<function>${this.callback.fqnName(value)}`;
+                return `<function>${this.fqn.name(value)}`;
             case 'symbol':
                 return `<symbol>${value.toString()}`;
         }
@@ -106,10 +100,10 @@ export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecu
         const type = typeof value;
         switch (type) {
             case "object":
-                params.type = `object(${this.callback.fqnName(value.constructor)})`;
+                params.type = `object(${this.fqn.name(value.constructor)})`;
                 break;
             case "function":
-                params.type = `function(${this.callback.fqnName(value)})`;
+                params.type = `function(${this.fqn.name(value)})`;
                 break;
             default:
                 params.type = type;
@@ -280,7 +274,7 @@ export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecu
     /** @inheritDoc */
     $init(leyyo: Leyyo): void {
         this.is = leyyo.is;
-        this.callback = leyyo.callback;
+        this.fqn = leyyo.fqn;
     }
 
     /** @inheritDoc */

@@ -1,8 +1,8 @@
 import {Exception} from "./exception";
-import {AssertionOpt} from "../assertion";
+import {AssertionOpt} from "../shared";
 
 // noinspection Annotator
-export class DeveloperException extends Exception {
+export class AssertionException extends Exception {
     constructor(indicator?: string, params?: AssertionOpt) {
         super(indicator, {...params, indicator});
     }

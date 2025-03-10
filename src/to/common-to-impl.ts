@@ -1,20 +1,23 @@
+import {CommonTo, CommonToSecure} from "./index-types";
 import {
-    CommonTo,
-    CommonToSecure,
+    Arr,
+    Dict,
+    KeyValue,
+    OneOrMore,
+    Pair,
     ToTypeArrayOpt,
     ToTypeChildOpt,
     ToTypeEnumOpt,
     ToTypeFnLambda,
     ToTypeObjectOpt,
     ToTypeOpt
-} from "./index-types";
-import {Arr, Dict, KeyValue, OneOrMore, Pair} from "../aliases";
-import {WeakFalse, WeakFalseItems, WeakTrue, WeakTrueItems} from "../literals";
+} from "../shared";
+import {WeakFalse, WeakFalseItems, WeakTrue, WeakTrueItems} from "../literal";
 import {Leyyo} from "../leyyo";
 import {CommonIs} from "../is";
-import {DeveloperException, Exception} from "../error";
-import {CommonCallback} from "../callback";
 import {CommonAssertion} from "../assertion";
+import {DeveloperException, Exception} from "../exception";
+import {CommonFqn} from "../fqn";
 
 // noinspection JSUnusedGlobalSymbols
 export class CommonToImpl implements CommonTo, CommonToSecure {
@@ -29,7 +32,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
     private readonly _EXPECTED_NUMBER = ['string', 'number', 'bigint'];
     private readonly _EXPECTED_STRING = ['boolean', 'string', 'number'];
     private is: CommonIs;
-    private callback: CommonCallback;
+    private fqn: CommonFqn;
     private assertion: CommonAssertion;
     // endregion properties
 
@@ -274,7 +277,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
                 return value as string;
             case 'object':
             case 'function':
-                return this.callback.fqnName(value);
+                return this.fqn.name(value);
         }
         return this.raiseInvalidValue(value, this._EXPECTED_CLASS, opt);
     }
@@ -559,7 +562,7 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
     // region secure
     $init(leyyo: Leyyo): void {
         this.is = leyyo.is;
-        this.callback = leyyo.callback;
+        this.fqn = leyyo.fqn;
         this.assertion = leyyo.assertion;
     }
 

@@ -1,6 +1,5 @@
-import {List} from "./list";
-import {Dict, InitLike, ShiftMain, ShiftSecure} from "../aliases";
-import {StorageType} from "../literals";
+import {InitLike, List, ShiftMain, ShiftSecure, StorageDetail} from "../shared";
+import {StorageType} from "../literal";
 
 /**
  * Storage factory
@@ -108,15 +107,4 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure> {
     details(type?: StorageType, name?: string): StorageDetail;
 }
 
-export interface CommonStorageSecure extends ShiftMain<CommonStorage>, InitLike {
-}
-
-/**
- * Storage size dictionary which in corresponding type
- * */
-export type StorageItem = Dict<number>;
-
-/**
- * Storage export dictionary which includes items
- * */
-export type StorageDetail = Record<StorageType, StorageItem>;
+export type CommonStorageSecure = ShiftMain<CommonStorage> & InitLike;

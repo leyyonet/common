@@ -1,9 +1,20 @@
+// noinspection JSUnusedGlobalSymbols
+
+export * from './exception';
+export * from './literal';
+export * from './shared';
+
 import {leyyo} from "./leyyo";
 
-export * from './aliases';
-export * from './constants';
-export * from './literals';
-
 const is = leyyo.is;
-const callback = leyyo.callback;
-export {leyyo, is, callback};
+const hook = leyyo.hook;
+const assertion = leyyo.assertion;
+const storage = leyyo.storage;
+const to = leyyo.to;
+
+const commonFqn = leyyo.fqn;
+const commonLog = leyyo.log;
+const commonError = leyyo.error;
+export {leyyo, is, hook, assertion, storage, to, commonFqn, commonLog, commonError};
+
+

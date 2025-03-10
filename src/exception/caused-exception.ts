@@ -1,5 +1,5 @@
 import {Exception} from "./exception";
-import {Dict} from "../aliases";
+import {Dict} from "../shared";
 
 // noinspection Annotator
 export class CausedException extends Exception {

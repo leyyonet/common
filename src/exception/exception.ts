@@ -1,13 +1,14 @@
-import {CommonError, ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index-types";
-import {Abstract, ClassLike, ClassOrName, Dict} from "../aliases";
-import {CommonLog, LogLine} from "../log";
-import {CommonCallback} from "../callback";
+import {CommonError} from "../error";
+import {Abstract, ClassLike, ClassOrName, Dict, LogLine} from "../shared";
+import {CommonLog} from "../log";
 import {Leyyo} from "../leyyo";
 import {CommonAssertion} from "../assertion";
+import {ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index-types";
+import {CommonFqn} from "../fqn";
 
 
 export class Exception extends Error implements ExceptionLike, ExceptionSecure {
-    private static _callback: CommonCallback;
+    private static _fqn: CommonFqn;
     private static _error: CommonError;
     private static _log: CommonLog;
     private static _assertion: CommonAssertion;
@@ -23,7 +24,7 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
             message += ` => ${JSON.stringify(Exception._assertion.secureJson(params))}`;
         }
         super(message);
-        this.name = Exception._callback.fqnName(this);
+        this.name = Exception._fqn.name(this);
         this._params = params ?? {};
         this._parsed = [];
         Exception._error.afterCreate(this);
@@ -47,7 +48,7 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
     }
 
     with(value: ClassLike | Abstract<any> | string | any): this {
-        this._holder = Exception._callback.fqnName(value);
+        this._holder = Exception._fqn.name(value);
         return this;
     }
 
@@ -127,8 +128,8 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
     }
 
     static $setLeyyo(leyyo: Leyyo) {
-        if (!this._callback) {
-            this._callback = leyyo.callback;
+        if (!this._fqn) {
+            this._fqn = leyyo.fqn;
         }
         if (!this._error) {
             this._error = leyyo.error;

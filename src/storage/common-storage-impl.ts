@@ -1,9 +1,9 @@
-import {List} from "./list";
-import {CommonStorage, CommonStorageSecure, StorageDetail, StorageItem} from "./index-types";
+import {List, StorageDetail, StorageItem} from "../shared";
+import {CommonStorage, CommonStorageSecure} from "./index-types";
 import {Leyyo} from "../leyyo";
-import {StorageType} from "../literals";
+import {StorageType} from "../literal";
 
-// noinspection JSUnusedLocalSymbols
+// noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 /** @inheritDoc */
 export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
     private readonly _lists: Map<string, List<any>>;

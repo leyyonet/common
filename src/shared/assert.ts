@@ -1,5 +1,8 @@
-import {AssertionOpt, CommonAssertion} from "./index-types";
+// noinspection JSUnusedGlobalSymbols
+
+import {CommonAssertion} from "../assertion";
 import {Leyyo} from "../leyyo";
+import {AssertionOpt} from "./index-types";
 
 let assertion: CommonAssertion;
 

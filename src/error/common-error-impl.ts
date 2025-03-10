@@ -1,34 +1,34 @@
-import {CommonError, CommonErrorCb, CommonErrorSecure, ExceptionLike} from "./index-types";
+import {CommonError, CommonErrorSecure} from "./index-types";
 import {Leyyo} from "../leyyo";
-import {Dict, Keys} from "../aliases";
-import {Exception} from "./exception";
-import {CommonLogCb} from "../log";
-import {LY_ATTACHED_ERROR} from "../constants";
+import {Dict, ErrorDefinedProvider, Keys, LY_ATTACHED_ERROR, LY_PENDING_ERROR_REGISTER} from "../shared";
+import {Exception, ExceptionLike} from "../exception";
+import {CommonHook} from "../hook";
 
 // noinspection JSUnusedLocalSymbols
 export class CommonErrorImpl implements CommonError, CommonErrorSecure {
+    private hook: CommonHook;
 
     get $back(): CommonError {
         return this;
     }
 
     $init(leyyo: Leyyo): void {
-
+        this.hook = leyyo.hook;
 
         const fields = ['build', 'afterCreate', 'causedBy', 'toObject', 'buildStack', 'copyStack',
             'initSign', 'addSign', 'getSign', 'removeSign', 'hasSign',
-            'initOmit', 'addOmit', 'getOmit', 'inheritOmit'] as Keys<CommonErrorCb>;
+            'initOmit', 'addOmit', 'getOmit', 'inheritOmit'] as Keys<ErrorDefinedProvider>;
 
-        const rec = {proper: false} as CommonErrorCb;
+        const rec = {proper: false} as ErrorDefinedProvider;
         fields.forEach(field => {
             rec[field] = this[field];
         });
 
         // define itself temporarily for error operations
-        leyyo.callback.defineProvider<CommonErrorCb>(LY_ATTACHED_ERROR, CommonErrorImpl, rec);
+        this.hook.defineProvider<ErrorDefinedProvider>(LY_ATTACHED_ERROR, CommonErrorImpl, rec);
 
         // when new error provider is defined, replace all common methods
-        leyyo.callback.whenProviderDefined<CommonLogCb>(LY_ATTACHED_ERROR, CommonErrorImpl, (ins) => {
+        this.hook.whenProviderDefined<ErrorDefinedProvider>(LY_ATTACHED_ERROR, CommonErrorImpl, (ins) => {
             fields.forEach(field => {
                 if (typeof ins[field] === 'function') {
                     this[field] = ins[field];
@@ -53,6 +53,10 @@ export class CommonErrorImpl implements CommonError, CommonErrorSecure {
         e.$secure.$setName(e.constructor.name);
     }
 
+    register(cls: Function): void {
+        this.hook.queueForCallback(LY_PENDING_ERROR_REGISTER, cls);
+    }
+
     build(e: Error | string): ExceptionLike {
         if (e instanceof Exception) {
             return e;
@@ -69,7 +73,7 @@ export class CommonErrorImpl implements CommonError, CommonErrorSecure {
     buildStack(e: Error): void {
     }
 
-    copyStack(exception: Exception, error: Error): void {
+    copyStack(exception: ExceptionLike, error: Error): void {
     }
 
     causedBy(e: Error | string): ExceptionLike {

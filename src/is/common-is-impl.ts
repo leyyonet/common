@@ -8,7 +8,7 @@ import {
     WeakFalseItems,
     WeakTrue,
     WeakTrueItems
-} from "../literals";
+} from "../literal";
 import {CommonIs, CommonIsSecure} from "./index-types";
 import {Leyyo} from "../leyyo";
 

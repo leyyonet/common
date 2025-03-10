@@ -1,4 +1,4 @@
-import {InitLike, ShiftMain, ShiftSecure} from "../aliases";
+import {InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Basic is commands to easy use
@@ -159,5 +159,4 @@ export interface CommonIs extends ShiftSecure<CommonIsSecure> {
     false(value: any): boolean;
 }
 
-export interface CommonIsSecure extends ShiftMain<CommonIs>, InitLike {
-}
+export type CommonIsSecure = ShiftMain<CommonIs> & InitLike;

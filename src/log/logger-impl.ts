@@ -1,26 +1,27 @@
-import {CommonLog, Logger, LoggerLambda, LoggerSecure} from "./index-types";
-import {DeveloperException} from "../error";
-import {CommonCallback} from "../callback";
+import {CommonLog} from "./index-types";
 import {Leyyo} from "../leyyo";
-import {Severity} from "../literals";
+import {Severity} from "../literal";
+import {Logger, LoggerLambda, LoggerSecure} from "../shared";
+import {DeveloperException} from "../exception";
+import {CommonFqn} from "../fqn";
 
 // noinspection JSUnusedLocalSymbols
 export class LoggerImpl implements Logger, LoggerSecure {
     private readonly _clazz: Function;
     private _name: string;
 
-    private static _callback: CommonCallback;
+    private static _fqn: CommonFqn;
     private static _log: CommonLog;
 
     constructor(value: Object | Function | string) {
         switch (typeof value) {
             case "function":
                 this._clazz = value;
-                this._name = LoggerImpl._callback.fqnName(value);
+                this._name = LoggerImpl._fqn.name(value);
                 break;
             case "object":
                 this._clazz = value.constructor;
-                this._name = LoggerImpl._callback.fqnName(value);
+                this._name = LoggerImpl._fqn.name(value);
                 break;
             case "string":
                 this._name = value;
@@ -72,7 +73,7 @@ export class LoggerImpl implements Logger, LoggerSecure {
     }
 
     static $setLeyyo(leyyo: Leyyo): void {
-        this._callback = leyyo.callback;
+        this._fqn = leyyo.fqn;
         this._log = leyyo.log;
     }
 

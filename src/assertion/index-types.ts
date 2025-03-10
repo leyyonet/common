@@ -1,8 +1,7 @@
-import {Arr, InitLike, OneOrMore, ShiftMain, ShiftSecure} from "../aliases";
-import {ToTypeOpt} from "../to";
+import {Arr, AssertionCallback, AssertionOpt, InitLike, ShiftMain, ShiftSecure, ToTypeOpt} from "../shared";
 
 /**
- * Basic is assertions to easy use
+ * Basic assertions to easy use
  * */
 export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
@@ -524,26 +523,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
     boolean(value: any, opt?: AssertionOpt): void;
 }
 
-export interface CommonAssertionSecure extends ShiftMain<CommonAssertion>, InitLike {
-}
-
-export interface AssertionOpt {
-    indicator?: AssertionReason | string;
-    param?: string;
-    where?: string;
-    value?: any;
-    expected?: OneOrMore<string>;
-    current?: string;
-    type?: string;
-
-    [k: string]: any;
-}
-
-type AssertionReason = 'invalid.type' | 'not.found' | 'duplicated' | 'empty'
-
-export type AssertionCallback = () => string | AssertionOpt;
-
-export interface AssertionBuiltResult {
-    message?: string;
-    params: AssertionOpt;
-}
+/**
+ * Secure assertion methods
+ * */
+export type CommonAssertionSecure = ShiftMain<CommonAssertion> & InitLike;

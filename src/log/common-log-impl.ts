@@ -1,13 +1,20 @@
 import {Leyyo} from "../leyyo";
-import {CommonLog, CommonLogCb, CommonLogSecure, Logger, LogLine, LogLineEnhanced} from "./index-types";
+import {CommonLog, CommonLogSecure} from "./index-types";
 import {LoggerImpl} from "./logger-impl";
-import {CommonCallback} from "../callback";
-import {LY_ATTACHED_LOG, LY_PENDING_LOG_REGISTER} from "../constants";
-import {Keys} from "../aliases";
+import {CommonHook} from "../hook";
+import {
+    Keys,
+    LogDefinedProvider,
+    Logger,
+    LogLine,
+    LogLineEnhanced,
+    LY_ATTACHED_LOG,
+    LY_PENDING_LOG_REGISTER
+} from "../shared";
 
-// noinspection JSUnusedLocalSymbols
+// noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonLogImpl implements CommonLog, CommonLogSecure {
-    private callback: CommonCallback;
+    private hook: CommonHook;
 
     constructor() {
         this.create.bind(this);
@@ -22,19 +29,19 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
 
     $init(leyyo: Leyyo): void {
 
-        this.callback = leyyo.callback;
+        this.hook = leyyo.hook;
 
-        const fields = ['create', 'apply', 'check', 'print'] as Keys<CommonLogCb>;
-        const rec = {proper: false} as CommonLogCb;
+        const fields = ['create', 'apply', 'check', 'print'] as Keys<LogDefinedProvider>;
+        const rec = {proper: false} as LogDefinedProvider;
         fields.forEach(field => {
             rec[field] = this[field];
         });
 
         // define itself temporarily for log operations
-        this.callback.defineProvider<CommonLogCb>(LY_ATTACHED_LOG, CommonLogImpl, rec);
+        this.hook.defineProvider<LogDefinedProvider>(LY_ATTACHED_LOG, CommonLogImpl, rec);
 
         // when new log provider is defined, replace all common methods
-        this.callback.whenProviderDefined<CommonLogCb>(LY_ATTACHED_LOG, CommonLogImpl, (ins) => {
+        this.hook.whenProviderDefined<LogDefinedProvider>(LY_ATTACHED_LOG, CommonLogImpl, (ins) => {
             fields.forEach(field => {
                 if (typeof ins[field] === 'function') {
                     this[field] = ins[field];
@@ -45,7 +52,7 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
 
     create(clazz: Object | Function | string): Logger {
         const ins = new LoggerImpl(clazz);
-        this.callback.queueForCallback(LY_PENDING_LOG_REGISTER, ins, clazz);
+        this.hook.queueForCallback(LY_PENDING_LOG_REGISTER, ins, clazz);
         return ins;
     }
 
