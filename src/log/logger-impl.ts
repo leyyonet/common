@@ -29,6 +29,13 @@ export class LoggerImpl implements Logger, LoggerSecure {
             default:
                 throw new DeveloperException('invalid.logger.name', {type: typeof value});
         }
+
+        // when this object is signed by FQN, then refresh logger name
+        if (!LoggerImpl._fqn.exists(value)) {
+            LoggerImpl._fqn.addHook(value, (name: string) => {
+                this._name = name;
+            });
+        }
     }
 
     debug(message: any, params?: any): void {
@@ -75,10 +82,6 @@ export class LoggerImpl implements Logger, LoggerSecure {
     static $setLeyyo(leyyo: Leyyo): void {
         this._fqn = leyyo.fqn;
         this._log = leyyo.log;
-    }
-
-    $setName(name: string): void {
-        this._name = name;
     }
 
     $setMethod(method: Severity, lambda?: LoggerLambda): void {

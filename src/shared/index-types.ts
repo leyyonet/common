@@ -50,12 +50,14 @@ export type HookDefinedProviderLambda<T extends HookDefinedProvider = HookDefine
 
 // region fqn
 export interface FqnDefinedProvider extends HookDefinedProvider {
-    name(value: any): string;
+    exists(target: any): boolean;
+    name(target: any): string;
 
-    register(value: any, type: FqnStereoType, pckName: string): void;
+    register(name: string, target: any, type: FqnStereoType, pckName: string): void;
 }
 
 export type FqnStereoType = 'class' | 'function' | 'enum' | 'literal';
+export type CommonFqnHook = (name: string) => void;
 // endregion fqn
 
 // region error
@@ -167,8 +169,6 @@ export interface LoggerSecure extends ShiftMain<Logger> {
     get $name(): string;
 
     $assert(error: Error, indicator: string, params?: unknown): void;
-
-    $setName(name: string): void;
 
     $setMethod(method: Severity, lambda?: LoggerLambda): void;
 }

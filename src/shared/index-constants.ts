@@ -3,6 +3,7 @@ export const LY_PENDING_ERROR_REGISTER = '#lyy.pending.error.register';
 
 export const LY_PENDING_ENUM_REGISTER = '#lyy.pending.enum.register';
 
+export const LY_SIGN_FQN_HOOK = Symbol.for(`#lyy.fqn.h`);
 export const LY_ATTACHED_FQN = '#lyy.attached.fqn';
 export const LY_PENDING_FQN_REGISTER = '#lyy.pending.fqn.register';
 

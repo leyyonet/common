@@ -20,6 +20,8 @@ import {
     RealValueItems,
     SeverityItems,
     StorageTypeItems,
+    SysClassItems,
+    SysFunctionItems,
     WeakFalseItems,
     WeakTrueItems
 } from "../literal";
@@ -71,37 +73,50 @@ export class LeyyoImpl implements Leyyo {
     }
 
     private initFqnRegister() {
-        this.fqn.register(CommonIsImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonStorageImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonHookImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonFqnImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonLogImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonErrorImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonAssertionImpl, 'class', FQN_PCK);
-        this.fqn.register(CommonToImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonIsImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonStorageImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonHookImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonFqnImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonLogImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonErrorImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonAssertionImpl, 'class', FQN_PCK);
+        this.fqn.register(null, CommonToImpl, 'class', FQN_PCK);
 
-        this.fqn.register(List, 'class', FQN_PCK);
-        this.fqn.register(LoggerImpl, 'class', FQN_PCK);
-        this.fqn.register(assert, 'function', FQN_PCK);
+        this.fqn.register(null, List, 'class', FQN_PCK);
+        this.fqn.register(null, LoggerImpl, 'class', FQN_PCK);
+        this.fqn.register(null, assert, 'function', FQN_PCK);
 
     }
 
     private initErrorRegister() {
         [Exception, AssertionException, CausedException, DeveloperException, MultipleException].forEach(cls => {
-            this.fqn.register(cls, 'class', FQN_PCK);
+            this.fqn.register(null, cls, 'class', FQN_PCK);
             this.error.register(cls);
         });
     }
 
     private initEnumRegister() {
-        [PrimitiveItems, StorageTypeItems, RealValueItems, KeyValueItems, WeakTrueItems, WeakFalseItems,
-            HttpMethodItems, HttpPlaceItems, SeverityItems, EnvironmentItems,
-            CountryCodeItems, LanguageCodeItems, LocaleCodeItems].forEach(enm => {
-            this.fqn.register(enm, 'enum', FQN_PCK);
-            this.hook.queueForCallback(LY_PENDING_ENUM_REGISTER, enm);
-        })
-
-
+        const enumMap = {
+            Primitive:PrimitiveItems,
+            StorageType:StorageTypeItems,
+            RealValue:RealValueItems,
+            KeyValue:KeyValueItems,
+            WeakTrue:WeakTrueItems,
+            WeakFalse:WeakFalseItems,
+            HttpMethod:HttpMethodItems,
+            HttpPlace:HttpPlaceItems,
+            Severity:SeverityItems,
+            Environment:EnvironmentItems,
+            CountryCode:CountryCodeItems,
+            LanguageCode:LanguageCodeItems,
+            LocaleCode:LocaleCodeItems,
+            SysClass:SysClassItems,
+            SysFunction:SysFunctionItems,
+        };
+        for (const [name, value] of Object.entries(enumMap)) {
+            this.fqn.register(name, value, 'enum', FQN_PCK);
+            this.hook.queueForCallback(LY_PENDING_ENUM_REGISTER, value);
+        }
     }
 }
 

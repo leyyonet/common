@@ -9,6 +9,8 @@ export * from './primitive';
 export * from './real-value';
 export * from './severity';
 export * from './storage-type';
+export * from './sys-class';
+export * from './sys-function';
 export * from './weak-false';
 export * from './weak-true';
 export * from './index-types';
