@@ -8,6 +8,8 @@ export interface CommonFqn extends ShiftSecure<CommonFqnSecure> {
 
     addHook(target: Function|Object, callback: CommonFqnHook): boolean;
     get isProper(): boolean;
+    isSysFunction(method: string): boolean;
+    isSysClass(clazz: string|Function): boolean;
 }
 
 
