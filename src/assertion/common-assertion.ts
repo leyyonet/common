@@ -1,16 +1,16 @@
-import {CommonAssertion, CommonAssertionSecure} from "./index-types";
-import {Leyyo} from "../leyyo";
-import {CommonIs} from "../is";
+import {CommonAssertionLike, CommonAssertionSecure} from "./index-types";
+import {LeyyoLike} from "../leyyo";
+import {CommonIsLike} from "../is";
 import {Arr, AssertionBuiltResult, AssertionCallback, AssertionOpt, Obj, ToTypeOpt} from "../shared";
 import {AssertionException} from "../exception";
-import {CommonFqn} from "../fqn";
+import {CommonFqnLike} from "../fqn";
 
 // noinspection JSUnusedGlobalSymbols
 /** @inheritDoc */
-export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecure {
+export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecure {
     // region properties
-    private is: CommonIs;
-    private fqn: CommonFqn;
+    private is: CommonIsLike;
+    private fqn: CommonFqnLike;
 
     // endregion properties
 
@@ -267,12 +267,12 @@ export class CommonAssertionImpl implements CommonAssertion, CommonAssertionSecu
     // region secure
 
     /** @inheritDoc */
-    get $back(): CommonAssertion {
+    get $back(): CommonAssertionLike {
         return this;
     }
 
     /** @inheritDoc */
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
         this.is = leyyo.is;
         this.fqn = leyyo.fqn;
     }

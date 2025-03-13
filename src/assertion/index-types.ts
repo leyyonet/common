@@ -3,7 +3,7 @@ import {Arr, AssertionCallback, AssertionOpt, InitLike, ShiftMain, ShiftSecure, 
 /**
  * Basic assertions to easy use
  * */
-export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
+export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Raises an error with given parameters
@@ -68,7 +68,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is not empty
-     * @see CommonIs#empty
+     * @see CommonIsLike#empty
      *
      * @param {any} value
      * @param {string?} message
@@ -77,7 +77,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is not empty
-     * @see CommonIs#empty
+     * @see CommonIsLike#empty
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -86,7 +86,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is not empty
-     * @see CommonIs#empty
+     * @see CommonIsLike#empty
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -95,7 +95,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a primitive
-     * @see CommonIs#primitive
+     * @see CommonIsLike#primitive
      *
      * @param {any} value
      * @param {string?} message
@@ -104,7 +104,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a primitive
-     * @see CommonIs#primitive
+     * @see CommonIsLike#primitive
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -113,7 +113,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a primitive
-     * @see CommonIs#primitive
+     * @see CommonIsLike#primitive
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -122,7 +122,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a real value
-     * @see CommonIs#realValue
+     * @see CommonIsLike#realValue
      *
      * @param {any} value
      * @param {string?} message
@@ -131,7 +131,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a real value
-     * @see CommonIs#realValue
+     * @see CommonIsLike#realValue
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -140,7 +140,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a real value
-     * @see CommonIs#realValue
+     * @see CommonIsLike#realValue
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -149,7 +149,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a key
-     * @see CommonIs#key
+     * @see CommonIsLike#key
      *
      * @param {any} value
      * @param {string?} message
@@ -158,7 +158,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a key
-     * @see CommonIs#key
+     * @see CommonIsLike#key
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -167,7 +167,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a key
-     * @see CommonIs#key
+     * @see CommonIsLike#key
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -176,7 +176,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an object
-     * @see CommonIs#object
+     * @see CommonIsLike#object
      *
      * @param {any} value
      * @param {string?} message
@@ -185,7 +185,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an object
-     * @see CommonIs#object
+     * @see CommonIsLike#object
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -194,7 +194,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an object
-     * @see CommonIs#object
+     * @see CommonIsLike#object
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -203,7 +203,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an array
-     * @see CommonIs#empty
+     * @see CommonIsLike#empty
      *
      * @param {any} value
      * @param {string?} message
@@ -212,7 +212,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an array
-     * @see CommonIs#array
+     * @see CommonIsLike#array
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -221,7 +221,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an array
-     * @see CommonIs#array
+     * @see CommonIsLike#array
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -230,7 +230,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a function
-     * @see CommonIs#func
+     * @see CommonIsLike#func
      *
      * @param {any} value
      * @param {string?} message
@@ -239,7 +239,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a function
-     * @see CommonIs#func
+     * @see CommonIsLike#func
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -248,7 +248,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a function
-     * @see CommonIs#func
+     * @see CommonIsLike#func
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -257,7 +257,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a number
-     * @see CommonIs#number
+     * @see CommonIsLike#number
      *
      * @param {any} value
      * @param {string?} message
@@ -266,7 +266,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a number
-     * @see CommonIs#number
+     * @see CommonIsLike#number
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -275,7 +275,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a number
-     * @see CommonIs#number
+     * @see CommonIsLike#number
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -284,7 +284,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a positive number
-     * @see CommonIs#number
+     * @see CommonIsLike#number
      *
      * @param {any} value
      * @param {string?} message
@@ -293,7 +293,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a positive number
-     * @see CommonIs#number
+     * @see CommonIsLike#number
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -302,7 +302,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a positive number
-     * @see CommonIs#number
+     * @see CommonIsLike#number
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -311,7 +311,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an integer
-     * @see CommonIs#integer
+     * @see CommonIsLike#integer
      *
      * @param {any} value
      * @param {string?} message
@@ -320,7 +320,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an integer
-     * @see CommonIs#integer
+     * @see CommonIsLike#integer
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -329,7 +329,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is an integer
-     * @see CommonIs#integer
+     * @see CommonIsLike#integer
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -338,7 +338,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a safe integer
-     * @see CommonIs#safeInteger
+     * @see CommonIsLike#safeInteger
      *
      * @param {any} value
      * @param {string?} message
@@ -347,7 +347,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a safe integer
-     * @see CommonIs#safeInteger
+     * @see CommonIsLike#safeInteger
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -356,7 +356,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a safe integer
-     * @see CommonIs#safeInteger
+     * @see CommonIsLike#safeInteger
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -365,7 +365,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a positive integer
-     * @see CommonIs#integer
+     * @see CommonIsLike#integer
      *
      * @param {any} value
      * @param {string?} message
@@ -374,7 +374,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a positive integer
-     * @see CommonIs#integer
+     * @see CommonIsLike#integer
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -383,7 +383,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a positive integer
-     * @see CommonIs#integer
+     * @see CommonIsLike#integer
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -392,7 +392,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a string
-     * @see CommonIs#string
+     * @see CommonIsLike#string
      *
      * @param {any} value
      * @param {string?} message
@@ -401,7 +401,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a string
-     * @see CommonIs#string
+     * @see CommonIsLike#string
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -410,7 +410,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a string
-     * @see CommonIs#string
+     * @see CommonIsLike#string
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -419,7 +419,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a text
-     * @see CommonIs#text
+     * @see CommonIsLike#text
      *
      * @param {any} value
      * @param {string?} message
@@ -428,7 +428,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a text
-     * @see CommonIs#text
+     * @see CommonIsLike#text
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -437,7 +437,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a text
-     * @see CommonIs#text
+     * @see CommonIsLike#text
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -446,7 +446,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a possible class
-     * @see CommonIs#clazz
+     * @see CommonIsLike#clazz
      *
      * @param {any} value
      * @param {string?} message
@@ -455,7 +455,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a possible class
-     * @see CommonIs#clazz
+     * @see CommonIsLike#clazz
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -464,7 +464,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a possible class
-     * @see CommonIs#clazz
+     * @see CommonIsLike#clazz
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -497,7 +497,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a boolean
-     * @see CommonIs#boolean
+     * @see CommonIsLike#boolean
      *
      * @param {any} value
      * @param {string?} message
@@ -506,7 +506,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a boolean
-     * @see CommonIs#boolean
+     * @see CommonIsLike#boolean
      *
      * @param {any} value
      * @param {AssertionCallback?} fn - it should return {@link AssertionOpt}
@@ -515,7 +515,7 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 
     /**
      * Asserts value is a boolean
-     * @see CommonIs#boolean
+     * @see CommonIsLike#boolean
      *
      * @param {any} value
      * @param {AssertionOpt?} opt
@@ -526,4 +526,4 @@ export interface CommonAssertion extends ShiftSecure<CommonAssertionSecure> {
 /**
  * Secure assertion methods
  * */
-export type CommonAssertionSecure = ShiftMain<CommonAssertion> & InitLike;
+export type CommonAssertionSecure = ShiftMain<CommonAssertionLike> & InitLike;

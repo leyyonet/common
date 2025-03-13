@@ -1,7 +1,7 @@
-import {Leyyo} from "../leyyo";
-import {CommonLog, CommonLogSecure} from "./index-types";
-import {LoggerImpl} from "./logger-impl";
-import {CommonHook} from "../hook";
+import {LeyyoLike} from "../leyyo";
+import {CommonLogLike, CommonLogSecure} from "./index-types";
+import {LoggerInstance} from "./logger-instance";
+import {CommonHookLike} from "../hook";
 import {
     Keys,
     LogDefinedProvider,
@@ -13,8 +13,8 @@ import {
 } from "../shared";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-export class CommonLogImpl implements CommonLog, CommonLogSecure {
-    private hook: CommonHook;
+export class CommonLog implements CommonLogLike, CommonLogSecure {
+    private hook: CommonHookLike;
 
     constructor() {
         this.create.bind(this);
@@ -24,10 +24,10 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
     }
 
     get $secure(): CommonLogSecure {
-        throw this;
+        return this;
     }
 
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
 
         this.hook = leyyo.hook;
 
@@ -38,10 +38,10 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
         });
 
         // define itself temporarily for log operations
-        this.hook.defineProvider<LogDefinedProvider>(LY_ATTACHED_LOG, CommonLogImpl, rec);
+        this.hook.defineProvider<LogDefinedProvider>(LY_ATTACHED_LOG, CommonLog, rec);
 
         // when new log provider is defined, replace all common methods
-        this.hook.whenProviderDefined<LogDefinedProvider>(LY_ATTACHED_LOG, CommonLogImpl, (ins) => {
+        this.hook.whenProviderDefined<LogDefinedProvider>(LY_ATTACHED_LOG, CommonLog, (ins) => {
             fields.forEach(field => {
                 if (typeof ins[field] === 'function') {
                     this[field] = ins[field];
@@ -51,7 +51,7 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
     }
 
     create(clazz: Object | Function | string): Logger {
-        const ins = new LoggerImpl(clazz);
+        const ins = new LoggerInstance(clazz);
         this.hook.queueForCallback(LY_PENDING_LOG_REGISTER, ins, clazz);
         return ins;
     }
@@ -74,7 +74,7 @@ export class CommonLogImpl implements CommonLog, CommonLogSecure {
         console[line.severity](`[${line.time}] ${line.severity} ${line.holder} ${line.message}`, line.params);
     }
 
-    get $back(): CommonLog {
+    get $back(): CommonLogLike {
         return this;
     }
 

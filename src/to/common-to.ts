@@ -1,4 +1,4 @@
-import {CommonTo, CommonToSecure} from "./index-types";
+import {CommonToLike, CommonToSecure} from "./index-types";
 import {
     Arr,
     Dict,
@@ -13,14 +13,14 @@ import {
     ToTypeOpt
 } from "../shared";
 import {WeakFalse, WeakFalseItems, WeakTrue, WeakTrueItems} from "../literal";
-import {Leyyo} from "../leyyo";
-import {CommonIs} from "../is";
-import {CommonAssertion} from "../assertion";
+import {LeyyoLike} from "../leyyo";
+import {CommonIsLike} from "../is";
+import {CommonAssertionLike} from "../assertion";
 import {DeveloperException, Exception} from "../exception";
-import {CommonFqn} from "../fqn";
+import {CommonFqnLike} from "../fqn";
 
 // noinspection JSUnusedGlobalSymbols
-export class CommonToImpl implements CommonTo, CommonToSecure {
+export class CommonTo implements CommonToLike, CommonToSecure {
 
     // region properties
     private readonly _EXPECTED_ANY = ['string', 'boolean', 'bigint', 'object', 'number', 'array'];
@@ -31,9 +31,9 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
     private readonly _EXPECTED_ENUM = ['string', 'number'];
     private readonly _EXPECTED_NUMBER = ['string', 'number', 'bigint'];
     private readonly _EXPECTED_STRING = ['boolean', 'string', 'number'];
-    private is: CommonIs;
-    private fqn: CommonFqn;
-    private assertion: CommonAssertion;
+    private is: CommonIsLike;
+    private fqn: CommonFqnLike;
+    private assertion: CommonAssertionLike;
     // endregion properties
 
     // region private
@@ -560,13 +560,13 @@ export class CommonToImpl implements CommonTo, CommonToSecure {
     // endregion types
 
     // region secure
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
         this.is = leyyo.is;
         this.fqn = leyyo.fqn;
         this.assertion = leyyo.assertion;
     }
 
-    get $back(): CommonTo {
+    get $back(): CommonToLike {
         return this;
     }
 

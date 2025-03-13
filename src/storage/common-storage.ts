@@ -1,14 +1,14 @@
 import {List, StorageDetail, StorageItem} from "../shared";
-import {CommonStorage, CommonStorageSecure} from "./index-types";
-import {Leyyo} from "../leyyo";
+import {CommonStorageLike, CommonStorageSecure} from "./index-types";
+import {LeyyoLike} from "../leyyo";
 import {StorageType} from "../literal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 /** @inheritDoc */
-export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
+export class CommonStorage implements CommonStorageLike, CommonStorageSecure {
     private readonly _lists: Map<string, List<any>>;
     private readonly _arrays: Map<string, Array<any>>;
-    private readonly _maps: Map<string, Map<string, any>>;
+    private readonly _maps: Map<string, Map<any, any>>;
     private readonly _sets: Map<string, Set<any>>;
 
     /**
@@ -24,7 +24,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
         this._sets = new Map<string, Set<any>>();
     }
 
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
 
     }
 
@@ -119,14 +119,14 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
 
     // region map
     /** @inheritDoc */
-    newMap<V>(name: string): Map<string, V> {
-        const map = new Map<string, V>;
+    newMap<V, K = string>(name: string): Map<K, V> {
+        const map = new Map<K, V>;
         this._maps.set(name, map);
         return map;
     }
 
     /** @inheritDoc */
-    getMap<V>(name: string): Map<string, V> {
+    getMap<V, K = string>(name: string): Map<K, V> {
         return this._maps.get(name);
     }
 
@@ -163,7 +163,7 @@ export class CommonStorageImpl implements CommonStorage, CommonStorageSecure {
         }
     }
 
-    get $back(): CommonStorage {
+    get $back(): CommonStorageLike {
         return this;
     }
 

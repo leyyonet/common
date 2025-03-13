@@ -1,3 +1,3 @@
 export * from './index-types';
-export * from './common-log-impl';
-export * from './logger-impl';
+export * from './common-log';
+export * from './logger-instance';

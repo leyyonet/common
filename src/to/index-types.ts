@@ -11,7 +11,7 @@ import {
     ToTypeOpt
 } from "../shared";
 
-export interface CommonTo extends ShiftSecure<CommonToSecure> {
+export interface CommonToLike extends ShiftSecure<CommonToSecure> {
     // region utility
     runFn<T = unknown>(fn: Function, value: Function, opt?: ToTypeOpt): T;
 
@@ -49,5 +49,5 @@ export interface CommonTo extends ShiftSecure<CommonToSecure> {
     // endregion types
 }
 
-export interface CommonToSecure extends ShiftMain<CommonTo>, InitLike {
+export interface CommonToSecure extends ShiftMain<CommonToLike>, InitLike {
 }

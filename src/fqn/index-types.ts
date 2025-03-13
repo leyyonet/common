@@ -1,17 +1,17 @@
 import {CommonFqnHook, FqnStereoType, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
-export interface CommonFqn extends ShiftSecure<CommonFqnSecure> {
+export interface CommonFqnLike extends ShiftSecure<CommonFqnSecure> {
     name(target: any): string;
+
     exists(target: any): boolean;
 
     register(name: string, target: any, type: FqnStereoType, pckName: string): void;
 
-    addHook(target: Function|Object, callback: CommonFqnHook): boolean;
+    addHook(target: Function | Object, callback: CommonFqnHook): boolean;
+
     get isProper(): boolean;
-    isSysFunction(method: string): boolean;
-    isSysClass(clazz: string|Function): boolean;
 }
 
 
-export type CommonFqnSecure = ShiftMain<CommonFqn> & InitLike;
+export type CommonFqnSecure = ShiftMain<CommonFqnLike> & InitLike;
 

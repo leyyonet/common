@@ -1,7 +1,7 @@
 import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
 import {ExceptionLike} from "../exception";
 
-export interface CommonError extends ShiftSecure<CommonErrorSecure> {
+export interface CommonErrorLike extends ShiftSecure<CommonErrorSecure> {
     register(cls: Function): void;
 
     build(e: Error | string): ExceptionLike;
@@ -36,5 +36,5 @@ export interface CommonError extends ShiftSecure<CommonErrorSecure> {
 }
 
 
-export type CommonErrorSecure = ShiftMain<CommonError> & InitLike;
+export type CommonErrorSecure = ShiftMain<CommonErrorLike> & InitLike;
 

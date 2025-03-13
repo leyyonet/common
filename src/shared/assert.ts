@@ -1,10 +1,10 @@
 // noinspection JSUnusedGlobalSymbols
 
-import {CommonAssertion} from "../assertion";
-import {Leyyo} from "../leyyo";
+import {CommonAssertionLike} from "../assertion";
+import {LeyyoLike} from "../leyyo";
 import {AssertionOpt} from "./index-types";
 
-let assertion: CommonAssertion;
+let assertion: CommonAssertionLike;
 
 export function assert(flag: boolean, message?: string): void;
 export function assert(flag: boolean, opt?: AssertionOpt): void;
@@ -15,6 +15,6 @@ export function assert(flag: boolean, v2?: string | Function | AssertionOpt): vo
     }
 }
 
-export function $$setLeyyo(leyyo: Leyyo): void {
+export function $$setLeyyo(leyyo: LeyyoLike): void {
     assertion = leyyo.assertion;
 }

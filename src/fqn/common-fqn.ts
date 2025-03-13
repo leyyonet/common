@@ -1,19 +1,18 @@
-import {CommonFqn, CommonFqnSecure} from "./index-types";
-import {Leyyo} from "../leyyo";
+import {CommonFqnLike, CommonFqnSecure} from "./index-types";
+import {LeyyoLike} from "../leyyo";
 import {
     CommonFqnHook,
     FqnDefinedProvider,
+    FqnSignHook,
     FqnStereoType,
     LY_ATTACHED_FQN,
-    LY_PENDING_FQN_REGISTER,
-    LY_SIGN_FQN_HOOK
+    LY_PENDING_FQN_REGISTER
 } from "../shared";
-import {CommonHook} from "../hook";
-import {SysClass, SysClassItems, SysFunction, SysFunctionItems} from "../literal";
+import {CommonHookLike} from "../hook";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
-    private hook: CommonHook;
+export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
+    private hook: CommonHookLike;
     private proper: boolean;
 
     constructor() {
@@ -21,11 +20,12 @@ export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
         this.exists.bind(this);
         this.register.bind(this);
     }
-    get $back(): CommonFqn {
+
+    get $back(): CommonFqnLike {
         return this;
     }
 
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
         this.hook = leyyo.hook;
 
         const rec = {
@@ -36,10 +36,10 @@ export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
         } as FqnDefinedProvider;
 
         // define itself temporarily for fqn operations
-        leyyo.hook.defineProvider<FqnDefinedProvider>(LY_ATTACHED_FQN, CommonFqnImpl, rec);
+        leyyo.hook.defineProvider<FqnDefinedProvider>(LY_ATTACHED_FQN, CommonFqn, rec);
 
         // when new fqn provider is defined, replace all common methods
-        leyyo.hook.whenProviderDefined<FqnDefinedProvider>(LY_ATTACHED_FQN, CommonFqnImpl, (ins) => {
+        leyyo.hook.whenProviderDefined<FqnDefinedProvider>(LY_ATTACHED_FQN, CommonFqn, (ins) => {
             if (ins.proper) {
                 this.proper = true;
             }
@@ -65,16 +65,20 @@ export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
                 return null;
         }
     }
+
     exists(target: any): boolean {
         return false;
     }
+
     register(name: string, value: any, type: FqnStereoType, pckName: string): void {
         this.hook.queueForCallback(LY_PENDING_FQN_REGISTER, name, value, type, pckName);
     }
+
     get isProper(): boolean {
         return this.proper;
     }
-    addHook(target: Function|Object, callback: CommonFqnHook): boolean {
+
+    addHook(target: Function | Object, callback: CommonFqnHook): boolean {
         if (typeof target === 'object') {
             try {
                 target = target.constructor;
@@ -90,7 +94,7 @@ export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
         }
         let callbacks: Array<CommonFqnHook>;
         try {
-            callbacks = Object.getOwnPropertyDescriptor(target, LY_SIGN_FQN_HOOK) as Array<CommonFqnHook> ?? [];
+            callbacks = Object.getOwnPropertyDescriptor(target, FqnSignHook) as Array<CommonFqnHook> ?? [];
         } catch (e) {
             console.log(`CommonFqnImpl.hook.get`, e.message);
         }
@@ -99,7 +103,7 @@ export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
         }
         callbacks.push(callback);
         try {
-            Object.defineProperty(target, LY_SIGN_FQN_HOOK, {
+            Object.defineProperty(target, FqnSignHook, {
                 value: callbacks,
                 configurable: false,
                 writable: false,
@@ -111,25 +115,4 @@ export class CommonFqnImpl implements CommonFqn, CommonFqnSecure {
         }
         return true;
     }
-    isSysFunction(method: string): boolean {
-        if (typeof method !== 'string') {
-            return false;
-        }
-        return SysFunctionItems.includes(method as SysFunction);
-    }
-    isSysClass(clazz: string|Function): boolean {
-        let name: string;
-        if (typeof clazz === 'function') {
-            name = clazz.name;
-        }
-        else if (typeof clazz === 'string') {
-            name = clazz;
-        }
-        if (!name) {
-            return false;
-        }
-        return SysClassItems.includes(name as SysClass);
-    }
-
-
 }

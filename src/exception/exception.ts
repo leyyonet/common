@@ -1,17 +1,17 @@
-import {CommonError} from "../error";
+import {CommonErrorLike} from "../error";
 import {Abstract, ClassLike, ClassOrName, Dict, LogLine} from "../shared";
-import {CommonLog} from "../log";
-import {Leyyo} from "../leyyo";
-import {CommonAssertion} from "../assertion";
+import {CommonLogLike} from "../log";
+import {LeyyoLike} from "../leyyo";
+import {CommonAssertionLike} from "../assertion";
 import {ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index-types";
-import {CommonFqn} from "../fqn";
+import {CommonFqnLike} from "../fqn";
 
 
 export class Exception extends Error implements ExceptionLike, ExceptionSecure {
-    private static _fqn: CommonFqn;
-    private static _error: CommonError;
-    private static _log: CommonLog;
-    private static _assertion: CommonAssertion;
+    private static _fqn: CommonFqnLike;
+    private static _error: CommonErrorLike;
+    private static _log: CommonLogLike;
+    private static _assertion: CommonAssertionLike;
 
     protected _params: Dict;
     protected _parsed: Array<ExceptionStackLine>;
@@ -127,7 +127,7 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
         return Exception._error.removeSign(this, ...keys);
     }
 
-    static $setLeyyo(leyyo: Leyyo) {
+    static $setLeyyo(leyyo: LeyyoLike) {
         if (!this._fqn) {
             this._fqn = leyyo.fqn;
         }
@@ -142,7 +142,7 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
         }
     }
 
-    static get $error(): CommonError {
+    static get $error(): CommonErrorLike {
         return this._error;
     }
 

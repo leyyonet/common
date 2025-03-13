@@ -3,7 +3,7 @@ import {InitLike, ShiftMain, ShiftSecure} from "../shared";
 /**
  * Basic is commands to easy use
  * */
-export interface CommonIs extends ShiftSecure<CommonIsSecure> {
+export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
 
     /**
      * Checks value is empty or not?
@@ -159,4 +159,4 @@ export interface CommonIs extends ShiftSecure<CommonIsSecure> {
     false(value: any): boolean;
 }
 
-export type CommonIsSecure = ShiftMain<CommonIs> & InitLike;
+export type CommonIsSecure = ShiftMain<CommonIsLike> & InitLike;

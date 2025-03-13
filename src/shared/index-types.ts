@@ -51,6 +51,7 @@ export type HookDefinedProviderLambda<T extends HookDefinedProvider = HookDefine
 // region fqn
 export interface FqnDefinedProvider extends HookDefinedProvider {
     exists(target: any): boolean;
+
     name(target: any): string;
 
     register(name: string, target: any, type: FqnStereoType, pckName: string): void;

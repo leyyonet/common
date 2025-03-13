@@ -6,7 +6,7 @@ import {StorageType} from "../literal";
  *
  * Purpose, unify all iteration based data in some place to track memory usage in your applications
  * */
-export interface CommonStorage extends ShiftSecure<CommonStorageSecure> {
+export interface CommonStorageLike extends ShiftSecure<CommonStorageSecure> {
     // region array
     /**
      * Creates new array
@@ -56,21 +56,21 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure> {
      * Creates new map
      *
      * @param {string} name
-     * @return {Map<string, any>}
+     * @return {Map<any, any>}
      * */
-    newMap<V>(name: string): Map<string, V>;
+    newMap<V, K = string>(name: string): Map<K, V>;
 
 
     /**
      * Returns a map by given name
      *
      * @param {string} name
-     * @return {Map<string, any>}
+     * @return {Map<any, any>}
      *
      * Note:
      * If the map does not exist than it returns null
      * */
-    getMap<V>(name: string): Map<string, V>;
+    getMap<V, K = string>(name: string): Map<K, V>;
 
     // endregion map
 
@@ -107,4 +107,4 @@ export interface CommonStorage extends ShiftSecure<CommonStorageSecure> {
     details(type?: StorageType, name?: string): StorageDetail;
 }
 
-export type CommonStorageSecure = ShiftMain<CommonStorage> & InitLike;
+export type CommonStorageSecure = ShiftMain<CommonStorageLike> & InitLike;

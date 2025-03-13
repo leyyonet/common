@@ -9,12 +9,12 @@ import {
     WeakTrue,
     WeakTrueItems
 } from "../literal";
-import {CommonIs, CommonIsSecure} from "./index-types";
-import {Leyyo} from "../leyyo";
+import {CommonIsLike, CommonIsSecure} from "./index-types";
+import {LeyyoLike} from "../leyyo";
 
 // noinspection JSUnusedGlobalSymbols, JSUnusedLocalSymbols
 /** @inheritDoc */
-export class CommonIsImpl implements CommonIs, CommonIsSecure {
+export class CommonIs implements CommonIsLike, CommonIsSecure {
 
     // region is
     /** @inheritDoc */
@@ -105,11 +105,11 @@ export class CommonIsImpl implements CommonIs, CommonIsSecure {
 
     // region secure
     /** @inheritDoc */
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
     }
 
     /** @inheritDoc */
-    get $back(): CommonIs {
+    get $back(): CommonIsLike {
         return this;
     }
 

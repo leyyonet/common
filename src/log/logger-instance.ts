@@ -1,27 +1,27 @@
-import {CommonLog} from "./index-types";
-import {Leyyo} from "../leyyo";
+import {CommonLogLike} from "./index-types";
+import {LeyyoLike} from "../leyyo";
 import {Severity} from "../literal";
-import {Logger, LoggerLambda, LoggerSecure} from "../shared";
+import {Logger, LoggerLambda, LoggerSecure, LogLine} from "../shared";
 import {DeveloperException} from "../exception";
-import {CommonFqn} from "../fqn";
+import {CommonFqnLike} from "../fqn";
 
 // noinspection JSUnusedLocalSymbols
-export class LoggerImpl implements Logger, LoggerSecure {
+export class LoggerInstance implements Logger, LoggerSecure {
     private readonly _clazz: Function;
     private _name: string;
 
-    private static _fqn: CommonFqn;
-    private static _log: CommonLog;
+    private static _fqn: CommonFqnLike;
+    private static _log: CommonLogLike;
 
     constructor(value: Object | Function | string) {
         switch (typeof value) {
             case "function":
                 this._clazz = value;
-                this._name = LoggerImpl._fqn.name(value);
+                this._name = LoggerInstance._fqn.name(value);
                 break;
             case "object":
                 this._clazz = value.constructor;
-                this._name = LoggerImpl._fqn.name(value);
+                this._name = LoggerInstance._fqn.name(value);
                 break;
             case "string":
                 this._name = value;
@@ -31,35 +31,43 @@ export class LoggerImpl implements Logger, LoggerSecure {
         }
 
         // when this object is signed by FQN, then refresh logger name
-        if (!LoggerImpl._fqn.exists(value)) {
-            LoggerImpl._fqn.addHook(value, (name: string) => {
+        if (!LoggerInstance._fqn.exists(value)) {
+            LoggerInstance._fqn.addHook(value, (name: string) => {
                 this._name = name;
             });
         }
     }
 
+    private _prepare(severity: Severity, message: any, params: any): LogLine {
+        if (!message && params?.indicator) {
+            message = params.indicator;
+            delete params.indicator;
+        }
+        return {severity, message, params, holder: this._name};
+    }
+
     debug(message: any, params?: any): void {
-        LoggerImpl._log.apply({severity: 'debug', message: message, holder: this._name, params: params});
+        LoggerInstance._log.apply(this._prepare('debug', message, params));
     }
 
     error(message: any, params?: any): void {
-        LoggerImpl._log.apply({severity: 'error', message: message, holder: this._name, params: params});
+        LoggerInstance._log.apply(this._prepare('error', message, params));
     }
 
     info(message: any, params?: any): void {
-        LoggerImpl._log.apply({severity: 'info', message: message, holder: this._name, params: params});
+        LoggerInstance._log.apply(this._prepare('info', message, params));
     }
 
     log(message: any, params?: any): void {
-        LoggerImpl._log.apply({severity: 'log', message: message, holder: this._name, params: params});
+        LoggerInstance._log.apply(this._prepare('log', message, params));
     }
 
     trace(message: any, params?: any): void {
-        LoggerImpl._log.apply({severity: 'trace', message: message, holder: this._name, params: params});
+        LoggerInstance._log.apply(this._prepare('trace', message, params));
     }
 
     warn(message: any, params?: any): void {
-        LoggerImpl._log.apply({severity: 'warn', message: message, holder: this._name, params: params});
+        LoggerInstance._log.apply(this._prepare('warn', message, params));
     }
 
     // region secure
@@ -79,7 +87,7 @@ export class LoggerImpl implements Logger, LoggerSecure {
         return this._name;
     }
 
-    static $setLeyyo(leyyo: Leyyo): void {
+    static $setLeyyo(leyyo: LeyyoLike): void {
         this._fqn = leyyo.fqn;
         this._log = leyyo.log;
     }

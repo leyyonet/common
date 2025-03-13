@@ -3,7 +3,7 @@ import {Arr, HookDefinedProvider, HookDefinedProviderLambda, InitLike, ShiftMain
 /**
  * Hook interface, it collects all jobs and fire them when callback is defined
  * */
-export interface CommonHook extends ShiftSecure<CommonHookSecure> {
+export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
 
     /**
      * Attach a callback
@@ -61,4 +61,4 @@ export interface CommonHook extends ShiftSecure<CommonHookSecure> {
 /**
  * Secure hook interface
  * */
-export type CommonHookSecure = ShiftMain<CommonHook> & InitLike;
+export type CommonHookSecure = ShiftMain<CommonHookLike> & InitLike;

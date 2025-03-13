@@ -6,13 +6,13 @@ import {
     HookDefinedProviderLambda,
     HookWaitingProviderItem
 } from "../shared";
-import {Leyyo} from "../leyyo";
+import {LeyyoLike} from "../leyyo";
 import {FQN_PCK} from "../internal";
-import {CommonHook, CommonHookSecure} from "./index-types";
+import {CommonHookLike, CommonHookSecure} from "./index-types";
 import {DeveloperException} from "../exception";
 
 // noinspection JSUnusedGlobalSymbols
-export class CommonHookImpl implements CommonHook, CommonHookSecure {
+export class CommonHook implements CommonHookLike, CommonHookSecure {
     private _waitingForCallbacks: Map<string, Array<Arr>>;
     private _attachedCallbacks: Map<string, HookAttachedCallback>;
 
@@ -31,7 +31,7 @@ export class CommonHookImpl implements CommonHook, CommonHookSecure {
         setTimeout(() => this._clearPending(), 60_000);
     }
 
-    $init(leyyo: Leyyo): void {
+    $init(leyyo: LeyyoLike): void {
         this._waitingForCallbacks = leyyo.storage.newMap<Array<Arr>>(`${FQN_PCK}/waitingForCallbacks`);
         this._attachedCallbacks = leyyo.storage.newMap<HookAttachedCallback>(`${FQN_PCK}/attachedCallbacks`);
         this._waitingForProviders = leyyo.storage.newMap<Array<HookWaitingProviderItem>>(`${FQN_PCK}/waitingForProviders`);
@@ -95,7 +95,7 @@ export class CommonHookImpl implements CommonHook, CommonHookSecure {
         return false;
     }
 
-    get $back(): CommonHook {
+    get $back(): CommonHookLike {
         return undefined;
     }
 

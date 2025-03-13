@@ -1,2 +1,2 @@
 export * from './index-types';
-export * from './common-hook-impl';
+export * from './common-hook';

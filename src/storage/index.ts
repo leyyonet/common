@@ -1,2 +1,2 @@
 export * from './index-types';
-export * from './common-storage-impl';
+export * from './common-storage';
