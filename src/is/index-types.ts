@@ -1,4 +1,4 @@
-import {InitLike, ShiftMain, ShiftSecure} from "../shared";
+import {BasicType, EnumLiteral, EnumMap, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Basic is commands to easy use
@@ -13,6 +13,15 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
      * @returns {boolean}
      * */
     empty(value: any): boolean;
+
+    /**
+     * Checks type of value is in given types
+     *
+     * @param {any} value
+     * @param {Array} types
+     * @returns {boolean}
+     * */
+    typeOf(value: any, ...types: Array<BasicType>): boolean;
 
     /**
      * Checks value is primitive or not?
@@ -51,6 +60,22 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
     object(value: any): boolean;
 
     /**
+     * Checks value is bare object [constructor === Object] or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     * */
+    bareObject(value: any): boolean;
+
+    /**
+     * Checks value is another object [constructor !== Object] or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     * */
+    anotherObject(value: any): boolean;
+
+    /**
      * Checks value is array or not?
      *
      * @param {any} value
@@ -65,6 +90,13 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
      * @returns {boolean}
      * */
     func(value: any): boolean;
+    /**
+     * Checks value is symbol or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     * */
+    sym(value: any): boolean;
 
     /**
      * Checks value is number (float or integer) or not?
@@ -123,6 +155,24 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
      * @returns {boolean}
      * */
     clazz(value: any): boolean;
+
+    /**
+     * Checks value is an enum value?
+     *
+     * @param {any} value
+     * @param {EnumMap<string>} map
+     * @returns {boolean}
+     * */
+    enumeration(value: unknown, map: EnumMap): boolean;
+
+    /**
+     * Checks value is an enum value?
+     *
+     * @param {any} value
+     * @param {EnumLiteral<string>} items
+     * @returns {boolean}
+     * */
+    literal(value: unknown, items: EnumLiteral): boolean;
 
     /**
      * Checks value is boolean?

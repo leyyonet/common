@@ -1,4 +1,4 @@
-import {Arr, HookDefinedProvider, HookDefinedProviderLambda, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import {Arr, ClassLike, Func, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Hook interface, it collects all jobs and fire them when callback is defined
@@ -8,32 +8,32 @@ export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
     /**
      * Attach a callback
      *
-     * @param {string} channel
-     * @param {Function} fn
+     * @param {symbol} channel
+     * @param {Func} fn
      *
      * Notes:
      * - channel should be regular string
      * - After attached, it should call all waiting calls in the queue
      * */
-    attachCallback(channel: string, fn: Function): void;
+    attachCallback(channel: symbol, fn: Func): void;
 
     /**
      * Add a call into queue, which to be executed by appropriate callback
      *
-     * @param {string} channel
+     * @param {symbol} channel
      * @param {Array<any>} args
      * @returns {boolean} - channel exists?
      *
      * Notes:
      * - channel should be regular string
      * */
-    queueForCallback(channel: string, ...args: Arr): boolean;
+    queueForCallback(channel: symbol, ...args: Arr): boolean;
 
     /**
      * Informs when callback is changed
      *
-     * @param {string} channel
-     * @param {Function} consumer
+     * @param {symbol} channel
+     * @param {ClassLike} consumer
      * @param {HookDefinedProviderLambda} callback
      *
      * Notes:
@@ -41,24 +41,46 @@ export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
      * - callback should be regular function
      * - channel should not be already defined
      * */
-    whenProviderDefined<T extends HookDefinedProvider = HookDefinedProvider>(channel: string, consumer: Function, callback: HookDefinedProviderLambda<T>): void;
+    whenProviderDefined<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, consumer: ClassLike, callback: HookDefinedProviderLambda<T>): void;
 
 
     /**
      * Defines a provider to replace temporary providers
      *
-     * @param {string} channel
-     * @param {Function} producer
+     * @param {symbol} channel
+     * @param {ClassLike} producer
      * @param {Object} instance
      *
      * Notes:
      * - channel should be regular string
      * */
-    defineProvider<T extends HookDefinedProvider = HookDefinedProvider>(channel: string, producer: Function, instance: T): void;
+    defineProvider<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, producer: ClassLike, instance: T): void;
 
 }
 
 /**
  * Secure hook interface
  * */
-export type CommonHookSecure = ShiftMain<CommonHookLike> & InitLike;
+export interface CommonHookSecure extends ShiftMain<CommonHookLike>, InitLike {
+    $clearTimeout(): void;
+}
+
+export interface HookAttachedCallback {
+    initialization?: true,
+    fn: Func;
+}
+
+export interface $HookDefinedProvider extends HookDefinedProvider {
+    producer: ClassLike;
+}
+
+export interface HookDefinedProvider {
+    proper: boolean;
+}
+
+export interface HookWaitingProviderItem {
+    consumer: ClassLike;
+    callback: HookDefinedProviderLambda;
+}
+
+export type HookDefinedProviderLambda<T extends HookDefinedProvider = HookDefinedProvider> = (instance: T) => void;

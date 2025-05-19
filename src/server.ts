@@ -1,3 +1,3 @@
-import {leyyo} from "./leyyo";
+import {leyyo} from "./index";
 
-leyyo.log.apply({severity: 'debug', message: 'test'});
+leyyo.log.apply({severity: 'log', message: 'message'});

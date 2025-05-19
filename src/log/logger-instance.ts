@@ -1,73 +1,99 @@
-import {CommonLogLike} from "./index-types";
+import {Logger, LoggerLambda, LoggerSecure, LogLine} from "./index-types";
 import {LeyyoLike} from "../leyyo";
-import {Severity} from "../literal";
-import {Logger, LoggerLambda, LoggerSecure, LogLine} from "../shared";
-import {DeveloperException} from "../exception";
-import {CommonFqnLike} from "../fqn";
+import {DevOpt} from "../developer";
+import {Severity} from "./severity";
+import {FQN_PCK} from "../internal";
 
 // noinspection JSUnusedLocalSymbols
 export class LoggerInstance implements Logger, LoggerSecure {
-    private readonly _clazz: Function;
+    private static lyy: LeyyoLike;
+    private _clazz: Function;
     private _name: string;
+    private _name2: string;
 
-    private static _fqn: CommonFqnLike;
-    private static _log: CommonLogLike;
 
     constructor(value: Object | Function | string) {
         switch (typeof value) {
             case "function":
                 this._clazz = value;
-                this._name = LoggerInstance._fqn.name(value);
                 break;
             case "object":
                 this._clazz = value.constructor;
-                this._name = LoggerInstance._fqn.name(value);
                 break;
             case "string":
                 this._name = value;
                 break;
             default:
-                throw new DeveloperException('invalid.logger.name', {type: typeof value});
+                LoggerInstance.lyy.dev.developerError({
+                    issue: 'invalid.logger.name',
+                    where: `${FQN_PCK}.LoggerInstance`,
+                    type: typeof value
+                });
         }
-
-        // when this object is signed by FQN, then refresh logger name
-        if (!LoggerInstance._fqn.exists(value)) {
-            LoggerInstance._fqn.addHook(value, (name: string) => {
-                this._name = name;
-            });
+        if (typeof this._clazz === 'function') {
+            if (LoggerInstance.lyy.fqn.exists(this._clazz)) {
+                this._name = LoggerInstance.lyy.fqn.name(this._clazz);
+                delete this._name2;
+                delete this._clazz;
+            }
+            else {
+                this._name2 = this._clazz?.name;
+                // when this object is signed by FQN, then refresh logger name
+                LoggerInstance.lyy.fqn.addHook(value, (name: string) => {
+                    this._name = name;
+                    delete this._name2;
+                    delete this._clazz;
+                });
+            }
         }
     }
 
-    private _prepare(severity: Severity, message: any, params: any): LogLine {
-        if (!message && params?.indicator) {
-            message = params.indicator;
-            delete params.indicator;
+    private _prepare(severity: Severity, info: any, params: any): LogLine {
+        const extra = {} as DevOpt;
+        let e: Error;
+        if (info instanceof Error) {
+            e = info;
         }
-        return {severity, message, params, holder: this._name};
+        else if (typeof info === 'string') {
+            extra['message'] = info;
+        }
+        else {
+            extra['info'] = info;
+        }
+        const {message, opt} = LoggerInstance.lyy.dev.buildParameters(params, extra, e);
+        const where = this._name ?? this._name2;
+        if (where && opt.where !== where) {
+            if (opt.where) {
+                opt[`where-${Date.now()}`] = LoggerInstance.lyy.dev.fetch(opt, 'where');
+            } else if (where) {
+                opt['where'] = where;
+            }
+        }
+        return {severity, message, params: opt};
     }
 
-    debug(message: any, params?: any): void {
-        LoggerInstance._log.apply(this._prepare('debug', message, params));
+    debug(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('debug', message, params));
     }
 
-    error(message: any, params?: any): void {
-        LoggerInstance._log.apply(this._prepare('error', message, params));
+    error(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('error', message, params));
     }
 
-    info(message: any, params?: any): void {
-        LoggerInstance._log.apply(this._prepare('info', message, params));
+    info(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('info', message, params));
     }
 
-    log(message: any, params?: any): void {
-        LoggerInstance._log.apply(this._prepare('log', message, params));
+    log(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('log', message, params));
     }
 
-    trace(message: any, params?: any): void {
-        LoggerInstance._log.apply(this._prepare('trace', message, params));
+    trace(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('trace', message, params));
     }
 
-    warn(message: any, params?: any): void {
-        LoggerInstance._log.apply(this._prepare('warn', message, params));
+    warn(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('warn', message, params));
     }
 
     // region secure
@@ -87,9 +113,8 @@ export class LoggerInstance implements Logger, LoggerSecure {
         return this._name;
     }
 
-    static $setLeyyo(leyyo: LeyyoLike): void {
-        this._fqn = leyyo.fqn;
-        this._log = leyyo.log;
+    static $setLeyyo(lyy: LeyyoLike): void {
+        this.lyy = lyy;
     }
 
     $setMethod(method: Severity, lambda?: LoggerLambda): void {
@@ -101,7 +126,28 @@ export class LoggerInstance implements Logger, LoggerSecure {
         }
     }
 
-    $assert(error: Error, indicator: string, params?: unknown): void {
+    debug$(opt: DevOpt): void {
+        this.debug(undefined, opt);
+    }
+
+    error$(opt: DevOpt): void {
+        this.error(undefined, opt);
+    }
+
+    info$(opt: DevOpt): void {
+        this.info(undefined, opt);
+    }
+
+    log$(opt: DevOpt): void {
+        this.log(undefined, opt);
+    }
+
+    trace$(opt: DevOpt): void {
+        this.trace(undefined, opt);
+    }
+
+    warn$(opt: DevOpt): void {
+        this.warn(undefined, opt);
     }
 
     // endregion secure

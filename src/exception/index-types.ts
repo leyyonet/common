@@ -9,7 +9,7 @@ export interface ExceptionStackLine {
 }
 
 export interface ExceptionParamsAppend extends Dict {
-    indicator?: string;
+    issue?: string;
 }
 
 export interface ExceptionLike extends Error, ShiftSecure<ExceptionSecure> {

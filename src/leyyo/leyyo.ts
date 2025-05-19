@@ -1,129 +1,116 @@
-import {CommonHook, CommonHookLike} from "../hook";
-import {LeyyoLike} from "./index-types";
-import {CommonIs, CommonIsLike} from "../is";
-import {CommonAssertion, CommonAssertionLike} from "../assertion";
-import {CommonError, CommonErrorLike} from "../error";
-import {CommonLog, CommonLogLike, LoggerInstance} from "../log";
-import {CommonStorage, CommonStorageLike} from "../storage";
-import {CommonTo, CommonToLike} from "../to";
-import {$$setLeyyo, assert, List, LY_PENDING_ENUM_REGISTER} from "../shared";
+import {Func, InitLike} from "../shared";
 import {FQN_PCK} from "../internal";
-import {
-    CountryCodeItems,
-    EnvironmentItems,
-    HttpMethodItems,
-    HttpPlaceItems,
-    KeyValueItems,
-    LanguageCodeItems,
-    LocaleCodeItems,
-    PrimitiveItems,
-    RealValueItems,
-    SeverityItems,
-    StorageTypeItems,
-    SysClassItems,
-    SysFunctionItems,
-    WeakFalseItems,
-    WeakTrueItems
-} from "../literal";
-import {AssertionException, CausedException, DeveloperException, Exception, MultipleException} from "../exception";
-import {CommonFqn, CommonFqnLike} from "../fqn";
-import {CommonSystem, CommonSystemLike} from "../system";
 
-export class Leyyo implements LeyyoLike {
+import {CommonHookLike} from "../hook";
+import {LeyyoLike, LeyyoSecure} from "./index-types";
+import {CommonIsLike} from "../is";
+import {CommonAssertionLike} from "../assertion";
+import {CommonErrorLike} from "../error";
+import {CommonLogLike} from "../log";
+import {CommonRepoLike} from "../repo";
+import {CommonToLike} from "../to";
+import {CommonFqnLike} from "../fqn";
+import {CommonSystemLike} from "../system";
+import {CommonDeveloperLike} from "../developer";
+import {CommonDescriptorLike} from "../descriptor";
+import {CommonWrapperLike} from "../wrapper";
+import {CommonTestLike} from "../test";
+import {CommonSystem} from "../system/common-system";
+import {CommonIs} from "../is/common-is";
+import {CommonRepo} from "../repo/common-repo";
+import {CommonHook} from "../hook/common-hook";
+import {CommonLog} from "../log/common-log";
+import {CommonFqn} from "../fqn/common-fqn";
+import {CommonDeveloper} from "../developer/common-developer";
+import {CommonError} from "../error/common-error";
+import {CommonAssertion} from "../assertion/common-assertion";
+import {CommonTo} from "../to/common-to";
+import {CommonDescriptor} from "../descriptor/common-descriptor";
+import {CommonWrapper} from "../wrapper/common-wrapper";
+import {CommonTest} from "../test/common-test";
+
+export class Leyyo implements LeyyoLike, LeyyoSecure {
+    private _lazyCallbacks: Array<Func> = [];
+    private _earlyCallbacks: Array<Func> = [];
     readonly hook: CommonHookLike;
     readonly is: CommonIsLike;
     readonly assertion: CommonAssertionLike;
     readonly error: CommonErrorLike;
     readonly log: CommonLogLike;
-    readonly storage: CommonStorageLike;
+    readonly repo: CommonRepoLike;
     readonly to: CommonToLike;
     readonly fqn: CommonFqnLike;
     readonly system: CommonSystemLike;
+    readonly dev: CommonDeveloperLike;
+    readonly descriptor: CommonDescriptorLike;
+    readonly wrapper: CommonWrapperLike;
+    readonly test: CommonTestLike;
 
     constructor() {
         this.system = new CommonSystem();
         this.is = new CommonIs();
-        this.storage = new CommonStorage();
-        this.hook = new CommonHook() // storage
+        this.repo = new CommonRepo();
+        this.hook = new CommonHook() // repo
         this.log = new CommonLog(); // hook
         this.fqn = new CommonFqn(); // hook
+        this.dev = new CommonDeveloper();
         this.error = new CommonError(); // hook
         this.assertion = new CommonAssertion(); // is, hook
         this.to = new CommonTo(); // is, hook, assertion
+        this.descriptor = new CommonDescriptor();
+        this.wrapper = new CommonWrapper();
+        this.test = new CommonTest();
 
+        const members = [
+            this.system.$secure,
+            this.is.$secure,
+            this.repo.$secure,
+            this.hook.$secure,
+            this.fqn.$secure,
+            this.dev.$secure,
+            this.log.$secure,
+            this.error.$secure,
+            this.assertion.$secure,
+            this.to.$secure,
+            this.descriptor.$secure,
+            this.wrapper.$secure,
+            this.test.$secure,
+        ] as Array<InitLike>;
 
-        this.init();
-        this.postInit();
-        this.initFqnRegister();
-        this.initErrorRegister();
-        this.initEnumRegister();
-    }
-
-    private init() {
-        this.system.$secure.$init(this);
-        this.is.$secure.$init(this);
-        this.storage.$secure.$init(this);
-        this.hook.$secure.$init(this);
-        this.fqn.$secure.$init(this);
-        this.log.$secure.$init(this);
-        this.error.$secure.$init(this);
-        this.assertion.$secure.$init(this);
-        this.to.$secure.$init(this);
-    }
-
-    private postInit() {
-        $$setLeyyo(this);
-        LoggerInstance.$setLeyyo(this);
-        Exception.$setLeyyo(this);
-    }
-
-    private initFqnRegister() {
-        this.fqn.register(null, CommonSystem, 'class', FQN_PCK);
-        this.fqn.register(null, CommonIs, 'class', FQN_PCK);
-        this.fqn.register(null, CommonStorage, 'class', FQN_PCK);
-        this.fqn.register(null, CommonHook, 'class', FQN_PCK);
-        this.fqn.register(null, CommonFqn, 'class', FQN_PCK);
-        this.fqn.register(null, CommonLog, 'class', FQN_PCK);
-        this.fqn.register(null, CommonError, 'class', FQN_PCK);
-        this.fqn.register(null, CommonAssertion, 'class', FQN_PCK);
-        this.fqn.register(null, CommonTo, 'class', FQN_PCK);
-
-        this.fqn.register(null, List, 'class', FQN_PCK);
-        this.fqn.register(null, LoggerInstance, 'class', FQN_PCK);
-        this.fqn.register(null, assert, 'function', FQN_PCK);
-
-    }
-
-    private initErrorRegister() {
-        [Exception, AssertionException, CausedException, DeveloperException, MultipleException].forEach(cls => {
-            this.fqn.register(null, cls, 'class', FQN_PCK);
-            this.error.register(cls);
+        members.forEach(member => member.$init(this));
+        this.$lazyRun(() => {
+            this.fqn.register(null, Leyyo, 'class', FQN_PCK);
+        })
+        this._earlyCallbacks.forEach(fn => fn());
+        this._lazyCallbacks.forEach(fn => fn());
+        members.forEach(member => {
+            this.descriptor.remove(member, '$init');
         });
+
+        ['$secure', '$back', '$earlyRun', '$lazyRun', '_lazyCallbacks', '_earlyCallbacks'].forEach(field => {
+            this.descriptor.remove(this, field);
+        })
     }
 
-    private initEnumRegister() {
-        const enumMap = {
-            Primitive: PrimitiveItems,
-            StorageType: StorageTypeItems,
-            RealValue: RealValueItems,
-            KeyValue: KeyValueItems,
-            WeakTrue: WeakTrueItems,
-            WeakFalse: WeakFalseItems,
-            HttpMethod: HttpMethodItems,
-            HttpPlace: HttpPlaceItems,
-            Severity: SeverityItems,
-            Environment: EnvironmentItems,
-            CountryCode: CountryCodeItems,
-            LanguageCode: LanguageCodeItems,
-            LocaleCode: LocaleCodeItems,
-            SysClass: SysClassItems,
-            SysFunction: SysFunctionItems,
-        };
-        for (const [name, value] of Object.entries(enumMap)) {
-            this.fqn.register(name, value, 'enum', FQN_PCK);
-            this.hook.queueForCallback(LY_PENDING_ENUM_REGISTER, value);
-        }
+    // region secure
+
+    get $secure(): LeyyoSecure {
+        return this;
     }
+
+    get $back(): LeyyoLike {
+        return this;
+    }
+
+    $earlyRun(fn: Func): LeyyoSecure {
+        this._earlyCallbacks.push(fn);
+        return this;
+    }
+
+    $lazyRun(fn: Func): LeyyoSecure {
+        this._lazyCallbacks.push(fn);
+        return this;
+    }
+
+    // endregion secure
 }
-
-export const leyyo: LeyyoLike = new Leyyo();

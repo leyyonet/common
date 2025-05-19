@@ -1,230 +1,235 @@
-import {Dict, KeyValue, OneOrMore, ShiftMain, ShiftSecure} from "./index-aliases";
-import {Exception, ExceptionLike} from "../exception";
-import {Severity, StorageType} from "../literal";
+// noinspection JSUnusedGlobalSymbols
 
-// region assertion
-export interface AssertionOpt {
-    indicator?: AssertionReason | string;
-    param?: string;
-    where?: string;
-    value?: any;
-    expected?: OneOrMore<string>;
-    current?: string;
-    type?: string;
+// region basic
+import {LanguageCode, LocaleCode} from "../system";
 
-    [k: string]: any;
+export type BasicType = 'undefined' | 'string' | 'object' | 'number' | 'boolean' | 'function' | 'symbol' | 'bigint';
+export type Dict<T = any> = Record<KeyValue, T>;
+export type Arr<T = any> = Array<T>;
+export type KeyValue = string | number;
+
+export type Id = string | number;
+export type Unknown = unknown;
+export type Integer = number;
+export type Float = number;
+export type Boolean = boolean;
+export type Enum = string; // enumeration
+export type Alpha = string; // alphaType
+export type String = string; // stringType
+export type Digit = string; // digitType, 0-9
+export type Title = string; //Single-line clear-text (no html)
+export type Description = string; //Multi-line clear-text (no html)
+export type RichText = string; // multi-line rich text with html tags
+export type Uuid = string;
+export type Host = string;
+export type Url = string;
+export type Email = string;
+export type Folder = string;
+export type Timestamp = number;
+export type IsoDatetime = string; // yyyy-mm-ddThh:mm:ii.eeeZ
+export type IsoDate = string; // yyyy-mm-dd
+export type IsoTime = string; // hh:mm:ii.eeeZ
+// endregion basic
+
+
+// region function-class
+interface _Func {
+    readonly name?: string;
+    readonly length?: number;
+
+    bind(thisArg: any, ...args: Array<any>): any;
+
+    apply(thisArg: any, args: Array<any>): any;
+
+    call(thisArg: any, ...args: Array<any>): any;
 }
 
-type AssertionReason = 'invalid.type' | 'not.found' | 'duplicated' | 'empty'
-
-export type AssertionCallback = () => string | AssertionOpt;
-
-export interface AssertionBuiltResult {
-    message?: string;
-    params: AssertionOpt;
+export interface Fnc<R = any> extends _Func {
+    (...args: Array<any>): R;
 }
 
-// endregion assertion
-
-// region hook
-export interface HookAttachedCallback {
-    initialization?: true,
-    fn: Function;
+export interface AsyncFnc<R = any> extends _Func {
+    (...args: Array<any>): Promise<R>;
 }
 
-export interface $HookDefinedProvider extends HookDefinedProvider {
-    producer: Function;
+export type Func<R = any> = Function | Fnc<R>;
+export type Async<R = any> = Function | AsyncFnc<R>;
+
+export interface ClassLike<T = {}> extends _Func {
+    new(...args: Array<any>): T;
+}
+export type TypeOf<C = ClassLike> = C extends ClassLike<infer T> ? T : C;
+
+export interface Describable {
+    description: string;
+}
+export interface Nameable {
+    name: string;
+}
+/**
+ * Serialized version of another type
+ */
+export type Serialized<T> = {
+    [P in keyof T]: T[P];
+};
+export type ClassOrName = ClassLike | string;
+export type FuncOrName = Function | string;
+export type ClassOrFuncOrName = ClassLike | Function | string;
+/**
+ * Referenced from Object
+ * */
+export type Obj = Object & {};
+
+export interface Abstract<T> extends Function {
+    prototype: T;
 }
 
-export interface HookDefinedProvider {
-    proper: boolean;
+// endregion function-class
+
+
+// region express
+declare namespace Express {
+    export interface Request {
+        custom?: Dict;
+    }
+
+    export interface Response {
+        custom?: Dict;
+    }
+}
+// endregion express
+
+// region entity
+export interface Entity<I extends Id = Uuid> {
+    id?: I;
 }
 
-export interface HookWaitingProviderItem {
-    consumer: Function;
-    callback: HookDefinedProviderLambda;
+export interface Pair<I extends Id = Uuid> extends Entity<I> {
+    name?: string;
 }
 
-export type HookDefinedProviderLambda<T extends HookDefinedProvider = HookDefinedProvider> = (instance: T) => void;
-// endregion hook
+// endregion entity
 
-// region fqn
-export interface FqnDefinedProvider extends HookDefinedProvider {
-    exists(target: any): boolean;
 
-    name(target: any): string;
-
-    register(name: string, target: any, type: FqnStereoType, pckName: string): void;
+// region utility
+export type TypeOfMethod<T, M extends keyof T> = T[M] extends Function ? T[M] : never;
+export type KeyOf<T> = keyof T;
+export type Keys<T> = Array<keyof T>;
+export type ValueOf<T> = T[KeyOf<T>];
+export type Values<T> = Array<T[KeyOf<T>]>;
+export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T ? {
+    [P in K]: T[K];
+} & Partial<Record<Exclude<keyof T, K>, never>> : never;
+export type OneOf<Obj> = ValueOf<OneOfByKey<Obj>>;
+export type Xor<A, B> =
+    | XorIn<A & { [K in keyof B]?: undefined }>
+    | XorIn<B & { [K in keyof A]?: undefined }>;
+export type Mutable<A> = {
+    -readonly [K in keyof A]: A[K];
 }
-
-export type FqnStereoType = 'class' | 'function' | 'enum' | 'literal';
-export type CommonFqnHook = (name: string) => void;
-// endregion fqn
-
-// region error
-export interface ErrorDefinedProvider extends HookDefinedProvider {
-    register(exception: ExceptionLike): void;
-
-    build?(e: Error | string): ExceptionLike;
-
-    afterCreate?(e: ExceptionLike): void;
-
-    causedBy?(e: Error | string): ExceptionLike;
-
-    initSign?(err: Error): boolean;
-
-    addSign?(err: Error, ...keys: Array<string>): boolean;
-
-    getSign?(err: Error): Array<string>;
-
-    removeSign?(err: Error, ...keys: Array<string>): boolean;
-
-    hasSign?(err: Error, key: string): boolean;
-
-    toObject?(e: Error, ...omittedFields: Array<string>): Dict;
-
-    buildStack?(e: Error): void;
-
-    copyStack?(exception: Exception, error: Error): void;
-
-    initOmit?(clz: Function): boolean;
-
-    addOmit?(clz: Function, ...properties: Array<string>): boolean;
-
-    getOmit?(clz: Function): Array<string>;
-
-    inheritOmit?(clz: Function): Array<string>;
+export type OneOrMore<T> = T | Array<T>;
+export type ValueOrCallback<T> = T | ValueCallback<T> | ValueCallbackAsync<T>;
+export type ValueCallback<T> = () => T;
+export type ValueCallbackAsync<T> = () => Promise<T>;
+export type SameType<A, T> = {
+    [K in keyof A]: T;
 }
+type OneOnly<T, K extends keyof T> = Omit<T, Exclude<keyof T, K>> | Pick<T, K>;
+type OneOfByKey<T> = { [key in keyof T]: OneOnly<T, key> };
+type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
+// endregion utility
 
-// endregion error
+// region shift
+/**
+ * An interface which contains secure mode members and provides to shift to main mode
+ * */
+export interface ShiftSecure<S extends ShiftMain<any>> {
 
-
-// region log
-export interface LogDefinedProvider extends HookDefinedProvider {
-    create?(clazz: Object | Function | string): Logger;
-
-    apply?(line: LogLine): void;
-
-    check?<T>(line: LogLineEnhanced<T>): void;
-
-    print<T>(line: LogLineEnhanced<T>): void;
+    /**
+     * Shifts to secure mode
+     * */
+    get $secure(): S;
 }
-
-export interface LogConsumer {
-    apply(line: LogLine): void;
-}
-
-export interface LogLine {
-    severity: Severity;
-    message: string | Error;
-    holder?: string;
-    params?: Dict;
-}
-
-export interface LogLineEnhanced<L = Dict> extends LogLine {
-    time?: Date;
-    locals?: L;
-}
-
-export interface Logger extends ShiftSecure<LoggerSecure> {
-    error(message: string, params?: any): void;
-
-    error(error: Error, params?: any): void;
-
-    error(whatever: any, params?: any): void;
-
-    warn(message: string, params?: any): void;
-
-    warn(error: Error, params?: any): void;
-
-    warn(whatever: any, params?: any): void;
-
-    info(message: string, params?: any): void;
-
-    info(error: Error, params?: any): void;
-
-    info(whatever: any, params?: any): void;
-
-    log(message: string, params?: any): void;
-
-    log(error: Error, params?: any): void;
-
-    log(whatever: any, params?: any): void;
-
-    trace(message: string, params?: any): void;
-
-    trace(error: Error, params?: any): void;
-
-    trace(whatever: any, params?: any): void;
-
-    debug(message: string, params?: any): void;
-
-    debug(error: Error, params?: any): void;
-
-    debug(whatever: any, params?: any): void;
-}
-
-export interface LoggerSecure extends ShiftMain<Logger> {
-    get $clazz(): Function;
-
-    get $name(): string;
-
-    $assert(error: Error, indicator: string, params?: unknown): void;
-
-    $setMethod(method: Severity, lambda?: LoggerLambda): void;
-}
-
-export type LoggerLambda = (whatever: any, params?: any) => void;
-// endregion log
-
-// region storage
 
 /**
- * Storage size dictionary which in corresponding type
+ * An interface which contains main mode members and provides to shift to secure mode
+ *
+ * IT's so useful to hide some public members
+ * - to see clean auto-completed members in IDE
+ * - to indicated that secure mode members should be used in special cases
  * */
-export type StorageItem = Dict<number>;
+export interface ShiftMain<M extends ShiftSecure<any>> {
+
+    /**
+     * Shifts to main mode
+     * */
+    get $back(): M;
+}
 
 /**
- * Storage export dictionary which includes items
+ * An interface which provides to flat generic interfaces/classes to prevent verbose casting commands
  * */
-export type StorageDetail = Record<StorageType, StorageItem>;
-// endregion storage
+export interface ShiftFlat<D> {
 
-// region to
-export interface ToTypeOpt extends AssertionOpt {
-    silent?: true;
-    children?: unknown;
+    /**
+     * Flats current classes, or eliminate generic parameters
+     * */
+    get $flat(): D;
 }
 
-export type ToTypeFnLambda<T = unknown, O extends ToTypeOpt = ToTypeOpt> = (value: unknown, opt?: O) => T;
+/**
+ * Useful interface which provides initialization state for instances
+ * */
+export interface InitLike {
 
-export interface ToTypeChildOpt<T = unknown> extends ToTypeOpt {
-    fn?: ToTypeFnLambda<T>;
+    /**
+     * Initializes the instance
+     * */
+    $init(...args: Arr): void;
 }
 
-export interface ToTypeArrayChildOpt<V extends ToTypeChildOpt = ToTypeChildOpt> extends Dict<ToTypeChildOpt> {
-    value?: V;
-}
+// endregion shift
 
-export interface ToTypeArrayOpt<V extends ToTypeChildOpt = ToTypeChildOpt> extends ToTypeOpt {
-    children?: ToTypeArrayChildOpt<V>;
-}
 
-export interface ToTypeDictChildOpt<K extends ToTypeChildOpt = ToTypeChildOpt, V extends ToTypeChildOpt = ToTypeChildOpt> extends Record<string, ToTypeChildOpt> {
-    key?: K;
-    value?: V;
-}
+// region json
+/**
+ * JSON Object
+ */
+export type JsonObject = { [K in string]?: JsonValue };
+/**
+ * JSON Array
+ */
+export type JsonArray = Array<JsonValue>;
 
-export interface ToTypeObjectOpt<K extends ToTypeChildOpt = ToTypeChildOpt, V extends ToTypeChildOpt = ToTypeChildOpt> extends ToTypeOpt {
-    children?: ToTypeDictChildOpt<K, V>;
-}
+/**
+ * JSON Primitives
+ */
+export type JsonPrimitive = string | number | boolean | null;
 
-export interface ToTypeEnumOpt<E extends KeyValue = KeyValue> extends ToTypeOpt {
-    map: EnumerationMap<E> | EnumerationArray<E>;
-    alt?: EnumerationAlt<E>;
-}
+/**
+ * JSON Values
+ */
+export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
+// endregion json
 
-export type EnumerationMap<E extends KeyValue = KeyValue> = Dict<E>;
-export type EnumerationAlt<E extends KeyValue = KeyValue> = Dict<E>;
-export type EnumerationArray<E extends KeyValue = KeyValue> = Array<E>;
-// endregion to
+// region i18n
+/**
+ * Primitive language key
+ *
+ * It can be language (xx), local (xx-xx) or string (not preferred)
+ * */
+export type I18nKey = LanguageCode | LocaleCode | string;
+/**
+ * Language map
+ *
+ * @example
+ * const name = {en: "Apple", tr: "Elma"};
+ *
+ * */
+export type I18nRaw<V = unknown> = Dict<V>;
+export type I18nAny<V = unknown> = I18nRaw<V> | V;
+// endregion i18n
+
+export type EnumMap<E extends KeyValue = KeyValue> = Dict<E>;
+export type EnumAlt<E extends KeyValue = KeyValue> = Dict<E>;
+export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|any;

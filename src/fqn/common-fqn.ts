@@ -1,19 +1,13 @@
-import {CommonFqnLike, CommonFqnSecure} from "./index-types";
-import {LeyyoLike} from "../leyyo";
-import {
-    CommonFqnHook,
-    FqnDefinedProvider,
-    FqnSignHook,
-    FqnStereoType,
-    LY_ATTACHED_FQN,
-    LY_PENDING_FQN_REGISTER
-} from "../shared";
-import {CommonHookLike} from "../hook";
+import {CommonFqnHook, CommonFqnLike, CommonFqnSecure, FqnDefinedProvider, FqnStereoType} from "./index-types";
+import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import {Func, Obj} from "../shared";
+import {FQN_PCK} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
-    private hook: CommonHookLike;
+    private lyy: LeyyoLike;
     private proper: boolean;
+    private _pendingSign: symbol;
 
     constructor() {
         this.name.bind(this);
@@ -21,31 +15,45 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         this.register.bind(this);
     }
 
+    private get pendingSign(): symbol {
+        if (this._pendingSign) {
+            return this._pendingSign;
+        }
+        this._pendingSign = this.lyy.descriptor.sym(FQN_PCK, 'fqnPending');
+        return this._pendingSign;
+    }
+
     get $back(): CommonFqnLike {
         return this;
     }
 
-    $init(leyyo: LeyyoLike): void {
-        this.hook = leyyo.hook;
+    $init(lyy: LeyyoLike): void {
+        this.lyy = lyy;
 
-        const rec = {
-            proper: false,
-            exists: this.exists,
-            name: this.name,
-            register: this.register,
-        } as FqnDefinedProvider;
+        this.lyy.$secure
+            .$lazyRun(() => {
+            const rec = {
+                proper: false,
+                exists: this.exists,
+                name: this.name,
+                register: this.register,
+            } as FqnDefinedProvider;
 
-        // define itself temporarily for fqn operations
-        leyyo.hook.defineProvider<FqnDefinedProvider>(LY_ATTACHED_FQN, CommonFqn, rec);
+            // define itself temporarily for fqn operations
+            this.lyy.hook.defineProvider<FqnDefinedProvider>(LeyyoCommonHook.fqnAttached, CommonFqn, rec);
 
-        // when new fqn provider is defined, replace all common methods
-        leyyo.hook.whenProviderDefined<FqnDefinedProvider>(LY_ATTACHED_FQN, CommonFqn, (ins) => {
-            if (ins.proper) {
-                this.proper = true;
-            }
-            this.exists = ins.exists;
-            this.name = ins.name;
-            this.register = ins.register;
+            // when new fqn provider is defined, replace all common methods
+            this.lyy.hook.whenProviderDefined<FqnDefinedProvider>(LeyyoCommonHook.fqnAttached, CommonFqn, (ins) => {
+                if (ins.proper) {
+                    this.proper = true;
+                }
+                this.exists = ins.exists;
+                this.name = ins.name;
+                this.register = ins.register;
+            });
+        })
+            .$lazyRun(() => {
+            this.lyy.fqn.register(null, CommonFqn, 'class', FQN_PCK);
         });
     }
 
@@ -71,11 +79,40 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
     }
 
     register(name: string, value: any, type: FqnStereoType, pckName: string): void {
-        this.hook.queueForCallback(LY_PENDING_FQN_REGISTER, name, value, type, pckName);
+        this.lyy.hook.queueForCallback(LeyyoCommonHook.fqnPendingRegister, name, value, type, pckName);
     }
 
     get isProper(): boolean {
         return this.proper;
+    }
+    $appendHook(target: Function | Object, callback: CommonFqnHook): void {
+        let callbacks = this.lyy.descriptor.getValue<Array<CommonFqnHook>>(target, this.pendingSign);
+        if (!Array.isArray(callbacks)) {
+            callbacks = [];
+        }
+        callbacks.push(callback);
+        this.lyy.descriptor.save(target, this.pendingSign, callbacks);
+    }
+    $runHooks(fn: Func | Obj, name: string): void {
+        const callbacks: Array<CommonFqnHook> = [];
+        let exists = false;
+        const desc = this.lyy.descriptor.get<Array<CommonFqnHook>>(fn, this.pendingSign);
+        if (desc) {
+            exists = true;
+            if (Array.isArray(desc.value)) {
+                callbacks.push(...desc.value);
+            }
+        }
+        if (exists) {
+            callbacks.forEach(lambda => {
+                try {
+                    lambda(name);
+                } catch (e) {
+                    this.lyy.dev.log(e, {issue: 'lambda.run', where: `${FQN_PCK}.CommonFqn`, method: '$runHooks', name, clazz: this.name(fn)});
+                }
+            });
+            this.lyy.descriptor.remove(fn, this.pendingSign);
+        }
     }
 
     addHook(target: Function | Object, callback: CommonFqnHook): boolean {
@@ -92,27 +129,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
             callback(this.name(target));
             return true;
         }
-        let callbacks: Array<CommonFqnHook>;
-        try {
-            callbacks = Object.getOwnPropertyDescriptor(target, FqnSignHook) as Array<CommonFqnHook> ?? [];
-        } catch (e) {
-            console.log(`CommonFqnImpl.hook.get`, e.message);
-        }
-        if (!Array.isArray(callbacks)) {
-            callbacks = [];
-        }
-        callbacks.push(callback);
-        try {
-            Object.defineProperty(target, FqnSignHook, {
-                value: callbacks,
-                configurable: false,
-                writable: false,
-                enumerable: false
-            });
-        } catch (e) {
-            console.log(`CommonFqnImpl.hook.set`, e.message);
-            return false;
-        }
+        this.$appendHook(target, callback);
         return true;
     }
 }

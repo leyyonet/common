@@ -1,2 +1,2 @@
 export * from './index-types';
-export * from './leyyo';
+export * from './leyyo-common-hook';

@@ -1,23 +1,25 @@
+import {Arr, ClassLike, Func,} from "../shared";
+import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import {FQN_PCK} from "../internal";
 import {
     $HookDefinedProvider,
-    Arr,
+    CommonHookLike,
+    CommonHookSecure,
     HookAttachedCallback,
     HookDefinedProvider,
     HookDefinedProviderLambda,
     HookWaitingProviderItem
-} from "../shared";
-import {LeyyoLike} from "../leyyo";
-import {FQN_PCK} from "../internal";
-import {CommonHookLike, CommonHookSecure} from "./index-types";
-import {DeveloperException} from "../exception";
+} from "./index-types";
 
 // noinspection JSUnusedGlobalSymbols
 export class CommonHook implements CommonHookLike, CommonHookSecure {
-    private _waitingForCallbacks: Map<string, Array<Arr>>;
-    private _attachedCallbacks: Map<string, HookAttachedCallback>;
+    private lyy: LeyyoLike;
+    private _waitingForCallbacks: Map<symbol, Array<Arr>>;
+    private _attachedCallbacks: Map<symbol, HookAttachedCallback>;
+    private _waitingForProviders: Map<symbol, Array<HookWaitingProviderItem>>;
+    private _definedProviders: Map<symbol, $HookDefinedProvider>;
 
-    private _waitingForProviders: Map<string, Array<HookWaitingProviderItem>>;
-    private _definedProviders: Map<string, $HookDefinedProvider>;
+    private timeout: any;
 
     /**
      * Default constructor
@@ -27,15 +29,24 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
      * - Trigger clear pending operation
      * */
     constructor() {
-        // clear after 1 minute
-        setTimeout(() => this._clearPending(), 60_000);
     }
 
-    $init(leyyo: LeyyoLike): void {
-        this._waitingForCallbacks = leyyo.storage.newMap<Array<Arr>>(`${FQN_PCK}/waitingForCallbacks`);
-        this._attachedCallbacks = leyyo.storage.newMap<HookAttachedCallback>(`${FQN_PCK}/attachedCallbacks`);
-        this._waitingForProviders = leyyo.storage.newMap<Array<HookWaitingProviderItem>>(`${FQN_PCK}/waitingForProviders`);
-        this._definedProviders = leyyo.storage.newMap<$HookDefinedProvider>(`${FQN_PCK}/definedProviders`);
+    $init(lyy: LeyyoLike): void {
+        this.lyy = lyy;
+        this._waitingForCallbacks = this.lyy.repo.newMap<symbol, Array<Arr>>(FQN_PCK, 'waitingForCallbacks');
+        this._attachedCallbacks = this.lyy.repo.newMap<symbol, HookAttachedCallback>(FQN_PCK, 'attachedCallbacks');
+        this._waitingForProviders = this.lyy.repo.newMap<symbol, Array<HookWaitingProviderItem>>(FQN_PCK, 'waitingForProviders');
+        this._definedProviders = this.lyy.repo.newMap<symbol, $HookDefinedProvider>(FQN_PCK, 'definedProviders');
+
+        // @todo clear after 1 minute
+        if (!global?.leyyo_is_testing) {
+            this.timeout = setTimeout(() => this._clearPending(), 60_000);
+        }
+
+        this.lyy.$secure.$lazyRun(() => {
+            this.lyy.fqn.register(null, CommonHook, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, LeyyoCommonHook, 'class', FQN_PCK);
+        })
     }
 
     /**
@@ -50,7 +61,7 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
                 continue;
             }
             this._waitingForCallbacks.delete(channel);
-            console.log(`hook.cleared.pending => {channel: ${channel}}`)
+            console.log(`hook.cleared.pending => {channel: ${channel.description}}`)
         }
     }
 
@@ -58,10 +69,9 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         return this;
     }
 
-    attachCallback(channel: string, fn: Function): void {
-        if (!channel || typeof channel !== 'string') {
-            throw new Error(`hook.invalid.channel => {type: ${typeof channel}}`);
-        }
+    attachCallback(channel: symbol, fn: Func): void {
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN_PCK}.CommonHook`, method: 'attachCallback'}));
+        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN_PCK}.CommonHook`, method: 'attachCallback'}));
 
         // callback attached
         this._attachedCallbacks.set(channel, {fn});
@@ -75,10 +85,9 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         }
     }
 
-    queueForCallback(channel: string, ...args: Arr): boolean {
-        if (!channel || typeof channel !== 'string') {
-            throw new Error(`hook.invalid.channel => {type: ${typeof channel}}`);
-        }
+    queueForCallback(channel: symbol, ...args: Arr): boolean {
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN_PCK}.CommonHook`, method: 'queueForCallback'}));
+
         // callback already exists
         if (this._attachedCallbacks.has(channel)) {
             const rec = this._attachedCallbacks.get(channel);
@@ -96,13 +105,23 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
     }
 
     get $back(): CommonHookLike {
-        return undefined;
+        return this;
     }
 
-    whenProviderDefined<T extends HookDefinedProvider = HookDefinedProvider>(channel: string, consumer: Function, callback: HookDefinedProviderLambda<T>): void {
-        if (!channel || typeof channel !== 'string') {
-            throw new DeveloperException(`hook.invalid.channel`, {type: typeof channel});
+    $clearTimeout(): void {
+        if (this.timeout !== undefined) {
+            try {
+                clearTimeout(this.timeout);
+            } catch (e) {
+            }
         }
+    }
+
+
+    whenProviderDefined<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, consumer: ClassLike, callback: HookDefinedProviderLambda<T>): void {
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN_PCK}.CommonHook`, method: 'whenProviderDefined'}));
+        this.lyy.assertion.func(consumer, () => this.lyy.dev.opt({field: 'consumer', where: `${FQN_PCK}.CommonHook`, method: 'whenProviderDefined'}));
+
         if (!this._waitingForProviders.has(channel)) {
             this._waitingForProviders.set(channel, []);
         }
@@ -115,10 +134,10 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         this._waitingForProviders.get(channel).push({consumer, callback});
     }
 
-    defineProvider<T extends HookDefinedProvider = HookDefinedProvider>(channel: string, producer: Function, instance: T): void {
-        if (!channel || typeof channel !== 'string') {
-            throw new DeveloperException(`hook.invalid.channel`, {type: typeof channel});
-        }
+    defineProvider<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, producer: ClassLike, instance: T): void {
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN_PCK}.CommonHook`, method: 'defineProvider'}));
+        this.lyy.assertion.func(producer, () => this.lyy.dev.opt({field: 'producer', where: `${FQN_PCK}.CommonHook`, method: 'defineProvider'}));
+
         const ins = {...instance, producer} as $HookDefinedProvider;
         this._definedProviders.set(channel, ins);
         if (instance.proper) {

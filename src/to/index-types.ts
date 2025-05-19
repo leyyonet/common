@@ -1,53 +1,115 @@
 import {
     Dict,
+    EnumAlt,
+    EnumLiteral,
+    EnumMap,
+    Func,
     InitLike,
     KeyValue,
-    OneOrMore,
+    Obj,
     ShiftMain,
-    ShiftSecure,
-    ToTypeArrayOpt,
-    ToTypeEnumOpt,
-    ToTypeObjectOpt,
-    ToTypeOpt
+    ShiftSecure
 } from "../shared";
+import {DevOpt} from "../developer";
+import {WeakTrue} from "./weak-true";
+import {WeakFalse} from "./weak-false";
+import {List} from "./list";
 
 export interface CommonToLike extends ShiftSecure<CommonToSecure> {
-    // region utility
-    runFn<T = unknown>(fn: Function, value: Function, opt?: ToTypeOpt): T;
-
-    raiseInvalidValue<T = unknown>(value: unknown, expected: OneOrMore<string>, opt?: ToTypeOpt, params?: Dict): T;
-
-    // endregion utility
-
     // region types
-    any(value: unknown, opt?: ToTypeOpt): unknown;
+    anyStrict<T = any>(value: any, opt?: ToOptAny): T;
+    any<T = any>(value: any, opt?: ToOptAny, notNull?: boolean): T;
 
-    array<T = unknown>(value: unknown, opt?: ToTypeArrayOpt): Array<T>;
+    booleanStrict(value: any, opt?: ToOptAny): boolean;
+    boolean(value: any, opt?: ToOptAny, notNull?: boolean): boolean;
 
-    boolean(value: unknown, opt?: ToTypeOpt): boolean;
+    dateStrict(value: any, opt?: ToOptAny): Date;
+    date(value: any, opt?: ToOptAny, notNull?: boolean): Date;
 
-    clazz(value: unknown, opt?: ToTypeOpt): string;
+    enumerationStrict<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: ToOpt, alt?: EnumAlt<E>): E;
+    enumeration<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: ToOpt, alt?: EnumAlt<E>, notNull?: boolean): E;
 
-    date(value: unknown, opt?: ToTypeOpt): Date;
+    literalStrict<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E> | any, opt?: ToOpt, alt?: EnumAlt<E>): E;
+    literal<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E> | any, opt?: ToOpt, alt?: EnumAlt<E>, notNull?: boolean): E;
 
-    enumeration<T extends KeyValue = KeyValue>(value: unknown, opt?: ToTypeEnumOpt<T>): T;
+    floatStrict(value: any, opt?: ToOptAny): number;
+    float(value: any, opt?: ToOptAny, notNull?: boolean): number;
 
-    float(value: unknown, opt?: ToTypeOpt): number | null;
+    funcStrict<F extends Func = Func>(value: any, opt?: ToOptAny): F;
+    func<F extends Func = Func>(value: any, opt?: ToOptAny, notNull?: boolean): F;
 
-    func<T = Function>(value: unknown, opt?: ToTypeOpt): T | null;
+    integerStrict(value: any, opt?: ToOptAny): number;
+    integer(value: any, opt?: ToOptAny, notNull?: boolean): number;
 
-    integer(value: unknown, opt?: ToTypeOpt): number | null;
+    stringStrict(value: any, opt?: ToOptAny): string;
+    string(value: any, opt?: ToOptAny, notNull?: boolean): string;
 
-    object<T = unknown>(value: unknown, opt?: ToTypeObjectOpt): Dict<T>;
-
-    dict<T = unknown>(value: unknown, opt?: ToTypeObjectOpt): Dict<T>;
-
-    string(value: unknown, opt?: ToTypeOpt): string;
-
-    text(value: unknown, opt?: ToTypeOpt): string;
+    textStrict(value: any, opt?: ToOptAny): string;
+    text(value: any, opt?: ToOptAny, notNull?: boolean): string;
 
     // endregion types
+
+
+    // region objects
+
+    arrayStrict<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
+    arrayStrictNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
+    arrayNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
+    array<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>, notNull?: boolean): Array<V>;
+
+    setStrict<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V>;
+    setStrictNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V>;
+    setNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V>;
+    set<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>, notNull?: boolean): Set<V>;
+
+
+    listStrict<T = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<T>): List<T>;
+    listStrictNotEmpty<T = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<T>): List<T>;
+    listNotEmpty<T = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<T>): List<T>;
+    list<T = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<T>, notNull?: boolean): List<T>;
+
+    objectStrict<O extends Obj = Obj>(value: any, opt?: ToOptAny): O;
+    object<O extends Obj = Obj>(value: any, opt?: ToOptAny, notNull?: boolean): O;
+
+    dictStrict<V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<string>): Dict<V>;
+    dictStrictNotEmpty<V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<string>): Dict<V>;
+    dictNotEmpty<V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<string>): Dict<V>;
+    dict<V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<string>, notNull?: boolean): Dict<V>;
+
+    mapStrict<K = any, V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<K>): Map<K, V>;
+    mapStrictNotEmpty<K = any, V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<K>): Map<K, V>;
+    mapNotEmpty<K = any, V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<K>): Map<K, V>;
+    map<K = any, V = any>(value: any, opt?: ToOptAny, valueFn?: ToSubKeyFnLambda<V>, keyFn?: ToSubIndexFnLambda<K>, notNull?: boolean): Map<K, V>;
+
+    // endregion objects
+
 }
 
 export interface CommonToSecure extends ShiftMain<CommonToLike>, InitLike {
+    $runOpt(opt: ToOptAny): ToOpt;
+    $runFn<T = any>(fn: Func, value: Func, opt?: ToOpt): T;
+    $errorOrLog(opt: ToOptAny, extra: ToOpt, e?: Error): any;
+    $unexpectedError<T = any>(value: unknown, expected: Array<string>, opt?: ToOpt): T;
+    $nullError<T = any>(opt?: ToOpt): T;
+    $emptyError<T = any>(kind: string, opt?: ToOpt): T;
+    $inEnumMap<T extends KeyValue = KeyValue>(value: unknown, map: Dict<T>): T;
+    $inEnumArray<T extends KeyValue = KeyValue>(value: unknown, arr: Array<T>): T;
+    $inEnumAlteration<T extends KeyValue = KeyValue>(value: unknown, alt: Dict<T>): T;
+    $realNumber(value: number, opt?: ToOpt): number;
 }
+
+export type ToOptAny = ToOpt | ToOptLambda;
+
+export type ToOptLambda = () => ToOpt;
+
+export interface ToOpt extends DevOpt {
+    silent?: true;
+}
+
+export type ToSubKeyFnLambda<T = unknown> = (value: unknown, key: string, opt?: ToOptAny) => T;
+export type ToSubIndexFnLambda<T = unknown> = (value: unknown, index: number, opt?: ToOptAny) => T;
+
+/**
+ * Weak Boolean
+ * */
+export type WeakBoolean = WeakTrue & WeakFalse;

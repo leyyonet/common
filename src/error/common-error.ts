@@ -1,38 +1,59 @@
-import {CommonErrorLike, CommonErrorSecure} from "./index-types";
-import {LeyyoLike} from "../leyyo";
-import {Dict, ErrorDefinedProvider, Keys, LY_ATTACHED_ERROR, LY_PENDING_ERROR_REGISTER} from "../shared";
-import {Exception, ExceptionLike} from "../exception";
-import {CommonHookLike} from "../hook";
+import {CommonErrorLike, CommonErrorSecure, ErrorDefinedProvider} from "./index-types";
+import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import {Dict, Keys} from "../shared";
+import {
+    AssertionException,
+    CausedException,
+    DeveloperException,
+    Exception,
+    ExceptionLike, InvalidValueException,
+    MultipleException
+} from "../exception";
+import {FQN_PCK} from "../internal";
 
 // noinspection JSUnusedLocalSymbols
 export class CommonError implements CommonErrorLike, CommonErrorSecure {
-    private hook: CommonHookLike;
+    private lyy: LeyyoLike;
 
     get $back(): CommonErrorLike {
         return this;
     }
 
-    $init(leyyo: LeyyoLike): void {
-        this.hook = leyyo.hook;
+    $init(lyy: LeyyoLike): void {
+        this.lyy = lyy;
 
-        const fields = ['build', 'afterCreate', 'causedBy', 'toObject', 'buildStack', 'copyStack',
-            'initSign', 'addSign', 'getSign', 'removeSign', 'hasSign',
-            'initOmit', 'addOmit', 'getOmit', 'inheritOmit'] as Keys<ErrorDefinedProvider>;
 
-        const rec = {proper: false} as ErrorDefinedProvider;
-        fields.forEach(field => {
-            rec[field] = this[field];
-        });
+        this.lyy.$secure
+            .$earlyRun(() => {
+            Exception.$setLeyyo(this.lyy);
+        })
+            .$lazyRun(() => {
+            const fields = ['build', 'afterCreate', 'causedBy', 'toObject', 'buildStack', 'copyStack',
+                'initSign', 'addSign', 'getSign', 'removeSign', 'hasSign',
+                'initOmit', 'addOmit', 'getOmit', 'inheritOmit'] as Keys<ErrorDefinedProvider>;
 
-        // define itself temporarily for error operations
-        this.hook.defineProvider<ErrorDefinedProvider>(LY_ATTACHED_ERROR, CommonError, rec);
-
-        // when new error provider is defined, replace all common methods
-        this.hook.whenProviderDefined<ErrorDefinedProvider>(LY_ATTACHED_ERROR, CommonError, (ins) => {
+            const rec = {proper: false} as ErrorDefinedProvider;
             fields.forEach(field => {
-                if (typeof ins[field] === 'function') {
-                    this[field] = ins[field];
-                }
+                rec[field] = this[field];
+            });
+
+            // define itself temporarily for error operations
+                this.lyy.hook.defineProvider<ErrorDefinedProvider>(LeyyoCommonHook.errorAttached, CommonError, rec);
+
+            // when new error provider is defined, replace all common methods
+                this.lyy.hook.whenProviderDefined<ErrorDefinedProvider>(LeyyoCommonHook.errorAttached, CommonError, (ins) => {
+                fields.forEach(field => {
+                    if (typeof ins[field] === 'function') {
+                        this[field] = ins[field];
+                    }
+                });
+            });
+        })
+            .$lazyRun(() => {
+                this.lyy.fqn.register(null, CommonError, 'class', FQN_PCK);
+            [Exception, AssertionException, CausedException, DeveloperException, MultipleException, InvalidValueException].forEach(cls => {
+                this.lyy.fqn.register(null, cls, 'class', FQN_PCK);
+                this.lyy.error.register(cls);
             });
         });
     }
@@ -54,7 +75,7 @@ export class CommonError implements CommonErrorLike, CommonErrorSecure {
     }
 
     register(cls: Function): void {
-        this.hook.queueForCallback(LY_PENDING_ERROR_REGISTER, cls);
+        this.lyy.hook.queueForCallback(LeyyoCommonHook.errorPendingRegister, cls);
     }
 
     build(e: Error | string): ExceptionLike {

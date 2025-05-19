@@ -1,55 +1,76 @@
+import {CommonIsLike, CommonIsSecure} from "./index-types";
+import {LeyyoLike} from "../leyyo";
+import {BasicType, EnumLiteral, EnumMap, KeyValue} from "../shared";
+import {FQN_PCK} from "../internal";
 import {
     KeyValueItems,
     Primitive,
     PrimitiveItems,
     RealValue,
-    RealValueItems,
-    WeakFalse,
-    WeakFalseItems,
-    WeakTrue,
+    RealValueItems, WeakFalse,
+    WeakFalseItems, WeakTrue,
     WeakTrueItems
-} from "../literal";
-import {CommonIsLike, CommonIsSecure} from "./index-types";
-import {LeyyoLike} from "../leyyo";
+} from "../to";
 
 // noinspection JSUnusedGlobalSymbols, JSUnusedLocalSymbols
 /** @inheritDoc */
 export class CommonIs implements CommonIsLike, CommonIsSecure {
-
+    private readonly _EMPTY = [null, undefined];
+    private lyy: LeyyoLike;
     // region is
     /** @inheritDoc */
     empty(value: any): boolean {
-        return (value === undefined || value === null || (typeof value === 'string' && value.trim() === ''));
+        return this._EMPTY.includes(value);
+    }
+
+    /** @inheritDoc */
+    typeOf(value: any, ...types: Array<BasicType>): boolean {
+        return !this._EMPTY.includes(value) && types.includes(typeof value);
     }
 
     /** @inheritDoc */
     primitive(value: any): boolean {
-        return PrimitiveItems.includes((typeof value) as Primitive);
+        return !this._EMPTY.includes(value) && PrimitiveItems.includes((typeof value) as Primitive);
     }
 
     /** @inheritDoc */
     realValue(value: any): boolean {
-        return RealValueItems.includes((typeof value) as RealValue);
+        return !this._EMPTY.includes(value) && RealValueItems.includes((typeof value) as RealValue);
     }
 
     /** @inheritDoc */
     key(value: any): boolean {
-        return KeyValueItems.includes((typeof value) as 'string');
+        return !this._EMPTY.includes(value) && KeyValueItems.includes((typeof value) as 'string');
     }
 
     /** @inheritDoc */
     object(value: any): boolean {
-        return value && typeof value === 'object' && !Array.isArray(value);
+        return !this._EMPTY.includes(value) && typeof value === 'object' && !Array.isArray(value);
+    }
+
+    /** @inheritDoc */
+    bareObject(value: any): boolean {
+        return !this._EMPTY.includes(value) && typeof value === 'object' && value.constructor === Object;
+    }
+
+    /** @inheritDoc */
+    anotherObject(value: any): boolean {
+        return !this._EMPTY.includes(value) && typeof value === 'object' && value.constructor !== Object;
     }
 
     /** @inheritDoc */
     array(value: any): boolean {
-        return value && typeof value === 'object' && Array.isArray(value);
+        return !this._EMPTY.includes(value) && Array.isArray(value);
     }
 
     /** @inheritDoc */
     func(value: any): boolean {
         return typeof value === 'function';
+    }
+
+    /** @inheritDoc */
+    sym(value: any): boolean {
+        return typeof value === 'symbol';
     }
 
     /** @inheritDoc */
@@ -83,6 +104,28 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
     }
 
     /** @inheritDoc */
+    enumeration(value: unknown, map: EnumMap): boolean {
+        if (!this.bareObject(map)) {
+            return false;
+        }
+        if (KeyValueItems.includes((typeof value) as 'string')) {
+            return !!map[value as string];
+        }
+        return false;
+    }
+
+    /** @inheritDoc */
+    literal(value: unknown, items: EnumLiteral): boolean {
+        if (!this.array(items)) {
+            return false;
+        }
+        if (KeyValueItems.includes((typeof value) as 'string')) {
+            return items.includes(value as KeyValue);
+        }
+        return false;
+    }
+
+    /** @inheritDoc */
     boolean(value: any): boolean {
         return (typeof value === 'boolean');
     }
@@ -105,7 +148,11 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
 
     // region secure
     /** @inheritDoc */
-    $init(leyyo: LeyyoLike): void {
+    $init(lyy: LeyyoLike): void {
+        this.lyy = lyy;
+        this.lyy.$secure.$lazyRun(() => {
+            this.lyy.fqn.register(null, CommonIs, 'class', FQN_PCK);
+        });
     }
 
     /** @inheritDoc */

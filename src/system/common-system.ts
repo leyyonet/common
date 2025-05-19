@@ -1,9 +1,16 @@
-import {CommonSystemLike, CommonSystemSecure} from "./index-types";
-import {LeyyoLike} from "../leyyo";
-import {SysClass, SysClassItems, SysFunction, SysFunctionItems} from "../literal";
+import {CommonSystemLike, CommonSystemSecure} from "./index.types";
+import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import {FQN_PCK} from "../internal";
+import {EnvironmentItems} from "./environment";
+import {CountryCodeItems} from "./country-code";
+import {LanguageCodeItems} from "./language-code";
+import {LocaleCodeItems} from "./locale-code";
+import {SysClass, SysClassItems} from "./sys-class";
+import {SysFunction, SysFunctionItems} from "./sys-function";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
+    private lyy: LeyyoLike;
 
     constructor() {
     }
@@ -12,7 +19,26 @@ export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
         return this;
     }
 
-    $init(leyyo: LeyyoLike): void {
+    $init(lyy: LeyyoLike): void {
+        this.lyy = lyy;
+        this.lyy.$secure
+            .$lazyRun(() => {
+                this.lyy.fqn.register(null, CommonSystem, 'class', FQN_PCK);
+        })
+            .$lazyRun(() => {
+            const enumMap = {
+                Environment: EnvironmentItems,
+                CountryCode: CountryCodeItems,
+                LanguageCode: LanguageCodeItems,
+                LocaleCode: LocaleCodeItems,
+                SysClass: SysClassItems,
+                SysFunction: SysFunctionItems,
+            };
+            for (const [name, value] of Object.entries(enumMap)) {
+                this.lyy.fqn.register(name, value, 'enum', FQN_PCK);
+                this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
+            }
+        });
     }
 
     get $secure(): CommonSystemSecure {

@@ -1,10 +1,10 @@
 import {Exception} from "./exception";
-import {Dict} from "../shared";
+import {DevOpt} from "../developer";
 
 // noinspection Annotator
 export class CausedException extends Exception {
-    constructor(e: Error, indicator?: string, params?: Dict) {
-        super(e.message, {...params, indicator});
+    constructor(e: Error, opt?: DevOpt) {
+        super(e.message, opt);
         this.causedBy(e);
     }
 }
