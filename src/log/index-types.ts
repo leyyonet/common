@@ -2,6 +2,7 @@ import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
 import {HookDefinedProvider} from "../hook";
 import {DevOpt} from "../developer";
 import {Severity} from "./severity";
+import {CommonDeployLike, CommonDeploySecure} from "../deploy";
 
 export interface CommonLogLike extends ShiftSecure<CommonLogSecure>, LogConsumer {
     create(clazz: Object | Function | string): Logger;
@@ -43,7 +44,6 @@ export interface Logger extends ShiftSecure<LoggerSecure> {
     error(error: Error, params?: any|DevOpt): void;
 
     error(whatever: any, params?: any|DevOpt): void;
-    error$(opt: DevOpt): void;
 
     warn(message: string, params?: any|DevOpt): void;
 
@@ -75,11 +75,7 @@ export interface Logger extends ShiftSecure<LoggerSecure> {
 
     debug(whatever: any, params?: any|DevOpt): void;
 
-    debug$?(opt: DevOpt): void;
-    warn$?(opt: DevOpt): void;
-    info$?(opt: DevOpt): void;
-    log$?(opt: DevOpt): void;
-    trace$?(opt: DevOpt): void;
+    get deploy(): CommonDeploySecure;
 }
 
 export interface LoggerSecure extends ShiftMain<Logger> {

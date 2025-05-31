@@ -59,8 +59,8 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
     }
 
     /** @inheritDoc */
-    array(value: any): boolean {
-        return !this._EMPTY.includes(value) && Array.isArray(value);
+    arrayLike(value: any): boolean {
+        return !this._EMPTY.includes(value) && (Array.isArray(value) || value instanceof Set || value instanceof Array);
     }
 
     /** @inheritDoc */
@@ -116,7 +116,7 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
 
     /** @inheritDoc */
     literal(value: unknown, items: EnumLiteral): boolean {
-        if (!this.array(items)) {
+        if (!Array.isArray(items)) {
             return false;
         }
         if (KeyValueItems.includes((typeof value) as 'string')) {

@@ -28,6 +28,8 @@ export * from './to';
 export * from './wrapper';
 export * from './descriptor';
 export * from './test';
+export * from './deploy';
+
 export const leyyo: LeyyoLike = new Leyyo();
 export const $descriptor = leyyo.descriptor;
 export const $is = leyyo.is;
@@ -42,3 +44,4 @@ export const $log = leyyo.log;
 export const $err = leyyo.error;
 export const $wrapper = leyyo.wrapper;
 export const $test = leyyo.test;
+export const $deploy = leyyo.deploy;

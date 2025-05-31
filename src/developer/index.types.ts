@@ -1,5 +1,5 @@
 import {Arr, ClassLike, Describable, Func, InitLike, Obj, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
-import {Severity} from "../log";
+import {Logger, Severity} from "../log";
 
 export interface CommonDeveloperLike extends ShiftSecure<CommonDeveloperSecure> {
     opt<O extends DevOpt = DevOpt>(value: O): O;
@@ -19,6 +19,7 @@ export interface CommonDeveloperLike extends ShiftSecure<CommonDeveloperSecure> 
      * @param {DevOpt?} extra
      * */
     developerError(opt: DevOpt, extra?: DevOpt): Error;
+
     developerError2(pck: string, testCase:number|string, opt: DevOpt): Error;
     developerError2(issue: string, opt: DevOpt): Error;
 
@@ -77,6 +78,7 @@ export type CommonDeveloperSecure = ShiftMain<CommonDeveloperLike> & InitLike;
 
 export interface DevOpt {
     issue?: OneOrMore<DeveloperReason | string>;
+    message?: string;
     field?: string;
     param?: any;
     where?: any;
@@ -90,6 +92,7 @@ export interface DevOpt {
 
     [k: string]: any;
 }
+export type DevCallback = () => DevOpt;
 
 
 export type DeveloperReason = 'invalid' | 'not.allowed' | 'not.found' | 'duplicated' | 'empty' | 'conflicted'

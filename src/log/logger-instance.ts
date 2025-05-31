@@ -3,6 +3,7 @@ import {LeyyoLike} from "../leyyo";
 import {DevOpt} from "../developer";
 import {Severity} from "./severity";
 import {FQN_PCK} from "../internal";
+import {CommonDeploySecure} from "../deploy";
 
 // noinspection JSUnusedLocalSymbols
 export class LoggerInstance implements Logger, LoggerSecure {
@@ -95,6 +96,9 @@ export class LoggerInstance implements Logger, LoggerSecure {
     warn(message: any, params?: any|DevOpt): void {
         LoggerInstance.lyy.log.apply(this._prepare('warn', message, params));
     }
+    get deploy(): CommonDeploySecure {
+        return LoggerInstance.lyy.deploy.logger(this);
+    }
 
     // region secure
     get $back(): Logger {
@@ -124,30 +128,6 @@ export class LoggerInstance implements Logger, LoggerSecure {
             this[method] = () => {
             };
         }
-    }
-
-    debug$(opt: DevOpt): void {
-        this.debug(undefined, opt);
-    }
-
-    error$(opt: DevOpt): void {
-        this.error(undefined, opt);
-    }
-
-    info$(opt: DevOpt): void {
-        this.info(undefined, opt);
-    }
-
-    log$(opt: DevOpt): void {
-        this.log(undefined, opt);
-    }
-
-    trace$(opt: DevOpt): void {
-        this.trace(undefined, opt);
-    }
-
-    warn$(opt: DevOpt): void {
-        this.warn(undefined, opt);
     }
 
     // endregion secure

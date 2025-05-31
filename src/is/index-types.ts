@@ -81,7 +81,7 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
      * @param {any} value
      * @returns {boolean}
      * */
-    array(value: any): boolean;
+    arrayLike(value: any): boolean;
 
     /**
      * Checks value is function or not?

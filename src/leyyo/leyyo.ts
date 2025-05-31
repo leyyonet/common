@@ -28,6 +28,8 @@ import {CommonTo} from "../to/common-to";
 import {CommonDescriptor} from "../descriptor/common-descriptor";
 import {CommonWrapper} from "../wrapper/common-wrapper";
 import {CommonTest} from "../test/common-test";
+import {CommonDeployLike} from "../deploy";
+import {CommonDeploy} from "../deploy/common-deploy";
 
 export class Leyyo implements LeyyoLike, LeyyoSecure {
     private _lazyCallbacks: Array<Func> = [];
@@ -45,6 +47,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
     readonly descriptor: CommonDescriptorLike;
     readonly wrapper: CommonWrapperLike;
     readonly test: CommonTestLike;
+    readonly deploy: CommonDeployLike;
 
     constructor() {
         this.system = new CommonSystem();
@@ -60,6 +63,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
         this.descriptor = new CommonDescriptor();
         this.wrapper = new CommonWrapper();
         this.test = new CommonTest();
+        this.deploy = new CommonDeploy();
 
         const members = [
             this.system.$secure,
@@ -75,6 +79,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
             this.descriptor.$secure,
             this.wrapper.$secure,
             this.test.$secure,
+            this.deploy.$secure,
         ] as Array<InitLike>;
 
         members.forEach(member => member.$init(this));
