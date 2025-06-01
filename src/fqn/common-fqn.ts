@@ -1,7 +1,7 @@
-import {CommonFqnHook, CommonFqnLike, CommonFqnSecure, FqnDefinedProvider, FqnStereoType} from "./index-types";
+import {CommonFqnHook, CommonFqnLike, CommonFqnSecure, FqnDefinedProvider, FqnStereoType} from "./index.types";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
 import {Func, Obj} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
@@ -19,7 +19,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         if (this._pendingSign) {
             return this._pendingSign;
         }
-        this._pendingSign = this.lyy.descriptor.sym(FQN_PCK, 'fqnPending');
+        this._pendingSign = this.lyy.descriptor.sym(FQN, 'fqnPending');
         return this._pendingSign;
     }
 
@@ -53,7 +53,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
             });
         })
             .$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonFqn, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonFqn, 'class', FQN);
         });
     }
 
@@ -108,7 +108,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
                 try {
                     lambda(name);
                 } catch (e) {
-                    this.lyy.dev.log(e, {issue: 'lambda.run', where: `${FQN_PCK}.CommonFqn`, method: '$runHooks', name, clazz: this.name(fn)});
+                    this.lyy.dev.log(e, {issue: 'lambda.run', where: `${FQN}.CommonFqn`, method: '$runHooks', name, clazz: this.name(fn)});
                 }
             });
             this.lyy.descriptor.remove(fn, this.pendingSign);

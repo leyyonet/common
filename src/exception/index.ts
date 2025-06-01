@@ -1,4 +1,4 @@
-export * from './index-types';
+export * from './index.types';
 export * from './exception';
 export * from './caused-exception';
 export * from './developer-exception';

@@ -13,6 +13,7 @@ import {CommonDescriptorLike} from "../descriptor";
 import {CommonWrapperLike} from "../wrapper";
 import {CommonTestLike} from "../test";
 import {CommonDeployLike} from "../deploy";
+import {CommonNameLike} from "../name";
 
 export interface LeyyoLike extends ShiftSecure<LeyyoSecure> {
     readonly is: CommonIsLike;
@@ -29,6 +30,7 @@ export interface LeyyoLike extends ShiftSecure<LeyyoSecure> {
     readonly wrapper: CommonWrapperLike;
     readonly test: CommonTestLike;
     readonly deploy: CommonDeployLike;
+    readonly name: CommonNameLike;
 }
 export interface LeyyoSecure extends ShiftMain<LeyyoLike> {
     $earlyRun(fn: Func): LeyyoSecure;

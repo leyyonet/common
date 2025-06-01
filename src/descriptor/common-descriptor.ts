@@ -1,7 +1,7 @@
 import {ClassLike, Func, Obj} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {LeyyoLike} from "../leyyo";
-import {CommonDescriptorLike, CommonDescriptorSecure, PropDescriptor} from "./index-types";
+import {CommonDescriptorLike, CommonDescriptorSecure, PropDescriptor} from "./index.types";
 
 export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorSecure {
     private lyy: LeyyoLike;
@@ -12,11 +12,11 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         if (this._funcSign) {
             return this._funcSign;
         }
-        this._funcSign = this.sym(FQN_PCK, 'funcSign');
+        this._funcSign = this.sym(FQN, 'funcSign');
         return this._funcSign;
     }
     sign(fn: Func | ClassLike): void {
-        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', type: typeof fn, where: `${FQN_PCK}.CommonDescriptor`, method: 'sign'}));
+        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', type: typeof fn, where: `${FQN}.CommonDescriptor`, method: 'sign'}));
         this.save(fn, this.funcSign, true);
     }
 
@@ -46,7 +46,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         try {
             return Object.getOwnPropertyDescriptor(target, key) as PropDescriptor<T> ?? null;
         } catch (e) {
-            this.lyy.dev.log(e, {issue: 'get.descriptor', key, where: `${FQN_PCK}.CommonDescriptor`}, 'debug');
+            this.lyy.dev.log(e, {issue: 'get.descriptor', key, where: `${FQN}.CommonDescriptor`}, 'debug');
         }
         return undefined;
     }
@@ -78,7 +78,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
                 return true;
             }
         } catch (e) {
-            this.lyy.dev.log(e, {issue: 'remove.descriptor', key, where: `${FQN_PCK}.CommonDescriptor`}, 'debug');
+            this.lyy.dev.log(e, {issue: 'remove.descriptor', key, where: `${FQN}.CommonDescriptor`}, 'debug');
         }
         return false;
     }
@@ -98,7 +98,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
                 enumerable: false
             });
         } catch (e) {
-            this.lyy.dev.log(e, {issue: 'save.descriptor', key, where: `${FQN_PCK}.CommonDescriptor`}, 'debug');
+            this.lyy.dev.log(e, {issue: 'save.descriptor', key, where: `${FQN}.CommonDescriptor`}, 'debug');
             return false;
         }
         return true;
@@ -112,7 +112,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
     $init(lyy: LeyyoLike): void {
         this.lyy = lyy;
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonDescriptor, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonDescriptor, 'class', FQN);
         });
     }
 

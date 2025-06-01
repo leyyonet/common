@@ -1,4 +1,4 @@
-import {CommonErrorLike, CommonErrorSecure, ErrorDefinedProvider} from "./index-types";
+import {CommonErrorLike, CommonErrorSecure, ErrorDefinedProvider} from "./index.types";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
 import {Dict, Keys} from "../shared";
 import {
@@ -9,7 +9,7 @@ import {
     ExceptionLike, InvalidValueException,
     MultipleException
 } from "../exception";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols
 export class CommonError implements CommonErrorLike, CommonErrorSecure {
@@ -50,9 +50,9 @@ export class CommonError implements CommonErrorLike, CommonErrorSecure {
             });
         })
             .$lazyRun(() => {
-                this.lyy.fqn.register(null, CommonError, 'class', FQN_PCK);
+                this.lyy.fqn.register(null, CommonError, 'class', FQN);
             [Exception, AssertionException, CausedException, DeveloperException, MultipleException, InvalidValueException].forEach(cls => {
-                this.lyy.fqn.register(null, cls, 'class', FQN_PCK);
+                this.lyy.fqn.register(null, cls, 'class', FQN);
                 this.lyy.error.register(cls);
             });
         });

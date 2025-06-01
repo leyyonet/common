@@ -1,8 +1,8 @@
 import {Func, InitLike} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 
 import {CommonHookLike} from "../hook";
-import {LeyyoLike, LeyyoSecure} from "./index-types";
+import {LeyyoLike, LeyyoSecure} from "./index.types";
 import {CommonIsLike} from "../is";
 import {CommonAssertionLike} from "../assertion";
 import {CommonErrorLike} from "../error";
@@ -30,6 +30,8 @@ import {CommonWrapper} from "../wrapper/common-wrapper";
 import {CommonTest} from "../test/common-test";
 import {CommonDeployLike} from "../deploy";
 import {CommonDeploy} from "../deploy/common-deploy";
+import {CommonNameLike} from "../name";
+import {CommonName} from "../name/common-name";
 
 export class Leyyo implements LeyyoLike, LeyyoSecure {
     private _lazyCallbacks: Array<Func> = [];
@@ -48,6 +50,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
     readonly wrapper: CommonWrapperLike;
     readonly test: CommonTestLike;
     readonly deploy: CommonDeployLike;
+    readonly name: CommonNameLike;
 
     constructor() {
         this.system = new CommonSystem();
@@ -64,6 +67,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
         this.wrapper = new CommonWrapper();
         this.test = new CommonTest();
         this.deploy = new CommonDeploy();
+        this.name = new CommonName();
 
         const members = [
             this.system.$secure,
@@ -80,11 +84,12 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
             this.wrapper.$secure,
             this.test.$secure,
             this.deploy.$secure,
+            this.name.$secure,
         ] as Array<InitLike>;
 
         members.forEach(member => member.$init(this));
         this.$lazyRun(() => {
-            this.fqn.register(null, Leyyo, 'class', FQN_PCK);
+            this.fqn.register(null, Leyyo, 'class', FQN);
         })
         this._earlyCallbacks.forEach(fn => fn());
         this._lazyCallbacks.forEach(fn => fn());

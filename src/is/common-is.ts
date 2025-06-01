@@ -1,7 +1,7 @@
-import {CommonIsLike, CommonIsSecure} from "./index-types";
+import {CommonIsLike, CommonIsSecure} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {BasicType, EnumLiteral, EnumMap, KeyValue} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {
     KeyValueItems,
     Primitive,
@@ -151,7 +151,7 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
     $init(lyy: LeyyoLike): void {
         this.lyy = lyy;
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonIs, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonIs, 'class', FQN);
         });
     }
 

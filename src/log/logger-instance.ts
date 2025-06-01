@@ -1,8 +1,8 @@
-import {Logger, LoggerLambda, LoggerSecure, LogLine} from "./index-types";
+import {Logger, LoggerLambda, LoggerSecure, LogLine} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {DevOpt} from "../developer";
 import {Severity} from "./severity";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {CommonDeploySecure} from "../deploy";
 
 // noinspection JSUnusedLocalSymbols
@@ -27,7 +27,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
             default:
                 LoggerInstance.lyy.dev.developerError({
                     issue: 'invalid.logger.name',
-                    where: `${FQN_PCK}.LoggerInstance`,
+                    where: `${FQN}.LoggerInstance`,
                     type: typeof value
                 });
         }

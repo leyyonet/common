@@ -1,6 +1,6 @@
 import {CommonDeployLike, CommonDeploySecure, DeployItem, DeployType,} from "./index.types";
 import {LeyyoLike} from "../leyyo";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {Logger} from "../log";
 import {DevOpt} from "../developer";
 
@@ -97,7 +97,7 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
         this.lyy = lyy;
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonDeploy, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonDeploy, 'class', FQN);
         });
     }
 

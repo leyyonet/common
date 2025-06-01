@@ -1,7 +1,7 @@
 import {CommonDeveloperLike, CommonDeveloperSecure, DeveloperParamResult, DevOpt} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {Arr, Describable, Obj} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {Severity} from "../log";
 import {CausedError, DeveloperError, InvalidValueError} from "./index.errors";
 
@@ -172,7 +172,7 @@ export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecu
     $init(lyy: LeyyoLike): void {
         this.lyy = lyy;
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonDeveloper, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonDeveloper, 'class', FQN);
         });
     }
 

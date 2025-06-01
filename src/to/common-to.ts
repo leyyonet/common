@@ -1,7 +1,7 @@
-import {CommonToLike, CommonToSecure, ToOpt, ToOptAny, ToSubIndexFnLambda, ToSubKeyFnLambda} from "./index-types";
+import {CommonToLike, CommonToSecure, ToOpt, ToOptAny, ToSubIndexFnLambda, ToSubKeyFnLambda} from "./index.types";
 import {Arr, Dict, EnumAlt, EnumLiteral, EnumMap, Func, KeyValue, Obj, Pair} from "../shared";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {PrimitiveItems} from "./primitive";
 import {RealValueItems} from "./real-value";
 import {KeyValueItems} from "./key-value";
@@ -39,13 +39,13 @@ export class CommonTo implements CommonToLike, CommonToSecure {
                 WeakFalse: WeakFalseItems,
             };
             for (const [name, value] of Object.entries(enumMap)) {
-                this.lyy.fqn.register(name, value, 'enum', FQN_PCK);
+                this.lyy.fqn.register(name, value, 'enum', FQN);
                 this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
             }
 
         }).$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonTo, 'class', FQN_PCK);
-            this.lyy.fqn.register(null, List, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonTo, 'class', FQN);
+            this.lyy.fqn.register(null, List, 'class', FQN);
         });
     }
 

@@ -1,6 +1,6 @@
 import {CommonSystemLike, CommonSystemSecure} from "./index.types";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {EnvironmentItems} from "./environment";
 import {CountryCodeItems} from "./country-code";
 import {LanguageCodeItems} from "./language-code";
@@ -23,7 +23,7 @@ export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
         this.lyy = lyy;
         this.lyy.$secure
             .$lazyRun(() => {
-                this.lyy.fqn.register(null, CommonSystem, 'class', FQN_PCK);
+                this.lyy.fqn.register(null, CommonSystem, 'class', FQN);
         })
             .$lazyRun(() => {
             const enumMap = {
@@ -35,7 +35,7 @@ export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
                 SysFunction: SysFunctionItems,
             };
             for (const [name, value] of Object.entries(enumMap)) {
-                this.lyy.fqn.register(name, value, 'enum', FQN_PCK);
+                this.lyy.fqn.register(name, value, 'enum', FQN);
                 this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
             }
         });

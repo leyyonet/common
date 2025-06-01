@@ -4,10 +4,10 @@ import {
     AssertionTupleDualLambda, AssertionTupleItemLambda,
     CommonAssertionLike,
     CommonAssertionSecure
-} from "./index-types";
+} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {DevOpt} from "../developer";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {Primitive, PrimitiveItems, RealValue, RealValueItems} from "../to";
 import {ClassLike, ClassOrFuncOrName, Dict, EnumLiteral, EnumMap, Fnc, Func, KeyValue, Obj, TypeOf} from "../shared";
 
@@ -602,7 +602,7 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
         this.lyy = lyy;
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonAssertion, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonAssertion, 'class', FQN);
         })
     }
 

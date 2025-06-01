@@ -1,8 +1,8 @@
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {CommonLogLike, CommonLogSecure, LogDefinedProvider, Logger, LogLine, LogLineEnhanced} from "./index-types";
+import {CommonLogLike, CommonLogSecure, LogDefinedProvider, Logger, LogLine, LogLineEnhanced} from "./index.types";
 import {LoggerInstance} from "./logger-instance";
 import {Keys} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {Severity, SeverityItems} from "./severity";
 
 const BLINK = '\\033[5m';
@@ -88,14 +88,14 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
                 });
             }).
             $lazyRun(() => {
-            this.lyy.fqn.register(null, CommonLog, 'class', FQN_PCK);
-            this.lyy.fqn.register(null, LoggerInstance, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonLog, 'class', FQN);
+            this.lyy.fqn.register(null, LoggerInstance, 'class', FQN);
 
             const enumMap = {
                 Severity: SeverityItems,
             };
             for (const [name, value] of Object.entries(enumMap)) {
-                this.lyy.fqn.register(name, value, 'enum', FQN_PCK);
+                this.lyy.fqn.register(name, value, 'enum', FQN);
                 this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
             }
         });

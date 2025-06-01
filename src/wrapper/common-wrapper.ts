@@ -1,10 +1,10 @@
 import {
     CommonWrapperLike, CommonWrapperSecure,
     WrapLike, WrapType
-} from "./index-types";
+} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {ClassLike, Func, Obj} from "../shared";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 import {Wrap} from "./wrap";
 
 export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
@@ -23,8 +23,8 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
         this.lyy = lyy;
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonWrapper, 'class', FQN_PCK);
-            this.lyy.fqn.register(null, Wrap, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonWrapper, 'class', FQN);
+            this.lyy.fqn.register(null, Wrap, 'class', FQN);
         });
     }
 
@@ -33,22 +33,22 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
     }
 
     ofClass(clazz: ClassLike): WrapLike<ClassLike> {
-        this.lyy.assertion.func(clazz, () => this.lyy.dev.opt({field: 'clazz', where: `${FQN_PCK}.CommonWrapper`, method: 'ofClass'}));
+        this.lyy.assertion.func(clazz, () => this.lyy.dev.opt({field: 'clazz', where: `${FQN}.CommonWrapper`, method: 'ofClass'}));
         return this.$create('class', clazz);
     }
 
     ofFunction(fn: Func): WrapLike<Func> {
-        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN_PCK}.CommonWrapper`, method: 'ofFunction'}));
+        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN}.CommonWrapper`, method: 'ofFunction'}));
         return this.$create('function', fn);
     }
 
     ofInstance(instance: Obj): WrapLike<Obj> {
-        this.lyy.assertion.object(instance, () => this.lyy.dev.opt({field: 'instance', where: `${FQN_PCK}.CommonWrapper`, method: 'ofInstance'}));
+        this.lyy.assertion.object(instance, () => this.lyy.dev.opt({field: 'instance', where: `${FQN}.CommonWrapper`, method: 'ofInstance'}));
         return this.$create('instance', instance);
     }
 
     ofString(name: string): WrapLike<string> {
-        this.lyy.assertion.text(name, () => this.lyy.dev.opt({field: 'name', where: `${FQN_PCK}.CommonWrapper`, method: 'ofString'}));
+        this.lyy.assertion.text(name, () => this.lyy.dev.opt({field: 'name', where: `${FQN}.CommonWrapper`, method: 'ofString'}));
         return this.$create('string', name);
     }
 

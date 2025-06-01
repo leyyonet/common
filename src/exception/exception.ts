@@ -2,7 +2,7 @@ import {CommonErrorLike} from "../error";
 import {Abstract, ClassLike, ClassOrName, Dict} from "../shared";
 import {LogLine} from "../log";
 import {LeyyoLike} from "../leyyo";
-import {ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index-types";
+import {ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index.types";
 import {DevOpt} from "../developer";
 
 

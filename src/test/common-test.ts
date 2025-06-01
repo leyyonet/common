@@ -1,6 +1,6 @@
 import {CommonTestLike, CommonTestSecure} from "./index.types";
 import {LeyyoLike} from "../leyyo";
-import {FQN_PCK} from "../internal";
+import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonTest implements CommonTestLike, CommonTestSecure {
@@ -16,7 +16,7 @@ export class CommonTest implements CommonTestLike, CommonTestSecure {
     $init(lyy: LeyyoLike): void {
         this.lyy = lyy;
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonTest, 'class', FQN_PCK);
+            this.lyy.fqn.register(null, CommonTest, 'class', FQN);
         });
     }
 
@@ -28,7 +28,7 @@ export class CommonTest implements CommonTestLike, CommonTestSecure {
         return `${testCase} >> ${title}`;
     }
     code(pck: string, testCase: string|number): string {
-        pck = (['string', 'number'].includes(typeof pck)) ? pck : FQN_PCK;
+        pck = (['string', 'number'].includes(typeof pck)) ? pck : FQN;
         testCase = (['string', 'number'].includes(typeof testCase)) ? testCase : 'XXX';
         return `${pck}#${testCase}`;
     }
