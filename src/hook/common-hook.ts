@@ -19,8 +19,6 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
     private _waitingForProviders: Map<symbol, Array<HookWaitingProviderItem>>;
     private _definedProviders: Map<symbol, $HookDefinedProvider>;
 
-    private timeout: any;
-
     /**
      * Default constructor
      *
@@ -38,31 +36,10 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         this._waitingForProviders = this.lyy.repo.newMap<symbol, Array<HookWaitingProviderItem>>(FQN, 'waitingForProviders');
         this._definedProviders = this.lyy.repo.newMap<symbol, $HookDefinedProvider>(FQN, 'definedProviders');
 
-        // @todo clear after 1 minute
-        if (!global?.leyyo_is_testing) {
-            this.timeout = setTimeout(() => this._clearPending(), 60_000);
-        }
-
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonHook, 'class', FQN);
             this.lyy.fqn.register(null, LeyyoCommonHook, 'class', FQN);
         })
-    }
-
-    /**
-     * Clear jobs in the queue which channel as pending
-     *
-     * Because the expected callback may not be defined
-     * */
-    private _clearPending(): void {
-        for (const [channel,] of this._waitingForCallbacks.entries()) {
-            const rec = this._attachedCallbacks.get(channel);
-            if (rec && !rec.initialization) {
-                continue;
-            }
-            this._waitingForCallbacks.delete(channel);
-            console.log(`hook.cleared.pending => {channel: ${channel.description}}`)
-        }
     }
 
     get $secure(): CommonHookSecure {
@@ -107,16 +84,6 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
     get $back(): CommonHookLike {
         return this;
     }
-
-    $clearTimeout(): void {
-        if (this.timeout !== undefined) {
-            try {
-                clearTimeout(this.timeout);
-            } catch (e) {
-            }
-        }
-    }
-
 
     whenProviderDefined<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, consumer: ClassLike, callback: HookDefinedProviderLambda<T>): void {
         this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.CommonHook`, method: 'whenProviderDefined'}));

@@ -62,7 +62,6 @@ export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
  * Secure hook interface
  * */
 export interface CommonHookSecure extends ShiftMain<CommonHookLike>, InitLike {
-    $clearTimeout(): void;
 }
 
 export interface HookAttachedCallback {

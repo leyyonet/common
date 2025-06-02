@@ -40,7 +40,6 @@ export class CommonTest implements CommonTestLike, CommonTestSecure {
         if (global) {
             if (!global.leyyo_is_testing) {
                 global.leyyo_is_testing = true;
-                this.lyy.hook.$secure.$clearTimeout();
 
                 ['log', 'warn', 'info', 'debug', 'trace', 'error', 'native'].forEach(name => {
                     global.console[name] = (): void => {
