@@ -6,9 +6,11 @@ import {DevOpt} from "../developer";
 
 export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
     private _types = ['debug', 'info', 'warning'] as Array<DeployType>;
-    private lyy: LeyyoLike;
     private _logger: Logger;
     private _lines: Array<DeployItem> = [];
+
+    constructor(private lyy: LeyyoLike) {
+    }
 
     // region private
     private _add(type: DeployType, pck: string, testCase: number | string, opt: DevOpt): void {
@@ -93,9 +95,7 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
-
+    $init(): void {
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonDeploy, 'class', FQN);
         });

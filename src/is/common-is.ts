@@ -16,7 +16,9 @@ import {
 /** @inheritDoc */
 export class CommonIs implements CommonIsLike, CommonIsSecure {
     private readonly _EMPTY = [null, undefined];
-    private lyy: LeyyoLike;
+
+    constructor(private lyy: LeyyoLike) {
+    }
     // region is
     /** @inheritDoc */
     empty(value: any): boolean {
@@ -148,8 +150,7 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
 
     // region secure
     /** @inheritDoc */
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonIs, 'class', FQN);
         });

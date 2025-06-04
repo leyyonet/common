@@ -10,17 +10,15 @@ import {SysFunction, SysFunctionItems} from "./sys-function";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
-    private lyy: LeyyoLike;
 
-    constructor() {
+    constructor(private lyy: LeyyoLike) {
     }
 
     get $back(): CommonSystemLike {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
         this.lyy.$secure
             .$lazyRun(() => {
                 this.lyy.fqn.register(null, CommonSystem, 'class', FQN);

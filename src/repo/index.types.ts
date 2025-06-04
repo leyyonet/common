@@ -1,5 +1,4 @@
 import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
-import {RepoType} from "./repo-type";
 import {List} from "../to";
 
 /**
@@ -97,6 +96,29 @@ export interface CommonRepoLike extends ShiftSecure<CommonRepoSecure> {
 
     // endregion set
 
+    // region record
+    /**
+     * Creates new record with given collection
+     *
+     * @param {Array<string>} names
+     * @return {Record<any, any>}
+     * */
+    newRecord<K extends string|symbol, V>(...names: Array<string>): Record<K, V>;
+
+
+    /**
+     * Returns a record by given collection
+     *
+     * @param {symbol} collection
+     * @return {Record<any, any>}
+     *
+     * Note:
+     * If the record does not exist than it returns null
+     * */
+    getRecord<K extends string|symbol, V>(collection: symbol): Record<K, V>;
+
+    // endregion map
+
     /**
      * Get sizes of each repository by given type and collection (optional)
      *
@@ -129,3 +151,5 @@ export type CommonRepoItem = Dict<number>;
  * Repo export dictionary which includes items
  * */
 export type CommonRepoDetail = Record<RepoType, CommonRepoItem>;
+export type RepoType = 'array' | 'list' | 'map' | 'set' | 'record';
+export type RepoLengthLambda = (obj: unknown) => number;

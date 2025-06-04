@@ -23,12 +23,12 @@ export class CommonTo implements CommonToLike, CommonToSecure {
     private readonly _EXPECTED_STRING = ['boolean', 'string', 'number'];
     private readonly _EXPECTED_OBJECT = ['object', 'Map'];
     private readonly _EXPECTED_FUNCTION = ['function', 'Wrap'];
-    private lyy: LeyyoLike;
     // endregion properties
 
+    constructor(private lyy: LeyyoLike) {
+    }
     // region secure
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
 
         this.lyy.$secure.$lazyRun(() => {
             const enumMap = {

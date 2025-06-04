@@ -1,17 +1,24 @@
-import {CommonRepoLike, CommonRepoSecure, CommonRepoDetail, CommonRepoItem} from "./index.types";
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import {
+    CommonRepoLike,
+    CommonRepoSecure,
+    CommonRepoDetail,
+    CommonRepoItem,
+    RepoType,
+    RepoLengthLambda
+} from "./index.types";
+import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
-import {RepoType, RepoTypeItems} from "./repo-type";
 import {List} from "../to";
+import {Arr} from "../shared";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 /** @inheritDoc */
 export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
-    private readonly _lists: Map<symbol, List<any>>;
-    private readonly _arrays: Map<symbol, Array<any>>;
-    private readonly _maps: Map<symbol, Map<any, any>>;
-    private readonly _sets: Map<symbol, Set<any>>;
-    private lyy: LeyyoLike;
+    private readonly _lists = new Map<symbol, List<unknown>>();
+    private readonly _arrays = new Map<symbol, Array<unknown>>();
+    private readonly _maps = new Map<symbol, Map<unknown, unknown>>();
+    private readonly _sets = new Map<symbol, Set<unknown>>();
+    private readonly _records = new Map<symbol, Record<string|symbol, unknown>>();
 
     /**
      * Default constructor
@@ -19,50 +26,57 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
      * Responsibilities
      * - Create repositories => ie: lists, arrays, maps, sets
      * */
-    constructor() {
-        this._lists = new Map<symbol, List<any>>();
-        this._arrays = new Map<symbol, Array<any>>();
-        this._maps = new Map<symbol, Map<string, any>>();
-        this._sets = new Map<symbol, Set<any>>();
+    constructor(private lyy: LeyyoLike) {
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
 
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonRepo, 'class', FQN);
-        }).$lazyRun(() => {
-            const enumMap = {
-                RepoType: RepoTypeItems,
-            };
-            for (const [name, value] of Object.entries(enumMap)) {
-                this.lyy.fqn.register(name, value, 'enum', FQN);
-                this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
-            }
         });
     }
 
-    private _appendDetail(result: CommonRepoItem, collection: symbol, size: number, duplicated: number): number {
-        if (result[collection.description] === undefined) {
-            result[collection.description] = size;
-            return duplicated;
+    private _addDetail(map: Map<any, any>, result: CommonRepoItem, collection: symbol, fn: RepoLengthLambda): void {
+        if (!map) {
+            if (collection) {
+                result[collection.description] = -1;
+            }
+            else {
+                result['*'] = -1;
+            }
+            return;
         }
-        duplicated++;
-        result[collection.description + '##' + duplicated] = size;
-        return duplicated;
+        if (collection) {
+            if (map.has(collection)) {
+                result[collection.description] = map.get(collection).length;
+                return;
+            }
+            else {
+                result[collection.description] = -1;
+            }
+            return;
+        }
+        for (const [key, list] of map.entries()) {
+            if (result[key.description] === undefined) {
+                result[key.description] = fn(list);
+            }
+            else {
+                result[key.description + '##' + Date.now()] = fn(list);
+            }
+        }
     }
 
     // region list
     /** @inheritDoc */
     newList<V>(...names: Array<string>): List<V> {
         const list = new List<V>();
-        this._lists.set(this.lyy.descriptor.sym(...names), list);
+        this._lists.set(Symbol.for(names.join('/')), list);
         return list;
     }
 
     /** @inheritDoc */
     getList<V>(collection: symbol): List<V> {
-        return this._lists.get(collection);
+        return this._lists.get(collection) as List<V>;
     }
 
     // endregion list
@@ -71,13 +85,13 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
     /** @inheritDoc */
     newArray<V>(...names: Array<string>): Array<V> {
         const arr = [];
-        this._arrays.set(this.lyy.descriptor.sym(...names), arr);
+        this._arrays.set(Symbol.for(names.join('/')), arr);
         return arr;
     }
 
     /** @inheritDoc */
     getArray<V>(collection: symbol): Array<V> {
-        return this._arrays.get(collection);
+        return this._arrays.get(collection) as Array<V>;
     }
 
     // endregion array
@@ -86,13 +100,13 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
     /** @inheritDoc */
     newMap<K, V>(...names: Array<string>): Map<K, V> {
         const map = new Map<K, V>;
-        this._maps.set(this.lyy.descriptor.sym(...names), map);
+        this._maps.set(Symbol.for(names.join('/')), map);
         return map;
     }
 
     /** @inheritDoc */
     getMap<K, V>(collection: symbol): Map<K, V> {
-        return this._maps.get(collection);
+        return this._maps.get(collection) as Map<K, V>;
     }
 
     // endregion map
@@ -101,73 +115,55 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
     /** @inheritDoc */
     newSet<V>(...names: Array<string>): Set<V> {
         const set = new Set<V>;
-        this._sets.set(this.lyy.descriptor.sym(...names), set);
+        this._sets.set(Symbol.for(names.join('/')), set);
         return set;
     }
 
     /** @inheritDoc */
     getSet<V>(collection: symbol): Set<V> {
-        return this._sets.get(collection);
+        return this._sets.get(collection) as Set<V>;
     }
 
     // endregion set
 
+    // region record
+    /** @inheritDoc */
+    newRecord<K extends string|symbol, V>(...names: Array<string>): Record<K, V> {
+        const rec = {} as Record<K, V>;
+        this._records.set(Symbol.for(names.join('/')), rec);
+        return rec;
+    }
+
+    /** @inheritDoc */
+    getRecord<K extends string|symbol, V>(collection: symbol): Record<K, V> {
+        return this._records.get(collection) as Record<K, V>;
+    }
+
+    // endregion record
 
     // region detail
     /** @inheritDoc */
     detailItem(type: RepoType, collection?: symbol): CommonRepoItem {
         const result = {} as CommonRepoItem;
-        let duplicated = 0;
         switch (type) {
             case "array":
-                if (collection) {
-                    if (this._arrays.has(collection)) {
-                        return {[collection.description]: this._arrays.get(collection).length} as CommonRepoItem;
-                    }
-                    return {[collection.description]: -1} as CommonRepoItem;
-                }
-                for (const [key, list] of this._arrays.entries()) {
-                    duplicated = this._appendDetail(result, key, list.length, duplicated);
-                }
+                this._addDetail(this._arrays, result, collection, (v: Arr) => v.length);
                 return result;
             case "list":
-                if (collection) {
-                    if (this._lists.has(collection)) {
-                        return {[collection.description]: this._lists.get(collection).length} as CommonRepoItem;
-                    }
-                    return {[collection.description]: -1} as CommonRepoItem;
-                }
-                for (const [key, list] of this._lists.entries()) {
-                    duplicated = this._appendDetail(result, key, list.length, duplicated);
-                }
+                this._addDetail(this._lists, result, collection, (v: List<unknown>) => v.length);
                 return result;
             case "map":
-                if (collection) {
-                    if (this._maps.has(collection)) {
-                        return {[collection.description]: this._maps.get(collection).size} as CommonRepoItem;
-                    }
-                    return {[collection.description]: -1} as CommonRepoItem;
-                }
-                for (const [key, map] of this._maps.entries()) {
-                    duplicated = this._appendDetail(result, key, map.size, duplicated);
-                }
+                this._addDetail(this._maps, result, collection, (v: Map<unknown, unknown>) => v.size);
+                return result;
+            case "record":
+                this._addDetail(this._records, result, collection, (v: Record<string|symbol, unknown>) => (v && typeof v === 'object') ? Object.keys(v).length : -2);
                 return result;
             case "set":
-                if (collection) {
-                    if (this._sets.has(collection)) {
-                        return {[collection.description]: this._sets.get(collection).size} as CommonRepoItem;
-                    }
-                    return {[collection.description]: -1} as CommonRepoItem;
-                }
-                for (const [key, set] of this._sets.entries()) {
-                    duplicated = this._appendDetail(result, key, set.size, duplicated);
-                }
+                this._addDetail(this._sets, result, collection, (v: Set<unknown>) => v.size);
                 return result;
             default:
-                if (collection) {
-                    return {[collection.description]: -1} as CommonRepoItem;
-                }
-                return {['*']: -1} as CommonRepoItem;
+                this._addDetail(undefined, result, collection, (_v) => -2);
+                return result;
         }
     }
 
@@ -176,14 +172,14 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
         const result = {} as CommonRepoDetail;
         if (type) {
             result[type] = this.detailItem(type, collection);
-            return result;
         } else {
             result['array'] = this.detailItem('array', collection);
             result['list'] = this.detailItem('list', collection);
             result['map'] = this.detailItem('map', collection);
             result['set'] = this.detailItem('set', collection);
-            return result;
+            result['record'] = this.detailItem('record', collection);
         }
+        return result;
     }
     // endregion detail
 

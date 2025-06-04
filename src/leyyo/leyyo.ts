@@ -32,6 +32,8 @@ import {CommonDeployLike} from "../deploy";
 import {CommonDeploy} from "../deploy/common-deploy";
 import {CommonNameLike} from "../name";
 import {CommonName} from "../name/common-name";
+import {CommonConfigLike} from "../config";
+import {CommonConfig} from "../config/common-config";
 
 export class Leyyo implements LeyyoLike, LeyyoSecure {
     private _lazyCallbacks: Array<Func> = [];
@@ -51,40 +53,43 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
     readonly test: CommonTestLike;
     readonly deploy: CommonDeployLike;
     readonly name: CommonNameLike;
+    readonly config: CommonConfigLike;
 
     constructor() {
-        this.system = new CommonSystem();
-        this.is = new CommonIs();
-        this.repo = new CommonRepo();
-        this.hook = new CommonHook() // repo
-        this.log = new CommonLog(); // hook
-        this.fqn = new CommonFqn(); // hook
-        this.dev = new CommonDeveloper();
-        this.error = new CommonError(); // hook
-        this.assertion = new CommonAssertion(); // is, hook
-        this.to = new CommonTo(); // is, hook, assertion
-        this.descriptor = new CommonDescriptor();
-        this.wrapper = new CommonWrapper();
-        this.test = new CommonTest();
-        this.deploy = new CommonDeploy();
-        this.name = new CommonName();
+        this.system = new CommonSystem(this); // no
+        this.is = new CommonIs(this); // no
+        this.test = new CommonTest(this); // no
+        this.repo = new CommonRepo(this); // none
+        this.config = new CommonConfig(this); // is
+        this.dev = new CommonDeveloper(this); // test
+        this.deploy = new CommonDeploy(this); // dev, test
+        this.assertion = new CommonAssertion(this); // dev, test
+        this.wrapper = new CommonWrapper(this); // assertion, dev
+        this.descriptor = new CommonDescriptor(this); // assertion, dev
+        this.name = new CommonName(this); // assertion, dev, descriptor
+        this.to = new CommonTo(this); // is, dev, wrapper
+        this.hook = new CommonHook(this) // repo, assertion, dev, sym
+        this.error = new CommonError(this); // hook
+        this.log = new CommonLog(this); // hook, test
+        this.fqn = new CommonFqn(this); // hook, descriptor, dev
 
         const members = [
             this.system.$secure,
             this.is.$secure,
-            this.repo.$secure,
-            this.hook.$secure,
-            this.fqn.$secure,
-            this.dev.$secure,
-            this.log.$secure,
-            this.error.$secure,
-            this.assertion.$secure,
-            this.to.$secure,
-            this.descriptor.$secure,
-            this.wrapper.$secure,
             this.test.$secure,
+            this.repo.$secure,
+            this.config.$secure,
+            this.dev.$secure,
             this.deploy.$secure,
+            this.assertion.$secure,
+            this.wrapper.$secure,
+            this.descriptor.$secure,
             this.name.$secure,
+            this.to.$secure,
+            this.hook.$secure,
+            this.error.$secure,
+            this.log.$secure,
+            this.fqn.$secure,
         ] as Array<InitLike>;
 
         members.forEach(member => member.$init(this));

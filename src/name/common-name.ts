@@ -4,9 +4,11 @@ import {FQN} from "../internal";
 import {ClassLike, Func} from "../shared";
 
 export class CommonName implements CommonNameLike, CommonNameSecure {
-    private lyy: LeyyoLike;
     private _counter = 0;
     private _pattern = /((?:[a-zA-Z_$][a-zA-Z\d_$]*\.)*)([a-zA-Z_$][a-zA-Z\d_$]*)/g;
+
+    constructor(private lyy: LeyyoLike) {
+    }
 
     copy(source: Func | ClassLike, target: Func | ClassLike): void {
         if (source?.name) {
@@ -78,9 +80,7 @@ export class CommonName implements CommonNameLike, CommonNameSecure {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
-
+    $init(): void {
         this.lyy.$secure
             .$lazyRun(() => {
                 this.lyy.fqn.register(null, CommonName, 'class', FQN);

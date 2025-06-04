@@ -37,8 +37,6 @@ const CYAN_BG = '\x1b[46m';
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonLog implements CommonLogLike, CommonLogSecure {
-    private lyy: LeyyoLike;
-
     private COLORS = {
         debug: ['debug',    'DEBUG', GRAY1, CYAN_FG, '', ''],
         trace: ['log',      'TRACE', GRAY1, CYAN_FG, '', ''],
@@ -49,7 +47,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
         fatal: ['error',    'FATAL', MAGENTA_BG, MAGENTA_FG, MAGENTA_BG, END],
     } as Record<Severity, [string, string, string, string, string, string]>;
 
-    constructor() {
+    constructor(private lyy: LeyyoLike) {
         this.create.bind(this);
         this.apply.bind(this);
         this.check.bind(this);
@@ -60,8 +58,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
 
         // @formatter:off
         this.lyy.$secure.

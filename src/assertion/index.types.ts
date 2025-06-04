@@ -330,6 +330,32 @@ export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> 
     positiveNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
 
     /**
+     * Asserts value is a non-negative number
+     * @see CommonIsLike#number
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    nonNegative(value: any, opt?: string | AssertionCallback | DevOpt): number;
+
+    /**
+     * Optional usage of below
+     * @see #nonNegative
+     * */
+    nonNegativeOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
+
+    /**
+     * Array usage of below
+     * @see #nonNegative
+     * */
+    nonNegativeArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
+
+    /**
      * Asserts value is an integer
      * @see CommonIsLike#integer
      *

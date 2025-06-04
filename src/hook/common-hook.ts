@@ -13,7 +13,6 @@ import {
 
 // noinspection JSUnusedGlobalSymbols
 export class CommonHook implements CommonHookLike, CommonHookSecure {
-    private lyy: LeyyoLike;
     private _waitingForCallbacks: Map<symbol, Array<Arr>>;
     private _attachedCallbacks: Map<symbol, HookAttachedCallback>;
     private _waitingForProviders: Map<symbol, Array<HookWaitingProviderItem>>;
@@ -26,11 +25,10 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
      * - Create repositories => ie: callbacks
      * - Trigger clear pending operation
      * */
-    constructor() {
+    constructor(private lyy: LeyyoLike) {
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
         this._waitingForCallbacks = this.lyy.repo.newMap<symbol, Array<Arr>>(FQN, 'waitingForCallbacks');
         this._attachedCallbacks = this.lyy.repo.newMap<symbol, HookAttachedCallback>(FQN, 'attachedCallbacks');
         this._waitingForProviders = this.lyy.repo.newMap<symbol, Array<HookWaitingProviderItem>>(FQN, 'waitingForProviders');

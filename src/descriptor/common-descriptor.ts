@@ -4,10 +4,10 @@ import {LeyyoLike} from "../leyyo";
 import {CommonDescriptorLike, CommonDescriptorSecure, PropDescriptor} from "./index.types";
 
 export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorSecure {
-    private lyy: LeyyoLike;
-
     private _funcSign: symbol;
 
+    constructor(private lyy: LeyyoLike) {
+    }
     private get funcSign(): symbol {
         if (this._funcSign) {
             return this._funcSign;
@@ -109,8 +109,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonDescriptor, 'class', FQN);
         });

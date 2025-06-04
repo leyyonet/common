@@ -5,11 +5,11 @@ import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
-    private lyy: LeyyoLike;
+
     private proper: boolean;
     private _pendingSign: symbol;
 
-    constructor() {
+    constructor(private lyy: LeyyoLike) {
         this.name.bind(this);
         this.exists.bind(this);
         this.register.bind(this);
@@ -27,8 +27,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
 
         this.lyy.$secure
             .$lazyRun(() => {

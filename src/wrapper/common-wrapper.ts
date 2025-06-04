@@ -8,8 +8,9 @@ import {FQN} from "../internal";
 import {Wrap} from "./wrap";
 
 export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
-    private lyy: LeyyoLike;
 
+    constructor(private lyy: LeyyoLike) {
+    }
 
     get $secure(): CommonWrapperSecure {
         return this;
@@ -19,9 +20,7 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
-
+    $init(): void {
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonWrapper, 'class', FQN);
             this.lyy.fqn.register(null, Wrap, 'class', FQN);

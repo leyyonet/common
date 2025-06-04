@@ -13,15 +13,15 @@ import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols
 export class CommonError implements CommonErrorLike, CommonErrorSecure {
-    private lyy: LeyyoLike;
+
+    constructor(private lyy: LeyyoLike) {
+    }
 
     get $back(): CommonErrorLike {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
-
+    $init(): void {
 
         this.lyy.$secure
             .$earlyRun(() => {

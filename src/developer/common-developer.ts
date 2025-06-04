@@ -6,7 +6,9 @@ import {Severity} from "../log";
 import {CausedError, DeveloperError, InvalidValueError} from "./index.errors";
 
 export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecure {
-    private lyy: LeyyoLike;
+
+    constructor(private lyy: LeyyoLike) {
+    }
 
     buildParameters(opt: DevOpt, extra?: DevOpt, e?: Error): DeveloperParamResult {
         let newOpt = this.checkParameters(opt, extra);
@@ -127,7 +129,7 @@ export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecu
                 }
                 break;
         }
-        return new DeveloperError(issue, opt);
+        return new DeveloperError(`${issue}/${this.secureJson(opt, true)}`, opt);
     }
 
     invalidError(opt: DevOpt, extra?: DevOpt): Error {
@@ -169,8 +171,7 @@ export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecu
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonDeveloper, 'class', FQN);
         });

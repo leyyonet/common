@@ -15,13 +15,11 @@ import {ClassLike, ClassOrFuncOrName, Dict, EnumLiteral, EnumMap, Fnc, Func, Key
 /** @inheritDoc */
 export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecure {
     // region properties
-    private lyy: LeyyoLike;
-
     private readonly _EMPTY = [null, undefined];
 
     // endregion properties
 
-    constructor() {
+    constructor(private lyy: LeyyoLike) {
     }
 
     // region internal
@@ -344,8 +342,33 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
     /** @inheritDoc */
     positiveNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
         const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'number' || (item < 0))) {
+        if (arr.length < 1 || arr.some(item => typeof item !== 'number' || (item <= 0))) {
             throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.positive.number.array', value, type: typeof value});
+        }
+        return value as Array<number>;
+    }
+
+    /** @inheritDoc */
+    nonNegative(value: any, opt?: string | AssertionCallback | DevOpt): number {
+        if (typeof value !== 'number' || (value < 0)) {
+            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.non-negative.number', value, type: typeof value});
+        }
+        return value as number;
+    }
+
+    /** @inheritDoc */
+    nonNegativeOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
+        if (this._EMPTY.includes(value)) {
+            return undefined;
+        }
+        return this.nonNegative(value, opt);
+    }
+
+    /** @inheritDoc */
+    nonNegativeArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
+        const arr = this.array(value, opt);
+        if (arr.length < 1 || arr.some(item => typeof item !== 'number' || (item < 0))) {
+            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.non-negative.number.array', value, type: typeof value});
         }
         return value as Array<number>;
     }
@@ -598,8 +621,7 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
     }
 
     /** @inheritDoc */
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
 
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonAssertion, 'class', FQN);

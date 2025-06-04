@@ -4,17 +4,16 @@ import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class CommonTest implements CommonTestLike, CommonTestSecure {
-    private lyy: LeyyoLike;
     private _is: boolean;
-    constructor() {
+
+    constructor(private lyy: LeyyoLike) {
     }
 
     get $back(): CommonTestLike {
         return this;
     }
 
-    $init(lyy: LeyyoLike): void {
-        this.lyy = lyy;
+    $init(): void {
         this.lyy.$secure.$lazyRun(() => {
             this.lyy.fqn.register(null, CommonTest, 'class', FQN);
         });
