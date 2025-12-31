@@ -1,7 +1,7 @@
 import {CommonNameLike, CommonNameSecure} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
-import {ClassLike, Func} from "../shared";
+import {ClassLike, Fnc} from "../shared";
 
 export class CommonName implements CommonNameLike, CommonNameSecure {
     private _counter = 0;
@@ -10,13 +10,13 @@ export class CommonName implements CommonNameLike, CommonNameSecure {
     constructor(private lyy: LeyyoLike) {
     }
 
-    copy(source: Func | ClassLike, target: Func | ClassLike): void {
+    copy(source: Fnc | ClassLike, target: Fnc | ClassLike): void {
         if (source?.name) {
             this.set(target, source.name);
         }
     }
 
-    set(target: Func | ClassLike, name: string): void {
+    set(target: Fnc | ClassLike, name: string): void {
         this.lyy.descriptor.save(target, 'name', name);
     }
 

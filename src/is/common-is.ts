@@ -1,14 +1,16 @@
 import {CommonIsLike, CommonIsSecure} from "./index.types";
 import {LeyyoLike} from "../leyyo";
-import {BasicType, EnumLiteral, EnumMap, KeyValue} from "../shared";
+import {BasicType, ClassLike, EnumLiteral, EnumMap, KeyValue} from "../shared";
 import {FQN} from "../internal";
 import {
     KeyValueItems,
     Primitive,
     PrimitiveItems,
     RealValue,
-    RealValueItems, WeakFalse,
-    WeakFalseItems, WeakTrue,
+    RealValueItems,
+    WeakFalse,
+    WeakFalseItems,
+    WeakTrue,
     WeakTrueItems
 } from "../to";
 
@@ -81,13 +83,33 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
     }
 
     /** @inheritDoc */
+    positiveNumber(value: any): boolean {
+        return (typeof value === 'number') && !isNaN(value) && isFinite(value) && value > 0;
+    }
+
+    /** @inheritDoc */
+    nonNegativeNumber(value: any): boolean {
+        return (typeof value === 'number') && !isNaN(value) && isFinite(value) && value >= 0;
+    }
+
+    /** @inheritDoc */
     integer(value: any): boolean {
-        return this.number(value) && Number.isInteger(value);
+        return (typeof value === 'number') && !isNaN(value) && isFinite(value) && Number.isInteger(value);
     }
 
     /** @inheritDoc */
     safeInteger(value: any): boolean {
-        return this.number(value) && Number.isSafeInteger(value);
+        return (typeof value === 'number') && !isNaN(value) && isFinite(value) && Number.isSafeInteger(value);
+    }
+
+    /** @inheritDoc */
+    positiveInteger(value: any): boolean {
+        return (typeof value === 'number') && !isNaN(value) && isFinite(value) && value > 0;
+    }
+
+    /** @inheritDoc */
+    nonNegativeInteger(value: any): boolean {
+        return (typeof value === 'number') && !isNaN(value) && isFinite(value) && value >= 0;
     }
 
     /** @inheritDoc */
@@ -97,12 +119,30 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
 
     /** @inheritDoc */
     text(value: any): boolean {
-        return this.string(value) && (value as string).trim() !== '';
+        return typeof value === 'string' && value.trim() !== '';
     }
 
     /** @inheritDoc */
     clazz(value: any): boolean {
-        return this.text(value) || this.func(value) || this.object(value);
+        if (typeof value !== 'function') {
+            return false;
+        }
+        try {
+            return Function.prototype.toString.call(value).startsWith('class');
+        }
+        catch (e) {
+            return false;
+        }
+    }
+    /** @inheritDoc */
+    possibleFunc(value: any): boolean {
+        switch (typeof value) {
+            case "function":
+                return true;
+            case "string":
+                return typeof value === 'string' && value.trim() !== '';
+        }
+        return false;
     }
 
     /** @inheritDoc */
@@ -125,6 +165,14 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
             return items.includes(value as KeyValue);
         }
         return false;
+    }
+
+    /** @inheritDoc */
+    instanceOf<T>(value: unknown, clazz: ClassLike<T>): boolean {
+        if (!value || !clazz !! || typeof clazz !== 'function' || typeof value !== 'object') {
+            return false;
+        }
+        return value instanceof clazz;
     }
 
     /** @inheritDoc */

@@ -1,4 +1,4 @@
-import {Arr, ClassLike, Func,} from "../shared";
+import {Arr, ClassLike, Fnc,} from "../shared";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
 import {
@@ -44,7 +44,7 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         return this;
     }
 
-    attachCallback(channel: symbol, fn: Func): void {
+    attachCallback(channel: symbol, fn: Fnc): void {
         this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.CommonHook`, method: 'attachCallback'}));
         this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN}.CommonHook`, method: 'attachCallback'}));
 

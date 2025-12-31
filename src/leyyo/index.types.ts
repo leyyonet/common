@@ -8,13 +8,14 @@ import {CommonToLike} from "../to";
 import {CommonFqnLike} from "../fqn";
 import {CommonSystemLike} from "../system";
 import {CommonDeveloperLike} from "../developer";
-import {Func, ShiftMain, ShiftSecure} from "../shared";
+import {Fnc, ShiftMain, ShiftSecure} from "../shared";
 import {CommonDescriptorLike} from "../descriptor";
 import {CommonWrapperLike} from "../wrapper";
 import {CommonTestLike} from "../test";
 import {CommonDeployLike} from "../deploy";
 import {CommonNameLike} from "../name";
 import {CommonConfigLike} from "../config";
+import {CommonMixinLike} from "../mixin";
 
 export interface LeyyoLike extends ShiftSecure<LeyyoSecure> {
     readonly is: CommonIsLike;
@@ -33,8 +34,9 @@ export interface LeyyoLike extends ShiftSecure<LeyyoSecure> {
     readonly deploy: CommonDeployLike;
     readonly name: CommonNameLike;
     readonly config: CommonConfigLike;
+    readonly mixin: CommonMixinLike;
 }
 export interface LeyyoSecure extends ShiftMain<LeyyoLike> {
-    $earlyRun(fn: Func): LeyyoSecure;
-    $lazyRun(fn: Func): LeyyoSecure;
+    $earlyRun(fn: Fnc): LeyyoSecure;
+    $lazyRun(fn: Fnc): LeyyoSecure;
 }

@@ -1,10 +1,10 @@
 import {
-    CommonRepoLike,
-    CommonRepoSecure,
     CommonRepoDetail,
     CommonRepoItem,
-    RepoType,
-    RepoLengthLambda
+    CommonRepoLike,
+    CommonRepoSecure,
+    RepoLengthLambda,
+    RepoType
 } from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";

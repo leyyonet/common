@@ -1,15 +1,4 @@
-import {
-    Dict,
-    EnumAlt,
-    EnumLiteral,
-    EnumMap,
-    Func,
-    InitLike,
-    KeyValue,
-    Obj,
-    ShiftMain,
-    ShiftSecure
-} from "../shared";
+import {Dict, EnumAlt, EnumLiteral, EnumMap, Fnc, InitLike, KeyValue, Obj, ShiftMain, ShiftSecure} from "../shared";
 import {DevOpt} from "../developer";
 import {WeakTrue} from "./weak-true";
 import {WeakFalse} from "./weak-false";
@@ -35,8 +24,8 @@ export interface CommonToLike extends ShiftSecure<CommonToSecure> {
     floatStrict(value: any, opt?: ToOptAny): number;
     float(value: any, opt?: ToOptAny, notNull?: boolean): number;
 
-    funcStrict<F extends Func = Func>(value: any, opt?: ToOptAny): F;
-    func<F extends Func = Func>(value: any, opt?: ToOptAny, notNull?: boolean): F;
+    funcStrict<F extends Fnc = Fnc>(value: any, opt?: ToOptAny): F;
+    func<F extends Fnc = Fnc>(value: any, opt?: ToOptAny, notNull?: boolean): F;
 
     integerStrict(value: any, opt?: ToOptAny): number;
     integer(value: any, opt?: ToOptAny, notNull?: boolean): number;
@@ -87,7 +76,7 @@ export interface CommonToLike extends ShiftSecure<CommonToSecure> {
 
 export interface CommonToSecure extends ShiftMain<CommonToLike>, InitLike {
     $runOpt(opt: ToOptAny): ToOpt;
-    $runFn<T = any>(fn: Func, value: Func, opt?: ToOpt): T;
+    $runFn<T = any>(fn: Fnc, value: Fnc, opt?: ToOpt): T;
     $errorOrLog(opt: ToOptAny, extra: ToOpt, e?: Error): any;
     $unexpectedError<T = any>(value: unknown, expected: Array<string>, opt?: ToOpt): T;
     $nullError<T = any>(opt?: ToOpt): T;

@@ -1,4 +1,4 @@
-import {ClassLike, Func, Obj} from "../shared";
+import {ClassLike, Fnc, Obj} from "../shared";
 import {FQN} from "../internal";
 import {LeyyoLike} from "../leyyo";
 import {CommonDescriptorLike, CommonDescriptorSecure, PropDescriptor} from "./index.types";
@@ -15,12 +15,12 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         this._funcSign = this.sym(FQN, 'funcSign');
         return this._funcSign;
     }
-    sign(fn: Func | ClassLike): void {
+    sign(fn: Fnc | ClassLike): void {
         this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', type: typeof fn, where: `${FQN}.CommonDescriptor`, method: 'sign'}));
         this.save(fn, this.funcSign, true);
     }
 
-    isSigned(fn: Func | ClassLike): boolean {
+    isSigned(fn: Fnc | ClassLike): boolean {
         if (typeof fn !== 'function') {
             return false;
         }
@@ -36,7 +36,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         const parts = sym.description.split('/');
         return parts.length >= 2 ? parts[1] : '';
     }
-    get<T = any>(target: Func | Obj, key: string | symbol, notSystem?: boolean): PropDescriptor<T> {
+    get<T = any>(target: Fnc | Obj, key: string | symbol, notSystem?: boolean): PropDescriptor<T> {
         if (!target) {
             return undefined;
         }
@@ -51,21 +51,21 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         return undefined;
     }
 
-    getValue<T = any>(target: Func | Obj, key: string | symbol): T {
+    getValue<T = any>(target: Fnc | Obj, key: string | symbol): T {
         const result = this.get(target, key);
         return result ? result.value : undefined;
     }
 
-    has(target: Func | Obj, key: string | symbol): boolean {
+    has(target: Fnc | Obj, key: string | symbol): boolean {
         const result = this.get(target, key);
         return !!result;
     }
 
-    $isNot<T = any>(target: Func | Obj, key: string | symbol): boolean {
+    $isNot<T = any>(target: Fnc | Obj, key: string | symbol): boolean {
         return (!['string', 'symbol'].includes(typeof key)) ||
             (key === ((typeof target === 'object') ? 'constructor' : 'prototype'));
     }
-    remove(target: Func | Obj, key: string | symbol, notSystem?: boolean): boolean {
+    remove(target: Fnc | Obj, key: string | symbol, notSystem?: boolean): boolean {
         if (!target) {
             return false;
         }
@@ -83,7 +83,7 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
         return false;
     }
 
-    save<T = any>(target: Func | Obj, key: string | symbol, value: T, notSystem?: boolean): boolean {
+    save<T = any>(target: Fnc | Obj, key: string | symbol, value: T, notSystem?: boolean): boolean {
         if (!target) {
             return false;
         }

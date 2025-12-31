@@ -5,7 +5,7 @@ import {Logger} from "../log";
 import {DevOpt} from "../developer";
 
 export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
-    private _types = ['debug', 'info', 'warning'] as Array<DeployType>;
+    private _types = ['debug', 'info', 'warn'] as Array<DeployType>;
     private _logger: Logger;
     private _lines: Array<DeployItem> = [];
 
@@ -13,8 +13,10 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
     }
 
     // region private
-    private _add(type: DeployType, pck: string, testCase: number | string, opt: DevOpt): void {
-        this._lines.push({opt: {case: this.lyy.test.code(pck, testCase), ...opt}, logger: this._logger, type});
+    private _add(type: DeployType, pck: string, testCase: number | string, opt: DevOpt): DeployItem {
+        const item = {opt: {case: this.lyy.test.code(pck, testCase), ...opt}, logger: this._logger, type};
+        this._lines.push(item);
+        return item;
     }
 
     private _get(type: DeployType, v2: string | Logger, deleteSelected: boolean): Array<DevOpt> {
@@ -48,6 +50,10 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
                 });
         })
     }
+    private _print(item: DeployItem): void {
+        const {opt, message} = this.lyy.dev.buildParameters(item.opt);
+        item.logger[item.type](message, opt);
+    }
 
     // endregion private
 
@@ -77,8 +83,8 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
         return this._get('info', pck, deleteSelected);
     }
 
-    warning(pck: string, deleteSelected?: boolean): Array<DevOpt> {
-        return this._get('warning', pck, deleteSelected);
+    warn(pck: string, deleteSelected?: boolean): Array<DevOpt> {
+        return this._get('warn', pck, deleteSelected);
     }
 
     printAll(v1: Logger | string): void {
@@ -102,15 +108,15 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
     }
 
     $debug(pck: string, testCase: number | string, opt: DevOpt): void {
-        this._add('debug', pck, testCase, opt);
+        this._print(this._add('debug', pck, testCase, opt));
     }
 
     $info(pck: string, testCase: number | string, opt: DevOpt): void {
-        this._add('info', pck, testCase, opt);
+        this._print(this._add('info', pck, testCase, opt));
     }
 
-    $warning(pck: string, testCase: number | string, opt: DevOpt): void {
-        this._add('warning', pck, testCase, opt);
+    $warn(pck: string, testCase: number | string, opt: DevOpt): void {
+        this._print(this._add('warn', pck, testCase, opt));
     }
 
     $printAll(): void {

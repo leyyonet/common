@@ -1,4 +1,4 @@
-import {BasicType, EnumLiteral, EnumMap, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import {BasicType, ClassLike, EnumLiteral, EnumMap, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Basic is commands to easy use
@@ -76,7 +76,7 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
     anotherObject(value: any): boolean;
 
     /**
-     * Checks value is array or not?
+     * Checks value is array like (array, Set or List) or not?
      *
      * @param {any} value
      * @returns {boolean}
@@ -107,6 +107,25 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
      * Note: NaN and infinite values are not evaluated as a number
      * */
     number(value: any): boolean;
+    /**
+     * Checks value is positive number or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     *
+     * Note: NaN and infinite values are not evaluated as a number
+     * */
+    positiveNumber(value: any): boolean;
+
+    /**
+     * Checks value is non-negative number or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     *
+     * Note: NaN and infinite values are not evaluated as a number
+     * */
+    nonNegativeNumber(value: any): boolean;
 
     /**
      * Checks value is integer or not?
@@ -130,6 +149,26 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
     safeInteger(value: any): boolean;
 
     /**
+     * Checks value is positive integer or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     *
+     * Note: NaN and infinite values are not evaluated as a number
+     * */
+    positiveInteger(value: any): boolean;
+
+    /**
+     * Checks value is non-negative integer or not?
+     *
+     * @param {any} value
+     * @returns {boolean}
+     *
+     * Note: NaN and infinite values are not evaluated as a number
+     * */
+    nonNegativeInteger(value: any): boolean;
+
+    /**
      * Checks value is string or not?
      * Empty string or space values are also string, if you want different behaviour, please check {@link #text}
      *
@@ -148,13 +187,21 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
     text(value: any): boolean;
 
     /**
-     * Checks value is possible class?
-     * Possible class means: object as instance, string as function name, or function
+     * Checks value is class?
      *
      * @param {any} value
      * @returns {boolean}
      * */
     clazz(value: any): boolean;
+
+    /**
+     * Checks value is possible func?
+     * Possible class means: object as instance, string as function name, or function
+     *
+     * @param {any} value
+     * @returns {boolean}
+     * */
+    possibleFunc(value: any): boolean;
 
     /**
      * Checks value is an enum value?
@@ -173,6 +220,15 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
      * @returns {boolean}
      * */
     literal(value: unknown, items: EnumLiteral): boolean;
+
+    /**
+     * Checks value is an instance of class?
+     *
+     * @param {any} value
+     * @param {ClassLike} clazz
+     * @returns {boolean}
+     * */
+    instanceOf<T>(value: unknown, clazz: ClassLike<T>): boolean;
 
     /**
      * Checks value is boolean?

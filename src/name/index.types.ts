@@ -1,18 +1,15 @@
-import {ClassLike, Func, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
-import {Logger} from "../log";
-import {DevOpt} from "../developer";
-import {CommonFqnHook, CommonFqnLike} from "../fqn";
+import {ClassLike, Fnc, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 export interface CommonNameLike extends ShiftSecure<CommonNameSecure> {
     /**
      * Copies function name
      * */
-    copy(source: Func | ClassLike, target: Func | ClassLike): void;
+    copy(source: Fnc | ClassLike, target: Fnc | ClassLike): void;
 
     /**
      * Sets function name, especially for arrow functions or proxied class
      * */
-    set(target: Func | ClassLike, name: string): void;
+    set(target: Fnc | ClassLike, name: string): void;
 
     /**
      * Validates fqn or function name

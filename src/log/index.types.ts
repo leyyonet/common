@@ -2,7 +2,7 @@ import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
 import {HookDefinedProvider} from "../hook";
 import {DevOpt} from "../developer";
 import {Severity} from "./severity";
-import {CommonDeployLike, CommonDeploySecure} from "../deploy";
+import {CommonDeploySecure} from "../deploy";
 
 export interface CommonLogLike extends ShiftSecure<CommonLogSecure>, LogConsumer {
     create(clazz: Object | Function | string): Logger;
@@ -39,41 +39,30 @@ export interface LogLineEnhanced<L = Dict> extends LogLine {
 }
 
 export interface Logger extends ShiftSecure<LoggerSecure> {
-    error(message: string, params?: any|DevOpt): void;
-
-    error(error: Error, params?: any|DevOpt): void;
-
-    error(whatever: any, params?: any|DevOpt): void;
-
-    warn(message: string, params?: any|DevOpt): void;
-
-    warn(error: Error, params?: any|DevOpt): void;
-
-    warn(whatever: any, params?: any|DevOpt): void;
-
-    info(message: string, params?: any|DevOpt): void;
-
-    info(error: Error, params?: any|DevOpt): void;
-
-    info(whatever: any, params?: any|DevOpt): void;
-
-    log(message: string, params?: any|DevOpt): void;
-
-    log(error: Error, params?: any|DevOpt): void;
-
-    log(whatever: any, params?: any|DevOpt): void;
-
-    trace(message: string, params?: any|DevOpt): void;
-
-    trace(error: Error, params?: any|DevOpt): void;
-
-    trace(whatever: any, params?: any|DevOpt): void;
 
     debug(message: string, params?: any|DevOpt): void;
-
     debug(error: Error, params?: any|DevOpt): void;
-
     debug(whatever: any, params?: any|DevOpt): void;
+
+    trace(message: string, params?: any|DevOpt): void;
+    trace(error: Error, params?: any|DevOpt): void;
+    trace(whatever: any, params?: any|DevOpt): void;
+
+    info(message: string, params?: any|DevOpt): void;
+    info(error: Error, params?: any|DevOpt): void;
+    info(whatever: any, params?: any|DevOpt): void;
+
+    warn(message: string, params?: any|DevOpt): void;
+    warn(error: Error, params?: any|DevOpt): void;
+    warn(whatever: any, params?: any|DevOpt): void;
+
+    error(message: string, params?: any|DevOpt): void;
+    error(error: Error, params?: any|DevOpt): void;
+    error(whatever: any, params?: any|DevOpt): void;
+
+    fatal(message: string, params?: any|DevOpt): void;
+    fatal(error: Error, params?: any|DevOpt): void;
+    fatal(whatever: any, params?: any|DevOpt): void;
 
     get deploy(): CommonDeploySecure;
 }
@@ -83,7 +72,5 @@ export interface LoggerSecure extends ShiftMain<Logger> {
 
     get $name(): string;
 
-    $setMethod(method: Severity, lambda?: LoggerLambda): void;
+    $refresh(severity: Severity): void;
 }
-
-export type LoggerLambda = (whatever: any, params?: any|DevOpt) => void;

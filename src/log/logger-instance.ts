@@ -1,4 +1,4 @@
-import {Logger, LoggerLambda, LoggerSecure, LogLine} from "./index.types";
+import {Logger, LoggerSecure, LogLine} from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {DevOpt} from "../developer";
 import {Severity} from "./severity";
@@ -77,25 +77,27 @@ export class LoggerInstance implements Logger, LoggerSecure {
         LoggerInstance.lyy.log.apply(this._prepare('debug', message, params));
     }
 
-    error(message: any, params?: any|DevOpt): void {
-        LoggerInstance.lyy.log.apply(this._prepare('error', message, params));
+    trace(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('trace', message, params));
     }
 
     info(message: any, params?: any|DevOpt): void {
         LoggerInstance.lyy.log.apply(this._prepare('info', message, params));
     }
 
-    log(message: any, params?: any|DevOpt): void {
-        LoggerInstance.lyy.log.apply(this._prepare('log', message, params));
-    }
-
-    trace(message: any, params?: any|DevOpt): void {
-        LoggerInstance.lyy.log.apply(this._prepare('trace', message, params));
-    }
-
     warn(message: any, params?: any|DevOpt): void {
         LoggerInstance.lyy.log.apply(this._prepare('warn', message, params));
     }
+
+    error(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('error', message, params));
+    }
+
+    fatal(message: any, params?: any|DevOpt): void {
+        LoggerInstance.lyy.log.apply(this._prepare('fatal', message, params));
+    }
+
+
     get deploy(): CommonDeploySecure {
         return LoggerInstance.lyy.deploy.logger(this);
     }
@@ -121,12 +123,46 @@ export class LoggerInstance implements Logger, LoggerSecure {
         this.lyy = lyy;
     }
 
-    $setMethod(method: Severity, lambda?: LoggerLambda): void {
-        if (typeof lambda === 'function') {
-            this[method] = lambda;
-        } else {
-            this[method] = () => {
-            };
+    $refresh(severity: Severity): void {
+        const rec= {
+            debug: false,
+            trace: false,
+            info: false,
+            warn: false,
+            error: true,
+            fatal: true,
+        } as Record<Severity, boolean>;
+        switch (severity) {
+            case 'debug':
+                rec.debug = true;
+                rec.trace = true;
+                rec.info = true;
+                rec.warn = true;
+                break;
+            case 'trace':
+                rec.trace = true;
+                rec.info = true;
+                rec.warn = true;
+                break;
+            case 'info':
+                rec.info = true;
+                rec.warn = true;
+                break;
+            case 'warn':
+                rec.warn = true;
+                break;
+            default:
+                break;
+        }
+        for (const [k, active] of Object.entries(rec)) {
+            if (active) {
+                this[k] = (message: any, params?: any|DevOpt): void => {
+                    LoggerInstance.lyy.log.apply(this._prepare(k as Severity, message, params));
+                }
+            }
+            else {
+                this[k] = (_message: any, _params?: any|DevOpt): void => {}
+            }
         }
     }
 

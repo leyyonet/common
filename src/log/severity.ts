@@ -1,7 +1,7 @@
 /**
  * Severity items
  * */
-export const SeverityItems = ['debug', 'error', 'fatal', 'info', 'log', 'trace', 'warn'] as const;
+export const SeverityItems = ['debug', 'trace', 'info', 'warn', 'error', 'fatal'] as const;
 /**
  * Severity for log and errors
  * */

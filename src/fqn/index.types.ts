@@ -1,4 +1,4 @@
-import {Func, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
+import {Fnc, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
 import {HookDefinedProvider} from "../hook";
 
 export interface CommonFqnLike extends ShiftSecure<CommonFqnSecure> {
@@ -16,7 +16,7 @@ export interface CommonFqnLike extends ShiftSecure<CommonFqnSecure> {
 
 
 export interface CommonFqnSecure extends ShiftMain<CommonFqnLike>, InitLike {
-    $runHooks(fn: Func | Obj, name: string): void;
+    $runHooks(fn: Fnc | Obj, name: string): void;
     $appendHook(target: Function | Object, callback: CommonFqnHook): void;
 }
 

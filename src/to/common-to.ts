@@ -1,5 +1,5 @@
 import {CommonToLike, CommonToSecure, ToOpt, ToOptAny, ToSubIndexFnLambda, ToSubKeyFnLambda} from "./index.types";
-import {Arr, Dict, EnumAlt, EnumLiteral, EnumMap, Func, KeyValue, Obj, Pair} from "../shared";
+import {Arr, Dict, EnumAlt, EnumLiteral, EnumMap, Fnc, KeyValue, Obj, Pair} from "../shared";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
 import {PrimitiveItems} from "./primitive";
@@ -77,7 +77,7 @@ export class CommonTo implements CommonToLike, CommonToSecure {
         }
     }
 
-    $runFn<T = any>(fn: Func, value: Func, opt?: ToOpt): T {
+    $runFn<T = any>(fn: Fnc, value: Fnc, opt?: ToOpt): T {
         try {
             return fn(value()) as T;
         } catch (e) {
@@ -288,7 +288,7 @@ export class CommonTo implements CommonToLike, CommonToSecure {
             }
             return value;
         }
-        let fn: Func;
+        let fn: Fnc;
         switch (typeof value) {
             case 'object':
                 if (value instanceof Date) {
@@ -455,7 +455,7 @@ export class CommonTo implements CommonToLike, CommonToSecure {
             }
             return value;
         }
-        let fn: Func;
+        let fn: Fnc;
         switch (typeof value) {
             case 'string':
                 fn = () => parseFloat(value);
@@ -478,10 +478,10 @@ export class CommonTo implements CommonToLike, CommonToSecure {
         return this.$unexpectedError(value, this._EXPECTED_NUMBER, opt);
     }
 
-    funcStrict<F extends Func = Func>(value: any, opt?: ToOptAny): F {
+    funcStrict<F extends Fnc = Fnc>(value: any, opt?: ToOptAny): F {
         return this.func(value, opt, true);
     }
-    func<F extends Func = Func>(value: any, opt?: ToOptAny, notNull?: boolean): F {
+    func<F extends Fnc = Fnc>(value: any, opt?: ToOptAny, notNull?: boolean): F {
         if (this._EMPTY.includes(value)) {
             if (notNull) {
                 this.$nullError(this._EXPECTED_FUNCTION, opt);
@@ -513,7 +513,7 @@ export class CommonTo implements CommonToLike, CommonToSecure {
             }
             return value;
         }
-        let fn: Func;
+        let fn: Fnc;
         switch (typeof value) {
             case 'string':
                 fn = () => parseInt(value);

@@ -142,6 +142,10 @@ export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecu
         const {opt: opt2, message} = this.buildParameters(opt, extra, e);
         return new CausedError(message, opt2, e);
     }
+    nativeError2(pck: string, testCase:number|string, e: Error, opt?: DevOpt): Error {
+        const issue = this.lyy.test.code(pck, testCase);
+        return new CausedError(`${issue}/${e.message}`, opt, e);
+    }
 
     log(v1: Error | DevOpt, v2: DevOpt|Severity, v3?: Severity): void {
         let error: Error = undefined;
@@ -150,15 +154,15 @@ export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecu
         if (v1 instanceof Error) {
             error = v1;
             opt = v2 as DevOpt;
-            severity = (typeof v3 === 'string') ? v3 : 'log';
+            severity = (typeof v3 === 'string') ? v3 : 'info';
         } else {
             opt = v1;
-            severity = (typeof v2 === 'string') ? v2 : 'log';
+            severity = (typeof v2 === 'string') ? v2 : 'info';
         }
         // todo
         const {opt: opt2, message} = this.buildParameters(opt, {}, error);
         if (typeof console[severity] !== 'function') {
-            severity = 'log';
+            severity = 'info';
         }
         console[severity](message, opt2);
     }

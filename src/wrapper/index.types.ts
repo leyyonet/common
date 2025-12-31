@@ -1,10 +1,10 @@
-import {ClassLike, Func, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
+import {ClassLike, Fnc, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
 
 export type WrapType = 'class'|'function'|'instance'|'string';
 export interface CommonWrapperLike extends ShiftSecure<CommonWrapperSecure> {
 
     ofClass(clazz: ClassLike): WrapLike<ClassLike>;
-    ofFunction(func: Func): WrapLike;
+    ofFunction(func: Fnc): WrapLike;
     ofString(name: string): WrapLike<string>;
     ofInstance(instance: Obj): WrapLike<Obj>;
 
@@ -15,15 +15,15 @@ export interface CommonWrapperLike extends ShiftSecure<CommonWrapperSecure> {
     isInstance(wrap: any): boolean;
 
     asClass(wrap: any): ClassLike;
-    asFunction<F extends Func = Func>(wrap: any): F;
+    asFunction<F extends Fnc = Fnc>(wrap: any): F;
     asString(wrap: any): string;
     asInstance<I extends Obj = Obj>(wrap: any): I;
 
     type(wrap: any): WrapType;
-    value<V extends ClassLike|Func|string|Obj = Func>(wrap: WrapLike<V>): V;
+    value<V extends ClassLike|Fnc|string|Obj = Fnc>(wrap: WrapLike<V>): V;
 }
 
-export interface WrapLike<V extends ClassLike|Func|string|Obj = Func> {
+export interface WrapLike<V extends ClassLike|Fnc|string|Obj = Fnc> {
     readonly value: V;
     readonly type: WrapType;
 }
@@ -31,5 +31,5 @@ export interface WrapLike<V extends ClassLike|Func|string|Obj = Func> {
  * Secure assertion methods
  * */
 export interface CommonWrapperSecure extends ShiftMain<CommonWrapperLike>, InitLike {
-    $create<V extends ClassLike|Func|string|Obj = Func>(type: WrapType, value: V): WrapLike<V>;
+    $create<V extends ClassLike|Fnc|string|Obj = Fnc>(type: WrapType, value: V): WrapLike<V>;
 }

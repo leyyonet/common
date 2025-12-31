@@ -1,12 +1,11 @@
-import {Dict, ShiftMain, ShiftSecure} from "../shared";
-import {Logger} from "../log";
-import {DevOpt} from "../developer";
+import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 export interface CommonConfigLike extends ShiftSecure<CommonConfigSecure> {
     read(): void;
     get<R = Dict>(pck?: string): R;
+    toJSON(): unknown;
 }
-export interface CommonConfigSecure extends ShiftMain<CommonConfigLike> {
+export interface CommonConfigSecure extends ShiftMain<CommonConfigLike>, InitLike {
     $update(value: Dict): void;
 }
 

@@ -25,33 +25,39 @@ export class CommonConfig implements CommonConfigLike, CommonConfigSecure {
         return this.value as R;
     }
 
+    private _read(folder: string, name: string): boolean {
+        const fullPath = path.normalize(`${folder}/leyyo${name}.yaml`);
+        if (fs.existsSync(fullPath)) {
+            const file = fs.readFileSync(fullPath, 'utf8');
+            if (typeof file === 'string') {
+                const value = YAML.parse(file);
+                if (this.lyy.is.bareObject(value)) {
+                    this.value = value;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     read(): void {
         let myEnv = {} as ConfigBasic;
         if (this.lyy.is.object(process.env)) {
             myEnv = process.env as unknown as ConfigBasic;
         }
         const name = typeof myEnv.LEYYO_CONFIG === 'string' ? `.${myEnv.LEYYO_CONFIG}` : '';
-        const fullPath = path.normalize(`${myEnv.PWD}/leyyo${name}.yml`);
-        if (fs.existsSync(fullPath)) {
-            const file = fs.readFileSync('./file.yml', 'utf8');
-            if (typeof file === 'string') {
-                const value = YAML.parse(file);
-                if (this.lyy.is.bareObject(value)) {
-                    this.value = value;
-                }
-                else {
-                    console.warn(`Config is not an object: ${fullPath}`);
-                }
+        const parts = path.normalize(myEnv.PWD).split('/');
+        let count = 0;
+        while (count < 3) {
+            if (this._read(parts.join('/'), name)) {
+                break;
             }
-            else {
-                console.warn(`Config content is not valid: ${fullPath}`);
-            }
-        }
-        else {
-            console.warn(`Config could not be found: ${fullPath}`);
+            parts.pop();
+            count++;
         }
     }
-
+    toJSON(): unknown {
+        return this.value ?? {'_version': '0.0.0', warn: 'no-file'};
+    }
     // region secure
 
     get $secure(): CommonConfigSecure {

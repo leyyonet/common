@@ -1,9 +1,6 @@
-import {
-    CommonWrapperLike, CommonWrapperSecure,
-    WrapLike, WrapType
-} from "./index.types";
+import {CommonWrapperLike, CommonWrapperSecure, WrapLike, WrapType} from "./index.types";
 import {LeyyoLike} from "../leyyo";
-import {ClassLike, Func, Obj} from "../shared";
+import {ClassLike, Fnc, Obj} from "../shared";
 import {FQN} from "../internal";
 import {Wrap} from "./wrap";
 
@@ -27,7 +24,7 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
         });
     }
 
-    $create<V extends ClassLike|Func|string|Obj = Func>(type: WrapType, value: V): WrapLike<V> {
+    $create<V extends ClassLike|Fnc|string|Obj = Fnc>(type: WrapType, value: V): WrapLike<V> {
         return new Wrap<V>(type, value);
     }
 
@@ -36,7 +33,7 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
         return this.$create('class', clazz);
     }
 
-    ofFunction(fn: Func): WrapLike<Func> {
+    ofFunction(fn: Fnc): WrapLike<Fnc> {
         this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN}.CommonWrapper`, method: 'ofFunction'}));
         return this.$create('function', fn);
     }
@@ -72,7 +69,7 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
     asClass(wrap: any): ClassLike {
         return this.isClass(wrap) ? (wrap as WrapLike<ClassLike>).value : undefined;
     }
-    asFunction<F extends Func = Func>(wrap: any): F {
+    asFunction<F extends Fnc = Fnc>(wrap: any): F {
         return this.isFunction(wrap) ? (wrap as WrapLike).value as F : undefined;
     }
     asString(wrap: any): string {
@@ -88,7 +85,7 @@ export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
         }
         return undefined;
     }
-    value<V extends ClassLike|Func|string|Obj = Func>(wrap: WrapLike<V>): V {
+    value<V extends ClassLike|Fnc|string|Obj = Fnc>(wrap: WrapLike<V>): V {
         if (wrap && wrap instanceof Wrap) {
             return wrap.value;
         }

@@ -1,4 +1,4 @@
-import {Func, InitLike} from "../shared";
+import {Fnc, InitLike} from "../shared";
 import {FQN} from "../internal";
 
 import {CommonHookLike} from "../hook";
@@ -34,10 +34,12 @@ import {CommonNameLike} from "../name";
 import {CommonName} from "../name/common-name";
 import {CommonConfigLike} from "../config";
 import {CommonConfig} from "../config/common-config";
+import {CommonMixinLike} from "../mixin";
+import {CommonMixin} from "../mixin/common-mixin";
 
 export class Leyyo implements LeyyoLike, LeyyoSecure {
-    private _lazyCallbacks: Array<Func> = [];
-    private _earlyCallbacks: Array<Func> = [];
+    private _lazyCallbacks: Array<Fnc> = [];
+    private _earlyCallbacks: Array<Fnc> = [];
     readonly hook: CommonHookLike;
     readonly is: CommonIsLike;
     readonly assertion: CommonAssertionLike;
@@ -54,6 +56,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
     readonly deploy: CommonDeployLike;
     readonly name: CommonNameLike;
     readonly config: CommonConfigLike;
+    readonly mixin: CommonMixinLike;
 
     constructor() {
         this.system = new CommonSystem(this); // no
@@ -61,6 +64,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
         this.test = new CommonTest(this); // no
         this.repo = new CommonRepo(this); // none
         this.config = new CommonConfig(this); // is
+        this.mixin = new CommonMixin(this); // is
         this.dev = new CommonDeveloper(this); // test
         this.deploy = new CommonDeploy(this); // dev, test
         this.assertion = new CommonAssertion(this); // dev, test
@@ -79,6 +83,7 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
             this.test.$secure,
             this.repo.$secure,
             this.config.$secure,
+            this.mixin.$secure,
             this.dev.$secure,
             this.deploy.$secure,
             this.assertion.$secure,
@@ -117,12 +122,12 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
         return this;
     }
 
-    $earlyRun(fn: Func): LeyyoSecure {
+    $earlyRun(fn: Fnc): LeyyoSecure {
         this._earlyCallbacks.push(fn);
         return this;
     }
 
-    $lazyRun(fn: Func): LeyyoSecure {
+    $lazyRun(fn: Fnc): LeyyoSecure {
         this._lazyCallbacks.push(fn);
         return this;
     }

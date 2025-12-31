@@ -1,6 +1,6 @@
 import {CommonFqnHook, CommonFqnLike, CommonFqnSecure, FqnDefinedProvider, FqnStereoType} from "./index.types";
 import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {Func, Obj} from "../shared";
+import {Fnc, Obj} from "../shared";
 import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
@@ -92,7 +92,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         callbacks.push(callback);
         this.lyy.descriptor.save(target, this.pendingSign, callbacks);
     }
-    $runHooks(fn: Func | Obj, name: string): void {
+    $runHooks(fn: Fnc | Obj, name: string): void {
         const callbacks: Array<CommonFqnHook> = [];
         let exists = false;
         const desc = this.lyy.descriptor.get<Array<CommonFqnHook>>(fn, this.pendingSign);

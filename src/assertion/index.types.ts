@@ -1,45 +1,105 @@
-import {
-    ClassOrFuncOrName,
-    Dict, EnumLiteral, EnumMap,
-    Func,
-    InitLike,
-    KeyValue,
-    ShiftMain,
-    ShiftSecure,
-    TypeOf
-} from "../shared";
+import {ClassLike, EnumLiteral, EnumMap, InitLike, KeyValue, ShiftMain, ShiftSecure} from "../shared";
 import {DevOpt} from "../developer";
-import {Primitive, RealValue} from "../to";
 
-export type AssertionTupleItems = 'object'|'object?'|
-    'bareObject'|'bareObject?'|
-    'array'|'array?'|
-    'realValue'|'realValue?'|
-    'primitive'|'primitive?'|
-    'key'|'key?'|
-    'func'|'func?'|
-    'sym'|'sym?'|
-    'number'|'number?'|
-    'positiveNumber'|'positiveNumber?'|
-    'integer'|'integer?'|
-    'safeInteger'|'safeInteger?'|
-    'positiveInteger'|'positiveInteger?'|
-    'string'|'string?'|
-    'text'|'text?'|
-    'clazz'|'clazz?'|
-    'boolean'|'boolean?';
-export type AssertionTupleDuals = 'instanceOf'|'instanceOf?'|
-    'enum'|'enum?'|
-    'literal'|'literal?';
-export type AssertionTuple = Array<AssertionTupleItems | [AssertionTupleDuals, any]>;
+export type AssertionTupleItems =
+    'notEmpty' | keyof CommonAssertionSingular
+    | keyof KeyOpt1<CommonAssertionSingular>
+    | keyof KeyOpt2<CommonAssertionSingular>
+    | keyof KeyArray1<CommonAssertionSingular>
+    | keyof KeyArray2<CommonAssertionSingular>;
+export type AssertionTupleDuals =
+    'notEmpty' | keyof CommonAssertionDual
+    | keyof KeyOpt1<CommonAssertionDual>
+    | keyof KeyOpt2<CommonAssertionDual>
+    | keyof KeyArray1<CommonAssertionDual>
+    | keyof KeyArray2<CommonAssertionDual>;
+
+export type AssertionTupleValue = AssertionTupleItems | [AssertionTupleDuals, any];
+export type AssertionTuple = Array<AssertionTupleValue | ['or', Array<AssertionTupleValue>]>;
 export type AssertionTupleItemLambda = (value: any, opt: string | AssertionCallback | DevOpt) => any;
 export type AssertionTupleDualLambda = (value: any, setting: any, opt: string | AssertionCallback | DevOpt) => any;
+
 /**
  * Basic assertions to easy use
  * */
-export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> {
+export interface CommonAssertionLike extends CommonAssertionSingular, CommonAssertionDual, ShiftSecure<CommonAssertionSecure> {
 
-    // region singular
+    // region instanceOf
+    /**
+     * Optional usage of above
+     * @see #instanceOf
+     * */
+    instanceOfOptional<T>(value: any, clazz: ClassLike<T>, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #literal
+     * */
+    instanceOfArray<T>(value: any, clazz: ClassLike<T>, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion instanceOf
+
+    // region tuple
+    /**
+     * Optional usage of above
+     * @see #realValue
+     * */
+    tupleOptional(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #literal
+     * */
+    tupleArray(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion tuple
+
+    // region enum
+    /**
+     * Optional usage of above
+     * @see #enum
+     * */
+    enumOptional<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #enum
+     * */
+    enumArray<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion enum
+
+    // region or
+    /**
+     * Optional usage of above
+     * @see #orCase
+     * */
+    orCaseOptional(value: any, types: Array<AssertionTupleValue>, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #orCase
+     * */
+    orCaseArray(value: any, types: Array<AssertionTupleValue>, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion or
+
+    // region literal
+    /**
+     * Optional usage of above
+     * @see #literal
+     * */
+    literalOptional<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #literal
+     * */
+    literalArray<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion literal
+
+    // region general
     /**
      * Asserts value is not empty
      * @see CommonIsLike#empty
@@ -52,88 +112,342 @@ export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> 
      * - function: it should return {@link DevOpt}
      * - object: object:
      * */
-    notEmpty<T = any>(value: any, opt?: string | AssertionCallback | DevOpt): T;
+    notEmpty(value: any, opt?: string | AssertionCallback | DevOpt): void;
+    // endregion general
 
+    // region realValue
     /**
-     * Asserts value is a real value
-     * @see CommonIsLike#realValue
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    realValue(value: any, opt?: string | AssertionCallback | DevOpt): RealValue;
-
-    /**
-     * Optional usage of below
+     * Optional usage of above
      * @see #realValue
      * */
-    realValueOptional(value: any, opt?: string | AssertionCallback | DevOpt): RealValue;
+    realValueOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
-     * Asserts value is an object
-     * @see CommonIsLike#object
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
+     * Array usage of above
+     * @see #literal
      * */
-    object<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T;
+    realValueArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
+    // endregion realValue
+
+    // region object
     /**
-     * Optional usage of below
+     * Optional usage of above
      * @see #object
      * */
-    objectOptional<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T;
+    objectOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
-     * Asserts value is an object
-     * @see CommonIsLike#object
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
+     * Array usage of above
+     * @see #literal
      * */
-    bareObject<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T;
+    objectArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
+    // endregion object
+
+    // region bareObject
     /**
-     * Optional usage of below
+     * Optional usage of above
      * @see #bareObject
      * */
-    bareObjectOptional<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T;
+    bareObjectOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
-     * Asserts value is an array
-     * @see CommonIsLike#empty
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
+     * Array usage of above
+     * @see #literal
      * */
-    array<V = any>(value: any, opt?: string | AssertionCallback | DevOpt): Array<V>;
+    bareObjectArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion bareObject
+
+    // region anotherObject
+    /**
+     * Optional usage of above
+     * @see #bareObject
+     * */
+    anotherObjectOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
-     * Optional usage of below
+     * Array usage of above
+     * @see #literal
+     * */
+    anotherObjectArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion anotherObject
+
+    // region arrayLike
+    /**
+     * Optional usage of above
+     * @see #realValue
+     * */
+    arrayLikeOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #literal
+     * */
+    arrayLikeArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion arrayLike
+
+    // region array
+    /**
+     * Optional usage of above
      * @see #array
      * */
-    arrayOptional<V = any>(value: any, opt?: string | AssertionCallback | DevOpt): Array<V>;
+    arrayOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
 
+    /**
+     * Array usage of above
+     * @see #array
+     * */
+    arrayArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion array
+
+    // region primitive
+    /**
+     * Optional usage of above
+     * @see #primitive
+     * */
+    primitiveOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #primitive
+     * */
+    primitiveArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion primitive
+
+    // region key
+    /**
+     * Optional usage of above
+     * @see #key
+     * */
+    keyOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #key
+     * */
+    keyArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion key
+
+    // region function
+    /**
+     * Optional usage of above
+     * @see #func
+     * */
+    funcOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #func
+     * */
+    funcArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion function
+
+    // region symbol
+    /**
+     * Optional usage of above
+     * @see #sym
+     * */
+    symOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #sym
+     * */
+    symArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion symbol
+
+    // region number
+    /**
+     * Optional usage of above
+     * @see #number
+     * */
+    numberOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #number
+     * */
+    numberArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion number
+
+    // region positiveNumber
+    /**
+     * Optional usage of above
+     * @see #positiveNumber
+     * */
+    positiveNumberOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #positiveNumber
+     * */
+    positiveNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion positiveNumber
+
+    // region nonNegativeNumber
+    /**
+     * Optional usage of above
+     * @see #nonNegativeNumber
+     * */
+    nonNegativeNumberOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #nonNegativeNumber
+     * */
+    nonNegativeNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion nonNegativeNumber
+
+    // region integer
+    /**
+     * Optional usage of above
+     * @see #integer
+     * */
+    integerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #integer
+     * */
+    integerArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion integer
+
+    // region safeInteger
+    /**
+     * Optional usage of above
+     * @see #safeInteger
+     * */
+    safeIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #safeInteger
+     * */
+    safeIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion safeInteger
+
+    // region positiveInteger
+    /**
+     * Optional usage of above
+     * @see #positiveInteger
+     * */
+    positiveIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #positiveInteger
+     * */
+    positiveIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion positiveInteger
+
+    // region nonNegativeInteger
+    /**
+     * Optional usage of above
+     * @see #positiveInteger
+     * */
+    nonNegativeIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #positiveInteger
+     * */
+    nonNegativeIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion nonNegativeInteger
+
+    // region string
+    /**
+     * Optional usage of above
+     * @see #string
+     * */
+    stringOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #string
+     * */
+    stringArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion string
+
+    // region text
+    /**
+     * Optional usage of above
+     * @see #text
+     * */
+    textOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #text
+     * */
+    textArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion text
+
+    // region clazz
+    /**
+     * Optional usage of above
+     * @see #clazz
+     * */
+    clazzOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #clazz
+     * */
+    clazzArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion clazz
+
+    // region possibleFunc
+    /**
+     * Optional usage of above
+     * @see #clazz
+     * */
+    possibleFuncOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #clazz
+     * */
+    possibleFuncArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion possibleFunc
+
+    // region boolean
+    /**
+     * Optional usage of above
+     * @see #boolean
+     * */
+    booleanOptional(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Array usage of above
+     * @see #boolean
+     * */
+    booleanArray(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    // endregion boolean
+
+}
+
+export interface CommonAssertionDual {
     /**
      * Asserts value is instance of class
      *
@@ -146,13 +460,7 @@ export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> 
      * - function: it should return {@link DevOpt}
      * - object: object:
      * */
-    instanceOf<C>(value: any, clazz: C, opt?: string | AssertionCallback | DevOpt): TypeOf<C>;
-
-    /**
-     * Optional usage of below
-     * @see #instanceOf
-     * */
-    instanceOfOptional<C>(value: any, clazz: C, opt?: string | AssertionCallback | DevOpt): TypeOf<C>;
+    instanceOf<T>(value: any, clazz: ClassLike<T>, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
      * Asserts value is a tuple
@@ -166,376 +474,7 @@ export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> 
      * - function: it should return {@link DevOpt}
      * - object: object:
      * */
-    tuple<T>(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): T;
-
-    // endregion singular
-
-
-    // region multiple
-
-    /**
-     * Asserts value is a primitive
-     * @see CommonIsLike#primitive
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    primitive(value: any, opt?: string | AssertionCallback | DevOpt): Primitive;
-
-    /**
-     * Optional usage of below
-     * @see #primitive
-     * */
-    primitiveOptional(value: any, opt?: string | AssertionCallback | DevOpt): Primitive;
-
-    /**
-     * Array usage of below
-     * @see #primitive
-     * */
-    primitiveArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<Primitive>;
-
-    /**
-     * Asserts value is a key
-     * @see CommonIsLike#key
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    key(value: any, opt?: string | AssertionCallback | DevOpt): KeyValue;
-
-    /**
-     * Optional usage of below
-     * @see #key
-     * */
-    keyOptional(value: any, opt?: string | AssertionCallback | DevOpt): KeyValue;
-
-    /**
-     * Array usage of below
-     * @see #key
-     * */
-    keyArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<KeyValue>;
-
-    /**
-     * Asserts value is a function
-     * @see CommonIsLike#func
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    func<F extends Func = Func>(value: any, opt?: string | AssertionCallback | DevOpt): F;
-
-    /**
-     * Optional usage of below
-     * @see #func
-     * */
-    funcOptional<F extends Func = Func>(value: any, opt?: string | AssertionCallback | DevOpt): F;
-
-    /**
-     * Array usage of below
-     * @see #func
-     * */
-    funcArray<F extends Func = Func>(value: any, opt?: string | AssertionCallback | DevOpt): Array<F>;
-
-    /**
-     * Asserts value is a symbol
-     * @see CommonIsLike#func
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    sym(value: any, opt?: string | AssertionCallback | DevOpt): symbol;
-
-    /**
-     * Optional usage of below
-     * @see #sym
-     * */
-    symOptional(value: any, opt?: string | AssertionCallback | DevOpt): symbol;
-
-    /**
-     * Array usage of below
-     * @see #sym
-     * */
-    symArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<symbol>;
-
-    /**
-     * Asserts value is a number
-     * @see CommonIsLike#number
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    number(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Optional usage of below
-     * @see #number
-     * */
-    numberOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Array usage of below
-     * @see #number
-     * */
-    numberArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
-
-    /**
-     * Asserts value is a positive number
-     * @see CommonIsLike#number
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    positiveNumber(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Optional usage of below
-     * @see #positiveNumber
-     * */
-    positiveNumberOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Array usage of below
-     * @see #positiveNumber
-     * */
-    positiveNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
-
-    /**
-     * Asserts value is a non-negative number
-     * @see CommonIsLike#number
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    nonNegative(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Optional usage of below
-     * @see #nonNegative
-     * */
-    nonNegativeOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Array usage of below
-     * @see #nonNegative
-     * */
-    nonNegativeArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
-
-    /**
-     * Asserts value is an integer
-     * @see CommonIsLike#integer
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    integer(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Optional usage of below
-     * @see #integer
-     * */
-    integerOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Array usage of below
-     * @see #integer
-     * */
-    integerArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
-
-    /**
-     * Asserts value is a safe integer
-     * @see CommonIsLike#safeInteger
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    safeInteger(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Optional usage of below
-     * @see #safeInteger
-     * */
-    safeIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Array usage of below
-     * @see #safeInteger
-     * */
-    safeIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
-
-    /**
-     * Asserts value is a positive integer
-     * @see CommonIsLike#integer
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    positiveInteger(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Optional usage of below
-     * @see #positiveInteger
-     * */
-    positiveIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): number;
-
-    /**
-     * Array usage of below
-     * @see #positiveInteger
-     * */
-    positiveIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number>;
-
-    /**
-     * Asserts value is a string
-     * @see CommonIsLike#string
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    string(value: any, opt?: string | AssertionCallback | DevOpt): string;
-
-    /**
-     * Optional usage of below
-     * @see #string
-     * */
-    stringOptional(value: any, opt?: string | AssertionCallback | DevOpt): string;
-
-    /**
-     * Array usage of below
-     * @see #string
-     * */
-    stringArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<string>;
-
-    /**
-     * Asserts value is a text
-     * @see CommonIsLike#text
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    text(value: any, opt?: string | AssertionCallback | DevOpt): string;
-
-    /**
-     * Optional usage of below
-     * @see #text
-     * */
-    textOptional(value: any, opt?: string | AssertionCallback | DevOpt): string;
-
-    /**
-     * Array usage of below
-     * @see #text
-     * */
-    textArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<string>;
-
-    /**
-     * Asserts value is a possible class
-     * @see CommonIsLike#clazz
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    clazz(value: any, opt?: string | AssertionCallback | DevOpt): ClassOrFuncOrName;
-
-    /**
-     * Optional usage of below
-     * @see #clazz
-     * */
-    clazzOptional(value: any, opt?: string | AssertionCallback | DevOpt): ClassOrFuncOrName;
-
-    /**
-     * Array usage of below
-     * @see #clazz
-     * */
-    clazzArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<ClassOrFuncOrName>;
-
-    /**
-     * Asserts value is a boolean
-     * @see CommonIsLike#boolean
-     *
-     * @param {any} value
-     * @param {(string | AssertionCallback | DevOpt)?} opt
-     *
-     * Option cases
-     * - string: issue
-     * - function: it should return {@link DevOpt}
-     * - object: object:
-     * */
-    boolean(value: any, opt?: string | AssertionCallback | DevOpt): boolean;
-
-    /**
-     * Optional usage of below
-     * @see #boolean
-     * */
-    booleanOptional(value: any, opt?: string | AssertionCallback | DevOpt): boolean;
-
-    /**
-     * Array usage of below
-     * @see #boolean
-     * */
-    booleanArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<boolean>;
+    tuple(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
      * Asserts value is a boolean
@@ -550,19 +489,7 @@ export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> 
      * - function: it should return {@link DevOpt}
      * - object: object:
      * */
-    enum<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): E;
-
-    /**
-     * Optional usage of below
-     * @see #enum
-     * */
-    enumOptional<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): E;
-
-    /**
-     * Array usage of below
-     * @see #enum
-     * */
-    enumArray<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): Array<E>;
+    enum<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): void;
 
     /**
      * Asserts value is a boolean
@@ -577,27 +504,338 @@ export interface CommonAssertionLike extends ShiftSecure<CommonAssertionSecure> 
      * - function: it should return {@link DevOpt}
      * - object: object:
      * */
-    literal<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): E;
-
-    /**
-     * Optional usage of below
-     * @see #literal
-     * */
-    literalOptional<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): E;
-
-    /**
-     * Array usage of below
-     * @see #literal
-     * */
-    literalArray<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): Array<E>;
-
-    // endregion multiple
-
+    literal<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void;
 }
 
+export interface CommonAssertionSingular {
+    /**
+     * Asserts value is a real value
+     * @see CommonIsLike#realValue
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    realValue(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is an object
+     * @see CommonIsLike#object
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    object(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is an object
+     * @see CommonIsLike#object
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    bareObject(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is another object [constructor !== Object] or not?
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     * */
+    anotherObject(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is array like (array, Set or List) or not?
+     * @see CommonIsLike#arrayLike
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     * */
+    arrayLike(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is an array
+     * @see CommonIsLike#empty
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    array(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a primitive
+     * @see CommonIsLike#primitive
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    primitive(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a key
+     * @see CommonIsLike#key
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    key(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a function
+     * @see CommonIsLike#func
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    func(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a symbol
+     * @see CommonIsLike#func
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    sym(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a number
+     * @see CommonIsLike#number
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    number(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a positive number
+     * @see CommonIsLike#number
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    positiveNumber(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a non-negative number
+     * @see CommonIsLike#number
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    nonNegativeNumber(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is an integer
+     * @see CommonIsLike#integer
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    integer(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a safe integer
+     * @see CommonIsLike#safeInteger
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    safeInteger(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a positive integer
+     * @see CommonIsLike#integer
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    positiveInteger(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a positive integer
+     * @see CommonIsLike#integer
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    nonNegativeInteger(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a string
+     * @see CommonIsLike#string
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    string(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a text
+     * @see CommonIsLike#text
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    text(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a class
+     * @see CommonIsLike#clazz
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    clazz(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Checks value is possible func?
+     * Possible class means: object as instance, string as function name, or function
+     * @see CommonIsLike#possibleFunc
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    possibleFunc(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is a boolean
+     * @see CommonIsLike#boolean
+     *
+     * @param {any} value
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    boolean(value: any, opt?: string | AssertionCallback | DevOpt): void;
+
+    /**
+     * Asserts value is any of them
+     *
+     * @param {any} value
+     * @param {Array<AssertionTupleValue>} types
+     * @param {(string | AssertionCallback | DevOpt)?} opt
+     *
+     * Option cases
+     * - string: issue
+     * - function: it should return {@link DevOpt}
+     * - object: object:
+     * */
+    orCase(value: any, types: Array<AssertionTupleValue>, opt?: string | AssertionCallback | DevOpt): void;
+}
+
+type KeyOpt1<T> = {
+    [K in keyof T as `${string & K}?`]: string;
+};
+type KeyOpt2<T> = {
+    [K in keyof T as `${string & K}Optional`]: string;
+};
+type KeyArray1<T> = {
+    [K in keyof T as `${string & K}[]`]: string;
+};
+type KeyArray2<T> = {
+    [K in keyof T as `${string & K}Array`]: string;
+};
 /**
  * Secure assertion methods
  * */
 export type CommonAssertionSecure = ShiftMain<CommonAssertionLike> & InitLike;
 
-export type AssertionCallback = () => string | DevOpt | [string, string|number, DevOpt?];
+export type AssertionCallback = () => string | DevOpt | [string, string | number, DevOpt?];

@@ -1,15 +1,15 @@
 import {
     AssertionCallback,
     AssertionTuple,
-    AssertionTupleDualLambda, AssertionTupleItemLambda,
+    AssertionTupleDuals,
+    AssertionTupleValue,
     CommonAssertionLike,
     CommonAssertionSecure
 } from "./index.types";
 import {LeyyoLike} from "../leyyo";
 import {DevOpt} from "../developer";
 import {FQN} from "../internal";
-import {Primitive, PrimitiveItems, RealValue, RealValueItems} from "../to";
-import {ClassLike, ClassOrFuncOrName, Dict, EnumLiteral, EnumMap, Fnc, Func, KeyValue, Obj, TypeOf} from "../shared";
+import {ClassLike, EnumLiteral, EnumMap, Fnc, KeyValue} from "../shared";
 
 // noinspection JSUnusedGlobalSymbols
 /** @inheritDoc */
@@ -26,12 +26,13 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
     private _run(opt: string | AssertionCallback | DevOpt): DevOpt {
         if (typeof opt === 'string') {
             return {issue: opt};
-        } else if (typeof opt === 'function') {
+        }
+        else if (typeof opt === 'function') {
             try {
                 const values = opt();
                 if (Array.isArray(values)) {
                     let [pck, testCase, opt2] = values;
-                    if (!opt2) {
+                    if ( !opt2) {
                         opt2 = {} as DevOpt;
                     }
                     opt2['message'] = this.lyy.test.code(pck, testCase);
@@ -50,15 +51,153 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
                     [`e-${now}-name`]: e.name,
                 };
             }
-        } else {
+        }
+        else {
             return (opt?.contructor === Object) ? opt as DevOpt : {};
         }
     }
 
+    private _optional(value: unknown, fn: Fnc): void {
+        if (this._EMPTY.includes(value)) {
+            return;
+        }
+        fn();
+    }
+
+    private _array(value: any, opt: string | AssertionCallback | DevOpt, issue: string, fn: Fnc): void {
+        if ( !Array.isArray(value)) {
+            throw this.lyy.dev.invalidError(this._run(opt), {issue, reason: 'type', type: typeof value});
+        }
+        const arr = value as Array<unknown>;
+        if (arr.length < 1) {
+            throw this.lyy.dev.invalidError(this._run(opt), {issue, reason: 'size', size: 0});
+        }
+        const wrongIndexes = arr.filter(item => !fn(item)).map((_v, index) => index);
+        if (wrongIndexes.length > 0) {
+            throw this.lyy.dev.invalidError(this._run(opt), {issue, reason: 'items', wrongIndexes});
+        }
+    }
+
+    private _is(value: any, opt: string | AssertionCallback | DevOpt, issue: string, fn: Fnc, extra: DevOpt): void {
+        if ( !fn(value)) {
+            throw this.lyy.dev.invalidError(this._run(opt), {issue, value, type: typeof value, ...extra});
+        }
+    }
+
+    private _replaceMethod(method: string): string {
+        if (method.endsWith('?')) {
+            method = method.slice(0, -1) + 'Optional';
+        }
+        else if (method.endsWith('[]')) {
+            method = method.slice(0, -2) + 'Array';
+        }
+        return method;
+    }
+    private _execLambda(value: unknown, method: string, opt: string | AssertionCallback | DevOpt, isDual: boolean, throwable: boolean, another?: unknown): string {
+        if (typeof method !== 'string') {
+            if (throwable) {
+                throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.method.name', value: method})
+            }
+            return 'invalid.method.name';
+        }
+        method = this._replaceMethod(method);
+        const fn = this[method] as Fnc;
+        if (typeof fn !== 'function') {
+            if (throwable) {
+                throw this.lyy.dev.invalidError(this._run(opt), {issue: 'unknown.assertion.method', value: method})
+            }
+            return 'unknown.assertion.method';
+        }
+        try {
+            if (isDual) {
+                fn(value, another, opt);
+            }
+            else {
+                fn(value, opt);
+            }
+        } catch (e) {
+            if (throwable) {
+                throw e;
+            }
+            return e.message;
+        }
+        return undefined;
+    }
+
+    private _isTupleReason(value: any, setting: AssertionTuple): string {
+        if ( !Array.isArray(setting)) {
+            return 'invalid.tuple.setting';
+        }
+        if ( !Array.isArray(value)) {
+            return 'tuple.should.be.array';
+        }
+        const arr = value as Array<any>;
+        if (arr.length < 1) {
+            return 'tuple.empty.array';
+        }
+        if (arr.length !== setting.length) {
+            return 'tuple.size.conflict';
+        }
+        let index = -1;
+        for (const set of setting) {
+            index++;
+            let method: string;
+            let another: any
+            let isDual: boolean;
+            if (Array.isArray(set)) {
+                if (set[0] === 'or') {
+                    const orCase = set as ['or', Array<AssertionTupleValue>];
+                    if (!this._isOrCase(arr[index], orCase[1])) {
+                        return 'invalid-or-case';
+                    }
+                    break;
+                }
+                const dualCase = set as [AssertionTupleDuals, any];
+                method = dualCase[0];
+                another = dualCase[1];
+                isDual = true;
+                if (another === undefined) {
+                    return 'invalid.tuple.setting';
+                }
+            }
+            else if (typeof set === 'string') {
+                method = set as string;
+            }
+            const issue = this._execLambda(arr[index], method, {}, isDual, false, another);
+            if (issue) {
+                return issue;
+            }
+        }
+        return undefined;
+    }
+
+    private _isTuple(value: any, setting: AssertionTuple): boolean {
+        return !this._isTupleReason(value, setting);
+    }
+    private _isOrCase(value: any, types: Array<AssertionTupleValue>): boolean {
+        for (const type of types) {
+            let method: string;
+            let another: any;
+            let isDual: boolean;
+            if (typeof type === 'string') {
+                method = type;
+            }
+            else if (Array.isArray(type) && type.length === 2) {
+                method = type[0];
+                another = type[1];
+                isDual = true;
+            }
+            const issue = this._execLambda(value, method, {}, isDual, false, another);
+            if (!issue) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // endregion internal
 
-    // region singular
-
+    // region general
     /** @inheritDoc */
     notEmpty<T = any>(value: any, opt?: string | AssertionCallback | DevOpt): T {
         if (this._EMPTY.includes(value)) {
@@ -67,551 +206,559 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
         return value as T;
     }
 
+    // endregion general
 
-    /** @inheritDoc */
-    realValue(value: any, opt?: string | AssertionCallback | DevOpt): RealValue {
-        if (!RealValueItems.includes(typeof value as RealValue)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.real.value', value, type: typeof value});
+    // region or
+    orCase(value: any, types: Array<AssertionTupleValue>, opt?: string | AssertionCallback | DevOpt) {
+        let firstError: Error;
+        for (const type of types) {
+            let method: string;
+            let another: any
+            let isDual: boolean;
+            let errorOccurred: boolean;
+            if (Array.isArray(type)) {
+                const dualCase = type as [AssertionTupleDuals, any];
+                method = dualCase[0];
+                another = dualCase[1];
+                isDual = true;
+                if (another === undefined) {
+                    if (!firstError) {
+                        firstError = this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.tuple.setting', value: method});
+                    }
+                    errorOccurred = true;
+                }
+            }
+            else if (typeof type === 'string') {
+                method = type as string;
+            }
+            if (!errorOccurred) {
+                const issue = this._execLambda(value, method, opt, isDual, false, another);
+                if (!issue) {
+                    return;
+                }
+                if (!firstError) {
+                    firstError = this.lyy.dev.invalidError(this._run(opt), {issue, value: method});
+                }
+            }
         }
-        return value as RealValue;
+        if (firstError) {
+            throw firstError;
+        }
+    }
+    /** @inheritDoc */
+    orCaseOptional(value: any, types: Array<AssertionTupleValue>, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.orCase(value, types, opt));
     }
 
     /** @inheritDoc */
-    realValueOptional(value: any, opt?: string | AssertionCallback | DevOpt): RealValue {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.realValue(value, opt);
+    orCaseArray(value: any, types: Array<AssertionTupleValue>, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.orCase.array', (v) => this._isOrCase(v, types));
+    }
+    // endregion or
+
+    // region realValue
+    /** @inheritDoc */
+    realValue(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.realValue', v => this.lyy.is.realValue(v), {});
     }
 
     /** @inheritDoc */
-    object<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T {
-        if (!value || typeof value !== 'object' && !Array.isArray(value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.object', value, type: typeof value});
-        }
-        return value as T;
+    realValueOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.realValue(value, opt));
     }
 
     /** @inheritDoc */
-    objectOptional<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.object(value, opt);
+    realValueArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.realValue.array', (v) => this.lyy.is.realValue(v));
+    }
+
+    // endregion realValue
+
+
+    // region object
+    /** @inheritDoc */
+    object(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.object', v => this.lyy.is.object(v), {});
     }
 
     /** @inheritDoc */
-    bareObject<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T {
-        if (!value || typeof value !== 'object' && value.constructor !== Object) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.bare.object', value, type: typeof value});
-        }
-        return value as T;
+    objectOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.object(value, opt));
+    }
+
+    objectArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.object.array', (v) => this.lyy.is.object(v));
+    }
+
+    // endregion object
+
+
+    // region bareObject
+    /** @inheritDoc */
+    bareObject(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.bareObject', v => this.lyy.is.bareObject(v), {});
     }
 
     /** @inheritDoc */
-    bareObjectOptional<T = Dict>(value: any, opt?: string | AssertionCallback | DevOpt): T {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.bareObject(value, opt);
+    bareObjectOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.bareObject(value, opt));
+    }
+
+    bareObjectArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.bareObject.array', (v) => this.lyy.is.bareObject(v));
+    }
+
+    // endregion bareObject
+
+    // region anotherObject
+    /** @inheritDoc */
+    anotherObject(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.anotherObject', v => this.lyy.is.anotherObject(v), {});
     }
 
     /** @inheritDoc */
-    array<V = any>(value: any, opt?: string | AssertionCallback | DevOpt): Array<V> {
-        if (!Array.isArray(value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.array', value, type: typeof value});
-        }
-        return value as Array<V>;
+    anotherObjectOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.anotherObject(value, opt));
     }
 
     /** @inheritDoc */
-    arrayOptional<V = any>(value: any, opt?: string | AssertionCallback | DevOpt): Array<V> {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.array(value, opt);
+    anotherObjectArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.anotherObject.array', (v) => this.lyy.is.anotherObject(v));
+    }
+
+    // endregion anotherObject
+
+    // region array
+    /** @inheritDoc */
+    array(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.array', v => Array.isArray(v) && v.length > 0, {});
     }
 
     /** @inheritDoc */
-    instanceOf<C>(value: any, clazz: C, opt?: string | AssertionCallback | DevOpt): TypeOf<C> {
-        if (typeof clazz !== 'function') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.instanceof', value: clazz, type: typeof clazz});
-        }
-        if (!(value instanceof (clazz as ClassLike))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'not.instance.of', value, type: typeof value, clazz: (clazz as Fnc)?.name});
-        }
-        return value as TypeOf<C>;
+    arrayOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.array(value, opt));
     }
 
     /** @inheritDoc */
-    instanceOfOptional<C>(value: any, clazz: C, opt?: string | AssertionCallback | DevOpt): TypeOf<C> {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.instanceOf(value, clazz, opt);
+    arrayArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.array.array', (v) => Array.isArray(v));
+    }
+    // endregion array
+
+    // region instanceOf
+    /** @inheritDoc */
+    instanceOf<T>(value: any, clazz: ClassLike<T>, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.instanceOf', v => this.lyy.is.instanceOf(v, clazz), {clazz});
     }
 
     /** @inheritDoc */
-    tuple<T>(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): T {
-        if (!Array.isArray(setting)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.tuple.setting', value: setting, type: typeof setting});
+    instanceOfOptional<T>(value: any, clazz: ClassLike<T>, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.instanceOf(value, clazz, opt));
+    }
+
+    /** @inheritDoc */
+    instanceOfArray<T>(value: any, clazz: ClassLike<T>, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.instanceOf.array', (v) => this.lyy.is.instanceOf(v, clazz));
+    }
+    // endregion instanceOf
+
+    // region tuple
+    /** @inheritDoc */
+    tuple(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): void {
+        if ( !Array.isArray(setting)) {
+            throw this.lyy.dev.invalidError(this._run(opt), {
+                issue: 'invalid.tuple.setting',
+                value: setting,
+                type: typeof setting
+            });
         }
-        if (!Array.isArray(value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'tuple.should.be.array', value: setting, type: typeof setting});
+        if ( !Array.isArray(value)) {
+            throw this.lyy.dev.invalidError(this._run(opt), {
+                issue: 'tuple.should.be.array',
+                value: setting,
+                type: typeof setting
+            });
         }
         const arr = value as Array<any>;
         if (arr.length !== setting.length) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'tuple.size.conflict', value: arr.length, setting: setting.length});
+            throw this.lyy.dev.invalidError(this._run(opt), {
+                issue: 'tuple.size.conflict',
+                value: arr.length,
+                setting: setting.length
+            });
         }
         setting.forEach((set, index) => {
+            let method: string;
+            let another: any;
+            let isDual: boolean;
             if (Array.isArray(set)) {
-                let method = set[0] as string;
-                const another = set[1];
-                if (set.length === 2 || typeof method !== 'string' || another === undefined) {
-                    throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.tuple.setting', index, value: setting, type: typeof setting});
+                if (set[0] === 'or') {
+                    const orCase = set as ['or', Array<AssertionTupleValue>];
+                    this.orCase(arr[index], orCase[1], opt);
+                    return;
                 }
-                if (method.includes('?')) {
-                    method = method.replace('?', 'Optional');
+                const dualCase = set as [AssertionTupleDuals, any];
+                method = dualCase[0];
+                another = dualCase[1];
+                isDual = true;
+                if (another === undefined) {
+                    throw this.lyy.dev.invalidError(this._run(opt), {
+                        issue: 'invalid.tuple.setting',
+                        index,
+                        value: setting,
+                        type: typeof setting
+                    });
                 }
-                const lambda = this[method] as AssertionTupleDualLambda;
-                if (typeof lambda !== 'function') {
-                    throw this.lyy.dev.invalidError(this._run(opt), {issue: 'unknown.assertion.method', value: method});
-                }
-                lambda(arr[index], another, opt);
             }
             else if (typeof set === 'string') {
-                let method = set as string;
-                if (method.includes('?')) {
-                    method = method.replace('?', 'Optional');
-                }
-                const lambda = this[method] as AssertionTupleItemLambda;
-                if (typeof lambda !== 'function') {
-                    throw this.lyy.dev.invalidError(this._run(opt), {issue: 'unknown.assertion.method', value: method});
-                }
-                lambda(arr[index], opt);
+                method = set as string;
             }
+            this._execLambda(arr[index], method, opt, isDual, true, another);
         });
-        return value as T;
-    }
-
-    // endregion singular
-
-    // region multiple
-
-    /** @inheritDoc */
-    primitive(value: any, opt?: string | AssertionCallback | DevOpt): Primitive {
-        if (!PrimitiveItems.includes(typeof value as Primitive)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.primitive', value, type: typeof value});
-        }
-        return value as Primitive;
     }
 
     /** @inheritDoc */
-    primitiveOptional(value: any, opt?: string | AssertionCallback | DevOpt): Primitive {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.primitive(value, opt);
+    tupleOptional(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.tuple(value, setting, opt));
     }
 
     /** @inheritDoc */
-    primitiveArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<Primitive> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => !PrimitiveItems.includes(typeof item as Primitive))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.primitive.array', value, type: typeof value});
-        }
-        return value as Array<Primitive>;
+    tupleArray(value: any, setting: AssertionTuple, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.tuple.array', (v) => this._isTuple(v, setting));
+    }
+    // endregion tuple
+
+
+    // region primitive
+    /** @inheritDoc */
+    primitive(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.primitive', v => this.lyy.is.primitive(v), {});
     }
 
     /** @inheritDoc */
-    key(value: any, opt?: string | AssertionCallback | DevOpt): KeyValue {
-        if (!['string', 'number'].includes(typeof value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.key', value, type: typeof value});
-        }
-        return value as KeyValue;
+    primitiveOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.primitive(value, opt));
     }
 
     /** @inheritDoc */
-    keyOptional(value: any, opt?: string | AssertionCallback | DevOpt): KeyValue {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.key(value, opt);
+    primitiveArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.primitive.array', (v) => this.lyy.is.primitive(v));
+    }
+    // endregion primitive
+
+    // region key
+    /** @inheritDoc */
+    key(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.key', v => this.lyy.is.key(v), {});
     }
 
     /** @inheritDoc */
-    keyArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<KeyValue> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => !['string', 'number'].includes(typeof item))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.key.array', value, type: typeof value});
-        }
-        return value as Array<KeyValue>;
+    keyOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.key(value, opt));
     }
 
     /** @inheritDoc */
-    func<F extends Func = Func>(value: any, opt?: string | AssertionCallback | DevOpt): F {
-        if (typeof value !== 'function') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.function', value, type: typeof value});
-        }
-        return value as F;
+    keyArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.key.array', (v) => this.lyy.is.key(v));
+    }
+    // endregion key
+
+
+    // region arrayLike
+    /** @inheritDoc */
+    arrayLike(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.arrayLike', v => this.lyy.is.arrayLike(v), {});
     }
 
     /** @inheritDoc */
-    funcOptional<F extends Func = Func>(value: any, opt?: string | AssertionCallback | DevOpt): F {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.func(value, opt);
+    arrayLikeOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.arrayLike(value, opt));
     }
 
     /** @inheritDoc */
-    funcArray<F extends Func = Func>(value: any, opt?: string | AssertionCallback | DevOpt): Array<F> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'function')) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.function.array', value, type: typeof value});
-        }
-        return value as Array<F>;
+    arrayLikeArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.arrayLike.array', (v) => this.lyy.is.arrayLike(v));
+    }
+    // endregion arrayLike
+
+
+    // region function
+    /** @inheritDoc */
+    func(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.function', v => this.lyy.is.func(v), {});
     }
 
     /** @inheritDoc */
-    sym(value: any, opt?: string | AssertionCallback | DevOpt): symbol {
-        if (typeof value !== 'symbol') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.symbol', value, type: typeof value});
-        }
-        return value as symbol;
+    funcOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.func(value, opt));
     }
 
     /** @inheritDoc */
-    symOptional(value: any, opt?: string | AssertionCallback | DevOpt): symbol {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.sym(value, opt);
+    funcArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.function.array', (v) => this.lyy.is.func(v));
+    }
+    // endregion function
+
+    // region symbol
+    /** @inheritDoc */
+    sym(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.symbol', v => this.lyy.is.sym(v), {});
     }
 
     /** @inheritDoc */
-    symArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<symbol> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'symbol')) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.symbol.array', value, type: typeof value});
-        }
-        return value as Array<symbol>;
+    symOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.sym(value, opt));
     }
 
     /** @inheritDoc */
-    number(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (typeof value !== 'number') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.number', value, type: typeof value});
-        }
-        return value as number;
+    symArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.symbol.array', (v) => this.lyy.is.sym(v));
+    }
+    // endregion symbol
+
+
+    // region number
+    /** @inheritDoc */
+    number(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.number', v => this.lyy.is.number(v), {});
     }
 
     /** @inheritDoc */
-    numberOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.number(value, opt);
+    numberOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.number(value, opt));
     }
 
     /** @inheritDoc */
-    numberArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'number')) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.number.array', value, type: typeof value});
-        }
-        return value as Array<number>;
+    numberArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.number.array', (v) => this.lyy.is.number(v));
+    }
+    // endregion number
+
+    // region positiveNumber
+    /** @inheritDoc */
+    positiveNumber(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.positiveNumber', v => this.lyy.is.positiveNumber(v), {});
     }
 
     /** @inheritDoc */
-    positiveNumber(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (typeof value !== 'number' || (value <= 0)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.positive.positive', value, type: typeof value});
-        }
-        return value as number;
+    positiveNumberOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.positiveNumber(value, opt));
     }
 
     /** @inheritDoc */
-    positiveNumberOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.positiveNumber(value, opt);
+    positiveNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.positiveNumber.array', (v) => this.lyy.is.positiveNumber(v));
+    }
+    // endregion positiveNumber
+
+
+    // region nonNegativeNumber
+    /** @inheritDoc */
+    nonNegativeNumber(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.nonNegativeNumber', v => this.lyy.is.nonNegativeNumber(v), {});
     }
 
     /** @inheritDoc */
-    positiveNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'number' || (item <= 0))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.positive.number.array', value, type: typeof value});
-        }
-        return value as Array<number>;
+    nonNegativeNumberOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.nonNegativeNumber(value, opt));
     }
 
     /** @inheritDoc */
-    nonNegative(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (typeof value !== 'number' || (value < 0)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.non-negative.number', value, type: typeof value});
-        }
-        return value as number;
+    nonNegativeNumberArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.nonNegativeNumber.array', (v) => this.lyy.is.nonNegativeNumber(v));
+    }
+    // endregion nonNegativeNumber
+
+
+    // region integer
+    /** @inheritDoc */
+    integer(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.integer', v => this.lyy.is.integer(v), {});
     }
 
     /** @inheritDoc */
-    nonNegativeOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.nonNegative(value, opt);
+    integerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.integer(value, opt));
     }
 
     /** @inheritDoc */
-    nonNegativeArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'number' || (item < 0))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.non-negative.number.array', value, type: typeof value});
-        }
-        return value as Array<number>;
+    integerArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.integer.array', (v) => this.lyy.is.integer(v));
+    }
+    // endregion integer
+
+
+    // region safeInteger
+    /** @inheritDoc */
+    safeInteger(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.safeInteger', v => this.lyy.is.safeInteger(v), {});
     }
 
     /** @inheritDoc */
-    integer(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (!Number.isInteger(value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.integer', value, type: typeof value});
-        }
-        return value as number;
+    safeIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.safeInteger(value, opt));
     }
 
     /** @inheritDoc */
-    integerArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => !Number.isInteger(item))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.integer.array', value, type: typeof value});
-        }
-        return value as Array<number>;
+    safeIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.safeInteger.array', (v) => this.lyy.is.safeInteger(v));
+    }
+    // endregion safeInteger
+
+
+    // region positiveInteger
+    /** @inheritDoc */
+    positiveInteger(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.positiveInteger', v => this.lyy.is.positiveInteger(v), {});
     }
 
     /** @inheritDoc */
-    integerOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.integer(value, opt);
+    positiveIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.positiveInteger(value, opt));
     }
 
     /** @inheritDoc */
-    safeInteger(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (!Number.isSafeInteger(value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.safe.integer', value, type: typeof value});
-        }
-        return value as number;
+    positiveIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.positiveInteger.array', (v) => this.lyy.is.positiveInteger(v));
+    }
+    // endregion positiveInteger
+
+
+    // region nonNegativeInteger
+    nonNegativeInteger(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.nonNegativeInteger', v => this.lyy.is.nonNegativeInteger(v), {});
+    }
+
+    nonNegativeIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.nonNegativeInteger(value, opt));
+    }
+
+    nonNegativeIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.nonNegativeInteger.array', (v) => this.lyy.is.nonNegativeInteger(v));
+    }
+    // endregion nonNegativeInteger
+
+    // region string
+    /** @inheritDoc */
+    string(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.string', v => this.lyy.is.string(v), {});
     }
 
     /** @inheritDoc */
-    safeIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.safeInteger(value, opt);
+    stringOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.string(value, opt));
     }
 
     /** @inheritDoc */
-    safeIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => !Number.isSafeInteger(item))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.safe.integer.array', value, type: typeof value});
-        }
-        return value as Array<number>;
+    stringArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.string.array', (v) => this.lyy.is.string(v));
+    }
+    // endregion string
+
+
+    // region text
+    /** @inheritDoc */
+    text(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.text', v => this.lyy.is.text(v), {});
     }
 
     /** @inheritDoc */
-    positiveInteger(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (!Number.isInteger(value) || ((value as number) <= 0)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.positive.integer', value, type: typeof value});
-        }
-        return value as number;
+    textOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.text(value, opt));
     }
 
     /** @inheritDoc */
-    positiveIntegerOptional(value: any, opt?: string | AssertionCallback | DevOpt): number {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.positiveNumber(value, opt);
+    textArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.text.array', (v) => this.lyy.is.text(v));
+    }
+    // endregion text
+
+    // region clazz
+    /** @inheritDoc */
+    clazz(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.class', v => this.lyy.is.clazz(v), {});
     }
 
     /** @inheritDoc */
-    positiveIntegerArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<number> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => !Number.isSafeInteger(item) || ((item as number) <= 0))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.positive.integer.array', value, type: typeof value});
-        }
-        return value as Array<number>;
+    clazzOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.clazz(value, opt));
     }
 
     /** @inheritDoc */
-    string(value: any, opt?: string | AssertionCallback | DevOpt): string {
-        if (typeof value !== 'string') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.string', value, type: typeof value});
-        }
-        return value as string;
+    clazzArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.clazz.array', (v) => this.lyy.is.clazz(v));
+    }
+    // endregion clazz
+
+    // region possibleFunc
+    /** @inheritDoc */
+    possibleFunc(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.possibleFunc', v => this.lyy.is.possibleFunc(v), {});
     }
 
     /** @inheritDoc */
-    stringOptional(value: any, opt?: string | AssertionCallback | DevOpt): string {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.string(value, opt);
+    possibleFuncOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.possibleFunc(value, opt));
     }
 
     /** @inheritDoc */
-    stringArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<string> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'string')) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.string.array', value, type: typeof value});
-        }
-        return value as Array<string>;
+    possibleFuncArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.possibleFunc.array', (v) => this.lyy.is.possibleFunc(v));
+    }
+    // endregion possibleFunc
+
+
+    // region boolean
+    /** @inheritDoc */
+    boolean(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.boolean', v => this.lyy.is.boolean(v), {});
     }
 
     /** @inheritDoc */
-    text(value: any, opt?: string | AssertionCallback | DevOpt): string {
-        if (typeof value !== 'string' || value.trim() !== value || value === '') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.text', value, type: typeof value});
-        }
-        return value as string;
+    booleanOptional(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.boolean(value, opt));
     }
 
     /** @inheritDoc */
-    textOptional(value: any, opt?: string | AssertionCallback | DevOpt): string {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.text(value, opt);
+    booleanArray(value: any, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.boolean.array', (v) => this.lyy.is.boolean(v));
+    }
+    // endregion boolean
+
+    // region enum
+    /** @inheritDoc */
+    enum<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.enum', v => this.lyy.is.enumeration(v, map), {});
     }
 
     /** @inheritDoc */
-    textArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<string> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'string' || item.trim() !== item || item === '')) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.text.array', value, type: typeof value});
-        }
-        return value as Array<string>;
+    enumOptional<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.enum(value, map, opt));
     }
 
     /** @inheritDoc */
-    clazz(value: any, opt?: string | AssertionCallback | DevOpt): ClassOrFuncOrName {
-        if (!((typeof value === 'function') || (typeof value === 'string' && value.trim() !== ''))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.class.or.name', value, type: typeof value});
-        }
-        return value as ClassOrFuncOrName;
+    enumArray<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.enum.array', (v) => this.lyy.is.enumeration(v, map));
+    }
+    // endregion enum
+
+    // region literal
+    /** @inheritDoc */
+    literal<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void {
+        this._is(value, opt, 'invalid.literal', v => this.lyy.is.literal(v, items), {});
     }
 
     /** @inheritDoc */
-    clazzOptional(value: any, opt?: string | AssertionCallback | DevOpt): ClassOrFuncOrName {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.clazz(value, opt);
+    literalOptional<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void {
+        this._optional(value, () => this.literal(value, items, opt));
     }
 
     /** @inheritDoc */
-    clazzArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<ClassOrFuncOrName> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => !((typeof item === 'function') || (typeof item === 'string' && item.trim() !== '')))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.class.or.name.array', value, type: typeof value});
-        }
-        return value as Array<ClassOrFuncOrName>;
+    literalArray<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void {
+        this._array(value, opt, 'invalid.literal.array', (v) => this.lyy.is.literal(v, items));
     }
+    // endregion literal
 
-    /** @inheritDoc */
-    boolean(value: any, opt?: string | AssertionCallback | DevOpt): boolean {
-        if (typeof value !== 'boolean') {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.boolean', value, type: typeof value});
-        }
-        return value as boolean;
-    }
-
-    /** @inheritDoc */
-    booleanOptional(value: any, opt?: string | AssertionCallback | DevOpt): boolean {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.boolean(value, opt);
-    }
-
-    /** @inheritDoc */
-    booleanArray(value: any, opt?: string | AssertionCallback | DevOpt): Array<boolean> {
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => typeof item !== 'boolean')) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.boolean.array', value, type: typeof value});
-        }
-        return value as Array<boolean>;
-    }
-
-    /** @inheritDoc */
-    enum<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): E {
-        if (!map || typeof map !== 'object' && (map as Obj).constructor !== Object) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.enum.map', value: map, type: typeof map});
-        }
-        if (!['string', 'number'].includes(typeof value) || map[value]) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.enum', value, type: typeof value});
-        }
-        return value as E;
-    }
-
-    /** @inheritDoc */
-    enumOptional<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): E {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.enum(value, map, opt);
-    }
-
-    /** @inheritDoc */
-    enumArray<E extends KeyValue = KeyValue>(value: any, map: EnumMap<E>, opt?: string | AssertionCallback | DevOpt): Array<E> {
-        if (!map || typeof map !== 'object' && (map as Obj).constructor !== Object) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.enum.map', value: map, type: typeof map});
-        }
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => (!['string', 'number'].includes(typeof item) || map[item as KeyValue]))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.enum.array', value, type: typeof value});
-        }
-        return value as Array<E>;
-    }
-
-    /** @inheritDoc */
-    literal<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): E {
-        if (!Array.isArray(items)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.literal.items', value: items, type: typeof items});
-        }
-        if (!['string', 'number'].includes(typeof value) || !(items as Array<E>).includes(value)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.literal', value, type: typeof value});
-        }
-        return value as E;
-    }
-
-    /** @inheritDoc */
-    literalOptional<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): E {
-        if (this._EMPTY.includes(value)) {
-            return undefined;
-        }
-        return this.literal(value, items, opt);
-    }
-
-    /** @inheritDoc */
-    literalArray<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): Array<E> {
-        if (!Array.isArray(items)) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.literal.items', value: items, type: typeof items});
-        }
-        const arr = this.array(value, opt);
-        if (arr.length < 1 || arr.some(item => (!['string', 'number'].includes(typeof item) || !(items as Array<E>).includes(item)))) {
-            throw this.lyy.dev.invalidError(this._run(opt), {issue: 'invalid.enum.array', value, type: typeof value});
-        }
-        return value as Array<E>;
-    }
-
-
-    // endregion multiple
 
     // region secure
 
@@ -632,6 +779,7 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
     get $secure(): CommonAssertionSecure {
         return this;
     }
+
 
     // endregion secure
 

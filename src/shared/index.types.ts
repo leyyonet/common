@@ -33,10 +33,9 @@ export type IsoTime = string; // hh:mm:ii.eeeZ
 
 
 // region function-class
-interface _Func {
+interface _BaseFunc {
     readonly name?: string;
     readonly length?: number;
-
     bind(thisArg: any, ...args: Array<any>): any;
 
     apply(thisArg: any, args: Array<any>): any;
@@ -44,20 +43,23 @@ interface _Func {
     call(thisArg: any, ...args: Array<any>): any;
 }
 
-export interface Fnc<R = any> extends _Func {
+interface _SyncFnc<R> extends _BaseFunc {
     (...args: Array<any>): R;
 }
-
-export interface AsyncFnc<R = any> extends _Func {
+interface _AsyncFnc<R> extends _BaseFunc {
     (...args: Array<any>): Promise<R>;
 }
 
-export type Func<R = any> = Function | Fnc<R>;
-export type Async<R = any> = Function | AsyncFnc<R>;
+export type Fnc<R = any> = _SyncFnc<R> & Function;
+export type Async<R = any> = _AsyncFnc<R> & AsyncGeneratorFunction;
+export type AnyFnc<R = any> = Fnc<R> | Async<R>;
 
-export interface ClassLike<T = {}> extends _Func {
+export type _Type<T> = {
     new(...args: Array<any>): T;
+    prototype?: any;
 }
+export type ClassLike<T = {}> = (_BaseFunc & _Type<T>) | _SyncFnc<T>;
+
 export type TypeOf<C = ClassLike> = C extends ClassLike<infer T> ? T : C;
 
 export interface Describable {

@@ -6,7 +6,8 @@ import {
     CausedException,
     DeveloperException,
     Exception,
-    ExceptionLike, InvalidValueException,
+    ExceptionLike,
+    InvalidValueException,
     MultipleException
 } from "../exception";
 import {FQN} from "../internal";

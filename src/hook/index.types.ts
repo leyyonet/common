@@ -1,4 +1,4 @@
-import {Arr, ClassLike, Func, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import {Arr, ClassLike, Fnc, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Hook interface, it collects all jobs and fire them when callback is defined
@@ -9,13 +9,13 @@ export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
      * Attach a callback
      *
      * @param {symbol} channel
-     * @param {Func} fn
+     * @param {Fnc} fn
      *
      * Notes:
      * - channel should be regular string
      * - After attached, it should call all waiting calls in the queue
      * */
-    attachCallback(channel: symbol, fn: Func): void;
+    attachCallback(channel: symbol, fn: Fnc): void;
 
     /**
      * Add a call into queue, which to be executed by appropriate callback
@@ -66,7 +66,7 @@ export interface CommonHookSecure extends ShiftMain<CommonHookLike>, InitLike {
 
 export interface HookAttachedCallback {
     initialization?: true,
-    fn: Func;
+    fn: Fnc;
 }
 
 export interface $HookDefinedProvider extends HookDefinedProvider {

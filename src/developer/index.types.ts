@@ -1,5 +1,5 @@
-import {Arr, ClassLike, Describable, Func, InitLike, Obj, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
-import {Logger, Severity} from "../log";
+import {Arr, Describable, InitLike, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
+import {Severity} from "../log";
 
 export interface CommonDeveloperLike extends ShiftSecure<CommonDeveloperSecure> {
     opt<O extends DevOpt = DevOpt>(value: O): O;
@@ -37,6 +37,7 @@ export interface CommonDeveloperLike extends ShiftSecure<CommonDeveloperSecure> 
      * @param {DevOpt?} extra
      * */
     nativeError(e: Error, opt: DevOpt, extra?: DevOpt): Error;
+    nativeError2(pck: string, testCase:number|string, e: Error, opt?: DevOpt): Error;
 
     /**
      * Asserts value is an object

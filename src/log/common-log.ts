@@ -4,6 +4,7 @@ import {LoggerInstance} from "./logger-instance";
 import {Keys} from "../shared";
 import {FQN} from "../internal";
 import {Severity, SeverityItems} from "./severity";
+import {$dev} from "../index";
 
 const BLINK = '\\033[5m';
 const RED1 = '\x1b[31m';
@@ -39,10 +40,9 @@ const CYAN_BG = '\x1b[46m';
 export class CommonLog implements CommonLogLike, CommonLogSecure {
     private COLORS = {
         debug: ['debug',    'DEBUG', GRAY1, CYAN_FG, '', ''],
-        trace: ['log',      'TRACE', GRAY1, CYAN_FG, '', ''],
-        log: ['log',        '  LOG', GREEN_BG, GREEN_FG, '', ''],
-        info: ['log',       ' INFO', GREEN_BG, GREEN_FG, '', ''],
-        warn: ['warn',      ' WARN', YELLOW_BG, YELLOW_FG, YELLOW_FG, END],
+        trace: ['trace',    'TRACE', GRAY1, CYAN_FG, '', ''],
+        info:  ['info',     ' INFO', GREEN_BG, GREEN_FG, '', ''],
+        warn:  ['warn',     ' WARN', YELLOW_BG, YELLOW_FG, YELLOW_FG, END],
         error: ['error',    'ERROR', RED_BG, RED_FG, RED_BG, END],
         fatal: ['error',    'FATAL', MAGENTA_BG, MAGENTA_FG, MAGENTA_BG, END],
     } as Record<Severity, [string, string, string, string, string, string]>;
@@ -119,9 +119,33 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
     private check<T>(line: LogLineEnhanced<T>): void {
         // nothing
     }
+    private where(where: string): string {
+        if (typeof where !== 'string') {
+            where = $dev.secureJson(where, true);
+        }
+        if (!where) {
+            where = ''.padStart(20);
+        }
+        else {
+            if (where.includes('.')) {
+                const parts = where.split('.');
+                where = parts.pop();
+                if (parts.length > 0) {
+                    where = parts.map(w => w.slice(0, 1)).join('.') + '.' + where;
+                }
+            }
+        }
+        if (where.length <= 20) {
+            return where.padStart(20);
+        }
+        else {
+            return where.substring(where.length - 20);
+        }
+
+    }
 
     private print<T>(line: LogLineEnhanced<T>): void {
-        let where = line.where;
+        let where = this.where(line.where);
         const date = line.time.toISOString();
         let json = '';
         if (line.params && Object.keys(line.params).length > 0) {
@@ -130,15 +154,6 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
         const colors = this.COLORS[line.severity] ?? this.COLORS.trace;
         const [severity, short, bg, clr1, clr2S, cls2E] = colors;
 
-        if (!where) {
-            where = ''.padStart(20);
-        }
-        else if (where.length > 20) {
-            where = where.substring(where.length - 20);
-        }
-        else {
-            where = where.padStart(20);
-        }
         const arr = [
             BLUE1, date.substring(11, 23), END,
             ' | ',

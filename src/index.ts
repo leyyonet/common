@@ -1,13 +1,14 @@
 // noinspection JSUnusedGlobalSymbols
 
 if (global?.leyyo_is_testing) {
-    ['log', 'warn', 'info', 'debug', 'trace', 'error', 'native'].forEach(name => {
+    ['log', 'warn', 'info', 'debug', 'trace', 'error'].forEach(name => {
         global.console[name] = (): void => {
         };
         console[name] = (): void => {
         };
     });
 }
+console['fatal'] = (...args: Array<unknown>) => console.error(...args);
 
 import {LeyyoLike} from "./leyyo";
 import {Leyyo} from "./leyyo/leyyo";
@@ -31,6 +32,7 @@ export * from './test';
 export * from './deploy';
 export * from './name';
 export * from './config';
+export * from './mixin';
 
 export const leyyo: LeyyoLike = new Leyyo();
 export const $descriptor = leyyo.descriptor;
@@ -49,3 +51,4 @@ export const $test = leyyo.test;
 export const $deploy = leyyo.deploy;
 export const $name = leyyo.name;
 export const $config = leyyo.config;
+export const $mixin = leyyo.mixin;
