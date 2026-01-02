@@ -1,27 +1,27 @@
-import {CommonSystemLike, CommonSystemSecure} from "./index.types";
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import type {SystemCommonLike, SystemCommonSecure} from "./index.types";
+import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
 import {EnvironmentItems} from "./environment";
 import {CountryCodeItems} from "./country-code";
 import {LanguageCodeItems} from "./language-code";
 import {LocaleCodeItems} from "./locale-code";
-import {SysClass, SysClassItems} from "./sys-class";
-import {SysFunction, SysFunctionItems} from "./sys-function";
+import {type SysClass, SysClassItems} from "./sys-class";
+import {type SysFunction, SysFunctionItems} from "./sys-function";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
+export class SystemCommon implements SystemCommonLike, SystemCommonSecure {
 
     constructor(private lyy: LeyyoLike) {
     }
 
-    get $back(): CommonSystemLike {
+    get $back(): SystemCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure
             .$lazyRun(() => {
-                this.lyy.fqn.register(null, CommonSystem, 'class', FQN);
+                this.lyy.fqn.register(null, SystemCommon, 'class', FQN);
         })
             .$lazyRun(() => {
             const enumMap = {
@@ -34,12 +34,12 @@ export class CommonSystem implements CommonSystemLike, CommonSystemSecure {
             };
             for (const [name, value] of Object.entries(enumMap)) {
                 this.lyy.fqn.register(name, value, 'enum', FQN);
-                this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
+                this.lyy.hook.queueForCallback(LeyyoHookCommon.enumPendingRegister, value);
             }
         });
     }
 
-    get $secure(): CommonSystemSecure {
+    get $secure(): SystemCommonSecure {
         return this;
     }
 

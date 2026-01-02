@@ -1,10 +1,10 @@
-import {CommonFqnHook, CommonFqnLike, CommonFqnSecure, FqnDefinedProvider, FqnStereoType} from "./index.types";
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {Fnc, Obj} from "../shared";
+import type {FqnHookCommon, FqnCommonLike, FqnCommonSecure, FqnDefinedProvider, FqnStereoType} from "./index.types";
+import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
+import type {Fnc, Obj} from "../shared";
 import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
+export class FqnCommon implements FqnCommonLike, FqnCommonSecure {
 
     private proper: boolean;
     private _pendingSign: symbol;
@@ -23,7 +23,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         return this._pendingSign;
     }
 
-    get $back(): CommonFqnLike {
+    get $back(): FqnCommonLike {
         return this;
     }
 
@@ -39,10 +39,10 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
             } as FqnDefinedProvider;
 
             // define itself temporarily for fqn operations
-            this.lyy.hook.defineProvider<FqnDefinedProvider>(LeyyoCommonHook.fqnAttached, CommonFqn, rec);
+            this.lyy.hook.defineProvider<FqnDefinedProvider>(LeyyoHookCommon.fqnAttached, FqnCommon, rec);
 
             // when new fqn provider is defined, replace all common methods
-            this.lyy.hook.whenProviderDefined<FqnDefinedProvider>(LeyyoCommonHook.fqnAttached, CommonFqn, (ins) => {
+            this.lyy.hook.whenProviderDefined<FqnDefinedProvider>(LeyyoHookCommon.fqnAttached, FqnCommon, (ins) => {
                 if (ins.proper) {
                     this.proper = true;
                 }
@@ -52,11 +52,11 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
             });
         })
             .$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonFqn, 'class', FQN);
+            this.lyy.fqn.register(null, FqnCommon, 'class', FQN);
         });
     }
 
-    get $secure(): CommonFqnSecure {
+    get $secure(): FqnCommonSecure {
         return this;
     }
 
@@ -78,14 +78,14 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
     }
 
     register(name: string, value: any, type: FqnStereoType, pckName: string): void {
-        this.lyy.hook.queueForCallback(LeyyoCommonHook.fqnPendingRegister, name, value, type, pckName);
+        this.lyy.hook.queueForCallback(LeyyoHookCommon.fqnPendingRegister, name, value, type, pckName);
     }
 
     get isProper(): boolean {
         return this.proper;
     }
-    $appendHook(target: Function | Object, callback: CommonFqnHook): void {
-        let callbacks = this.lyy.descriptor.getValue<Array<CommonFqnHook>>(target, this.pendingSign);
+    $appendHook(target: Function | Object, callback: FqnHookCommon): void {
+        let callbacks = this.lyy.descriptor.getValue<Array<FqnHookCommon>>(target, this.pendingSign);
         if (!Array.isArray(callbacks)) {
             callbacks = [];
         }
@@ -93,9 +93,9 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         this.lyy.descriptor.save(target, this.pendingSign, callbacks);
     }
     $runHooks(fn: Fnc | Obj, name: string): void {
-        const callbacks: Array<CommonFqnHook> = [];
+        const callbacks: Array<FqnHookCommon> = [];
         let exists = false;
-        const desc = this.lyy.descriptor.get<Array<CommonFqnHook>>(fn, this.pendingSign);
+        const desc = this.lyy.descriptor.get<Array<FqnHookCommon>>(fn, this.pendingSign);
         if (desc) {
             exists = true;
             if (Array.isArray(desc.value)) {
@@ -114,7 +114,7 @@ export class CommonFqn implements CommonFqnLike, CommonFqnSecure {
         }
     }
 
-    addHook(target: Function | Object, callback: CommonFqnHook): boolean {
+    addHook(target: Function | Object, callback: FqnHookCommon): boolean {
         if (typeof target === 'object') {
             try {
                 target = target.constructor;

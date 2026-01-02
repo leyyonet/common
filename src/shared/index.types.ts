@@ -1,11 +1,11 @@
 // noinspection JSUnusedGlobalSymbols
 
 // region basic
-import {LanguageCode, LocaleCode} from "../system";
+import type {LanguageCode, LocaleCode} from "../system";
 
 export type BasicType = 'undefined' | 'string' | 'object' | 'number' | 'boolean' | 'function' | 'symbol' | 'bigint';
-export type Dict<T = any> = Record<KeyValue, T>;
-export type Arr<T = any> = Array<T>;
+export type Dict<T = unknown> = Record<KeyValue, T>;
+export type Arr<T = unknown> = Array<T>;
 export type KeyValue = string | number;
 
 export type Id = string | number;
@@ -36,27 +36,27 @@ export type IsoTime = string; // hh:mm:ii.eeeZ
 interface _BaseFunc {
     readonly name?: string;
     readonly length?: number;
-    bind(thisArg: any, ...args: Array<any>): any;
+    bind(thisArg: unknown, ...args: Array<unknown>): unknown;
 
-    apply(thisArg: any, args: Array<any>): any;
+    apply(thisArg: unknown, args: Array<unknown>): unknown;
 
-    call(thisArg: any, ...args: Array<any>): any;
+    call(thisArg: unknown, ...args: Array<unknown>): unknown;
 }
 
 interface _SyncFnc<R> extends _BaseFunc {
-    (...args: Array<any>): R;
+    (...args: Array<unknown>): R;
 }
 interface _AsyncFnc<R> extends _BaseFunc {
-    (...args: Array<any>): Promise<R>;
+    (...args: Array<unknown>): Promise<R>;
 }
 
-export type Fnc<R = any> = _SyncFnc<R> & Function;
-export type Async<R = any> = _AsyncFnc<R> & AsyncGeneratorFunction;
-export type AnyFnc<R = any> = Fnc<R> | Async<R>;
+export type Fnc<R = unknown> = _SyncFnc<R> & Function;
+export type Async<R = unknown> = _AsyncFnc<R> & AsyncGeneratorFunction;
+export type AnyFnc<R = unknown> = Fnc<R> | Async<R>;
 
 export type _Type<T> = {
-    new(...args: Array<any>): T;
-    prototype?: any;
+    new(...args: Array<unknown>): T;
+    prototype?: unknown;
 }
 export type ClassLike<T = {}> = (_BaseFunc & _Type<T>) | _SyncFnc<T>;
 
@@ -234,4 +234,4 @@ export type I18nAny<V = unknown> = I18nRaw<V> | V;
 
 export type EnumMap<E extends KeyValue = KeyValue> = Dict<E>;
 export type EnumAlt<E extends KeyValue = KeyValue> = Dict<E>;
-export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|any;
+export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|unknown;

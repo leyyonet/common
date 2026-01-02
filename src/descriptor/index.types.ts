@@ -1,6 +1,6 @@
-import {ClassLike, Fnc, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
+import type {ClassLike, Fnc, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
 
-export interface CommonDescriptorLike extends ShiftSecure<CommonDescriptorSecure> {
+export interface DescriptorCommonLike extends ShiftSecure<DescriptorCommonSecure> {
     sign(fn: Fnc | ClassLike): void;
 
     isSigned(fn: Fnc | ClassLike): boolean;
@@ -18,7 +18,7 @@ export interface CommonDescriptorLike extends ShiftSecure<CommonDescriptorSecure
 /**
  * Secure assertion methods
  * */
-export interface CommonDescriptorSecure extends ShiftMain<CommonDescriptorLike>, InitLike {
+export interface DescriptorCommonSecure extends ShiftMain<DescriptorCommonLike>, InitLike {
     $isNot<T = any>(target: Fnc | Obj, key: string | symbol): boolean;
 }
 

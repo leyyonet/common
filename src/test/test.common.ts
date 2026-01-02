@@ -1,25 +1,25 @@
-import {CommonTestLike, CommonTestSecure} from "./index.types";
-import {LeyyoLike} from "../leyyo";
+import type {TestCommonLike, TestCommonSecure} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-export class CommonTest implements CommonTestLike, CommonTestSecure {
+export class TestCommon implements TestCommonLike, TestCommonSecure {
     private _is: boolean;
 
     constructor(private lyy: LeyyoLike) {
     }
 
-    get $back(): CommonTestLike {
+    get $back(): TestCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonTest, 'class', FQN);
+            this.lyy.fqn.register(null, TestCommon, 'class', FQN);
         });
     }
 
-    get $secure(): CommonTestSecure {
+    get $secure(): TestCommonSecure {
         return this;
     }
 

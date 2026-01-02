@@ -1,11 +1,12 @@
-import {CommonDeveloperLike, CommonDeveloperSecure, DeveloperParamResult, DevOpt} from "./index.types";
-import {LeyyoLike} from "../leyyo";
-import {Arr, Describable, Obj} from "../shared";
 import {FQN} from "../internal";
-import {Severity} from "../log";
 import {CausedError, DeveloperError, InvalidValueError} from "./index.errors";
 
-export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecure {
+import type {DeveloperCommonLike, DeveloperCommonSecure, DeveloperParamResult, DevOpt} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {Arr, Describable, Obj} from "../shared";
+import type {Severity} from "../log";
+
+export class DeveloperCommon implements DeveloperCommonLike, DeveloperCommonSecure {
 
     constructor(private lyy: LeyyoLike) {
     }
@@ -167,17 +168,17 @@ export class CommonDeveloper implements CommonDeveloperLike, CommonDeveloperSecu
         console[severity](message, opt2);
     }
 
-    get $secure(): CommonDeveloperSecure {
+    get $secure(): DeveloperCommonSecure {
         return this;
     }
 
-    get $back(): CommonDeveloperLike {
+    get $back(): DeveloperCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonDeveloper, 'class', FQN);
+            this.lyy.fqn.register(null, DeveloperCommon, 'class', FQN);
         });
     }
 

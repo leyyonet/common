@@ -1,9 +1,9 @@
-import {Arr, ClassLike, Fnc, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {Arr, ClassLike, Fnc, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Hook interface, it collects all jobs and fire them when callback is defined
  * */
-export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
+export interface HookCommonLike extends ShiftSecure<HookCommonSecure> {
 
     /**
      * Attach a callback
@@ -61,7 +61,7 @@ export interface CommonHookLike extends ShiftSecure<CommonHookSecure> {
 /**
  * Secure hook interface
  * */
-export interface CommonHookSecure extends ShiftMain<CommonHookLike>, InitLike {
+export interface HookCommonSecure extends ShiftMain<HookCommonLike>, InitLike {
 }
 
 export interface HookAttachedCallback {

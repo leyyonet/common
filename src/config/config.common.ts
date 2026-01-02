@@ -1,12 +1,13 @@
-import {CommonConfigLike, CommonConfigSecure, ConfigBasic} from "./index.types";
-import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
-import {Dict} from "../shared";
 import YAML from 'yaml'
 import fs from 'fs'
 import path from "node:path";
 
-export class CommonConfig implements CommonConfigLike, CommonConfigSecure {
+import type {ConfigBasic, ConfigCommonLike, ConfigCommonSecure} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {Dict} from "../shared";
+
+export class ConfigCommon implements ConfigCommonLike, ConfigCommonSecure {
     private value: Dict;
 
     constructor(private lyy: LeyyoLike) {
@@ -60,18 +61,18 @@ export class CommonConfig implements CommonConfigLike, CommonConfigSecure {
     }
     // region secure
 
-    get $secure(): CommonConfigSecure {
+    get $secure(): ConfigCommonSecure {
         return this;
     }
 
-    get $back(): CommonConfigLike {
+    get $back(): ConfigCommonLike {
         return this;
     }
 
     $init(): void {
         this.read();
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonConfig, 'class', FQN);
+            this.lyy.fqn.register(null, ConfigCommon, 'class', FQN);
         });
     }
 

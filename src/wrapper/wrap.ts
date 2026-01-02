@@ -1,5 +1,5 @@
-import {ClassLike, Fnc, Obj} from "../shared";
-import {WrapLike, WrapType} from "./index.types";
+import type {ClassLike, Fnc, Obj} from "../shared";
+import type {WrapLike, WrapType} from "./index.types";
 
 export class Wrap<V extends ClassLike|Fnc|string|Obj = Fnc> implements WrapLike<V> {
     readonly value: V;

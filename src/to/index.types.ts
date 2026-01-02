@@ -1,10 +1,10 @@
-import {Dict, EnumAlt, EnumLiteral, EnumMap, Fnc, InitLike, KeyValue, Obj, ShiftMain, ShiftSecure} from "../shared";
-import {DevOpt} from "../developer";
-import {WeakTrue} from "./weak-true";
-import {WeakFalse} from "./weak-false";
+import type {Dict, EnumAlt, EnumLiteral, EnumMap, Fnc, InitLike, KeyValue, Obj, ShiftMain, ShiftSecure} from "../shared";
+import type {DevOpt} from "../developer";
+import type {WeakTrue} from "./weak-true";
+import type {WeakFalse} from "./weak-false";
 import {List} from "./list";
 
-export interface CommonToLike extends ShiftSecure<CommonToSecure> {
+export interface ToCommonLike extends ShiftSecure<ToCommonSecure> {
     // region types
     anyStrict<T = any>(value: any, opt?: ToOptAny): T;
     any<T = any>(value: any, opt?: ToOptAny, notNull?: boolean): T;
@@ -74,7 +74,7 @@ export interface CommonToLike extends ShiftSecure<CommonToSecure> {
 
 }
 
-export interface CommonToSecure extends ShiftMain<CommonToLike>, InitLike {
+export interface ToCommonSecure extends ShiftMain<ToCommonLike>, InitLike {
     $runOpt(opt: ToOptAny): ToOpt;
     $runFn<T = any>(fn: Fnc, value: Fnc, opt?: ToOpt): T;
     $errorOrLog(opt: ToOptAny, extra: ToOpt, e?: Error): any;

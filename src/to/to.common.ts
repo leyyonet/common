@@ -1,16 +1,16 @@
-import {CommonToLike, CommonToSecure, ToOpt, ToOptAny, ToSubIndexFnLambda, ToSubKeyFnLambda} from "./index.types";
-import {Arr, Dict, EnumAlt, EnumLiteral, EnumMap, Fnc, KeyValue, Obj, Pair} from "../shared";
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import type {ToCommonLike, ToCommonSecure, ToOpt, ToOptAny, ToSubIndexFnLambda, ToSubKeyFnLambda} from "./index.types";
+import type {Arr, Dict, EnumAlt, EnumLiteral, EnumMap, Fnc, KeyValue, Obj, Pair} from "../shared";
+import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
 import {PrimitiveItems} from "./primitive";
 import {RealValueItems} from "./real-value";
 import {KeyValueItems} from "./key-value";
-import {WeakTrue, WeakTrueItems} from "./weak-true";
-import {WeakFalse, WeakFalseItems} from "./weak-false";
+import {type WeakTrue, WeakTrueItems} from "./weak-true";
+import {type WeakFalse, WeakFalseItems} from "./weak-false";
 import {List} from "./list";
 
 // noinspection JSUnusedGlobalSymbols
-export class CommonTo implements CommonToLike, CommonToSecure {
+export class ToCommon implements ToCommonLike, ToCommonSecure {
 
     // region properties
     private readonly _EMPTY = [null, undefined];
@@ -40,20 +40,20 @@ export class CommonTo implements CommonToLike, CommonToSecure {
             };
             for (const [name, value] of Object.entries(enumMap)) {
                 this.lyy.fqn.register(name, value, 'enum', FQN);
-                this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
+                this.lyy.hook.queueForCallback(LeyyoHookCommon.enumPendingRegister, value);
             }
 
         }).$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonTo, 'class', FQN);
+            this.lyy.fqn.register(null, ToCommon, 'class', FQN);
             this.lyy.fqn.register(null, List, 'class', FQN);
         });
     }
 
-    get $back(): CommonToLike {
+    get $back(): ToCommonLike {
         return this;
     }
 
-    get $secure(): CommonToSecure {
+    get $secure(): ToCommonSecure {
         return this;
     }
 
@@ -662,7 +662,7 @@ export class CommonTo implements CommonToLike, CommonToSecure {
                     const newOpt = this.$runOpt(opt);
                     const field = (typeof newOpt.field === 'string') ? newOpt.field : undefined;
                     const clonedOpt = {...newOpt} as ToOpt;
-                    return (value as Arr).map((v, index) => {
+                    return (value as Arr<V>).map((v, index) => {
                         clonedOpt.field = field ? `${field}#${index}` : `#${index}`;
                         try {
                             return itemFn(v, index, clonedOpt);

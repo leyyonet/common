@@ -1,10 +1,11 @@
-import {CommonDeployLike, CommonDeploySecure, DeployItem, DeployType,} from "./index.types";
-import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
-import {Logger} from "../log";
-import {DevOpt} from "../developer";
 
-export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
+import type {DeployCommonLike, DeployCommonSecure, DeployItem, DeployType,} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {Logger} from "../log";
+import type {DevOpt} from "../developer";
+
+export class DeployCommon implements DeployCommonLike, DeployCommonSecure {
     private _types = ['debug', 'info', 'warn'] as Array<DeployType>;
     private _logger: Logger;
     private _lines: Array<DeployItem> = [];
@@ -61,7 +62,7 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
         this._lines = [];
     }
 
-    logger(logger: Logger): CommonDeploySecure {
+    logger(logger: Logger): DeployCommonSecure {
         this._logger = logger;
         return this;
     }
@@ -93,17 +94,17 @@ export class CommonDeploy implements CommonDeployLike, CommonDeploySecure {
 
     // region secure
 
-    get $secure(): CommonDeploySecure {
+    get $secure(): DeployCommonSecure {
         return this;
     }
 
-    get $back(): CommonDeployLike {
+    get $back(): DeployCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonDeploy, 'class', FQN);
+            this.lyy.fqn.register(null, DeployCommon, 'class', FQN);
         });
     }
 

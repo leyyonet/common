@@ -1,24 +1,24 @@
-import {CommonErrorLike, CommonErrorSecure, ErrorDefinedProvider} from "./index.types";
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {Dict, Keys} from "../shared";
+import type {ErrorCommonLike, ErrorCommonSecure, ErrorDefinedProvider} from "./index.types";
+import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
+import type {Dict, Keys} from "../shared";
 import {
     AssertionException,
     CausedException,
     DeveloperException,
     Exception,
-    ExceptionLike,
+    type ExceptionLike,
     InvalidValueException,
     MultipleException
 } from "../exception";
 import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols
-export class CommonError implements CommonErrorLike, CommonErrorSecure {
+export class ErrorCommon implements ErrorCommonLike, ErrorCommonSecure {
 
     constructor(private lyy: LeyyoLike) {
     }
 
-    get $back(): CommonErrorLike {
+    get $back(): ErrorCommonLike {
         return this;
     }
 
@@ -39,10 +39,10 @@ export class CommonError implements CommonErrorLike, CommonErrorSecure {
             });
 
             // define itself temporarily for error operations
-                this.lyy.hook.defineProvider<ErrorDefinedProvider>(LeyyoCommonHook.errorAttached, CommonError, rec);
+                this.lyy.hook.defineProvider<ErrorDefinedProvider>(LeyyoHookCommon.errorAttached, ErrorCommon, rec);
 
             // when new error provider is defined, replace all common methods
-                this.lyy.hook.whenProviderDefined<ErrorDefinedProvider>(LeyyoCommonHook.errorAttached, CommonError, (ins) => {
+                this.lyy.hook.whenProviderDefined<ErrorDefinedProvider>(LeyyoHookCommon.errorAttached, ErrorCommon, (ins) => {
                 fields.forEach(field => {
                     if (typeof ins[field] === 'function') {
                         this[field] = ins[field];
@@ -51,7 +51,7 @@ export class CommonError implements CommonErrorLike, CommonErrorSecure {
             });
         })
             .$lazyRun(() => {
-                this.lyy.fqn.register(null, CommonError, 'class', FQN);
+                this.lyy.fqn.register(null, ErrorCommon, 'class', FQN);
             [Exception, AssertionException, CausedException, DeveloperException, MultipleException, InvalidValueException].forEach(cls => {
                 this.lyy.fqn.register(null, cls, 'class', FQN);
                 this.lyy.error.register(cls);
@@ -59,7 +59,7 @@ export class CommonError implements CommonErrorLike, CommonErrorSecure {
         });
     }
 
-    get $secure(): CommonErrorSecure {
+    get $secure(): ErrorCommonSecure {
         return this;
     }
 
@@ -76,7 +76,7 @@ export class CommonError implements CommonErrorLike, CommonErrorSecure {
     }
 
     register(cls: Function): void {
-        this.lyy.hook.queueForCallback(LeyyoCommonHook.errorPendingRegister, cls);
+        this.lyy.hook.queueForCallback(LeyyoHookCommon.errorPendingRegister, cls);
     }
 
     build(e: Error | string): ExceptionLike {

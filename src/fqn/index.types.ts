@@ -1,23 +1,23 @@
-import {Fnc, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
-import {HookDefinedProvider} from "../hook";
+import type {Fnc, InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
+import type {HookDefinedProvider} from "../hook";
 
-export interface CommonFqnLike extends ShiftSecure<CommonFqnSecure> {
+export interface FqnCommonLike extends ShiftSecure<FqnCommonSecure> {
     name(target: any): string;
 
     exists(target: any): boolean;
 
     register(name: string, target: any, type: FqnStereoType, pckName: string): void;
 
-    addHook(target: Function | Object, callback: CommonFqnHook): boolean;
+    addHook(target: Function | Object, callback: FqnHookCommon): boolean;
 
 
     get isProper(): boolean;
 }
 
 
-export interface CommonFqnSecure extends ShiftMain<CommonFqnLike>, InitLike {
+export interface FqnCommonSecure extends ShiftMain<FqnCommonLike>, InitLike {
     $runHooks(fn: Fnc | Obj, name: string): void;
-    $appendHook(target: Function | Object, callback: CommonFqnHook): void;
+    $appendHook(target: Function | Object, callback: FqnHookCommon): void;
 }
 
 export interface FqnDefinedProvider extends HookDefinedProvider {
@@ -29,4 +29,4 @@ export interface FqnDefinedProvider extends HookDefinedProvider {
 }
 
 export type FqnStereoType = 'class' | 'function' | 'enum' | 'literal';
-export type CommonFqnHook = (name: string) => void;
+export type FqnHookCommon = (name: string) => void;

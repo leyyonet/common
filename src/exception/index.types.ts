@@ -1,4 +1,4 @@
-import {Abstract, ClassLike, Dict, ShiftMain, ShiftSecure} from "../shared";
+import type {Abstract, ClassLike, Dict, ShiftMain, ShiftSecure} from "../shared";
 
 export interface ExceptionStackLine {
     file?: string;

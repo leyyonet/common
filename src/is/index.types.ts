@@ -1,9 +1,9 @@
-import {BasicType, ClassLike, EnumLiteral, EnumMap, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {BasicType, ClassLike, EnumLiteral, EnumMap, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
 /**
  * Basic is commands to easy use
  * */
-export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
+export interface IsCommonLike extends ShiftSecure<IsCommonSecure> {
 
     /**
      * Checks value is empty or not?
@@ -265,4 +265,4 @@ export interface CommonIsLike extends ShiftSecure<CommonIsSecure> {
     false(value: any): boolean;
 }
 
-export type CommonIsSecure = ShiftMain<CommonIsLike> & InitLike;
+export type IsCommonSecure = ShiftMain<IsCommonLike> & InitLike;

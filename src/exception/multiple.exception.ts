@@ -1,5 +1,5 @@
 import {Exception} from "./exception";
-import {ExceptionLike} from "./index.types";
+import type {ExceptionLike} from "./index.types";
 
 // noinspection Annotator
 export class MultipleException extends Exception {

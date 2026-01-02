@@ -1,22 +1,22 @@
-import {CommonIsLike, CommonIsSecure} from "./index.types";
-import {LeyyoLike} from "../leyyo";
-import {BasicType, ClassLike, EnumLiteral, EnumMap, KeyValue} from "../shared";
+import type {IsCommonLike, IsCommonSecure} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {BasicType, ClassLike, EnumLiteral, EnumMap, KeyValue} from "../shared";
 import {FQN} from "../internal";
 import {
     KeyValueItems,
-    Primitive,
+    type Primitive,
     PrimitiveItems,
-    RealValue,
+    type RealValue,
     RealValueItems,
-    WeakFalse,
+    type WeakFalse,
     WeakFalseItems,
-    WeakTrue,
+    type WeakTrue,
     WeakTrueItems
 } from "../to";
 
 // noinspection JSUnusedGlobalSymbols, JSUnusedLocalSymbols
 /** @inheritDoc */
-export class CommonIs implements CommonIsLike, CommonIsSecure {
+export class IsCommon implements IsCommonLike, IsCommonSecure {
     private readonly _EMPTY = [null, undefined];
 
     constructor(private lyy: LeyyoLike) {
@@ -200,17 +200,17 @@ export class CommonIs implements CommonIsLike, CommonIsSecure {
     /** @inheritDoc */
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonIs, 'class', FQN);
+            this.lyy.fqn.register(null, IsCommon, 'class', FQN);
         });
     }
 
     /** @inheritDoc */
-    get $back(): CommonIsLike {
+    get $back(): IsCommonLike {
         return this;
     }
 
     /** @inheritDoc */
-    get $secure(): CommonIsSecure {
+    get $secure(): IsCommonSecure {
         return this;
     }
 

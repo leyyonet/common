@@ -1,18 +1,18 @@
-import {ClassLike, EnumLiteral, EnumMap, InitLike, KeyValue, ShiftMain, ShiftSecure} from "../shared";
-import {DevOpt} from "../developer";
+import type {ClassLike, EnumLiteral, EnumMap, InitLike, KeyValue, ShiftMain, ShiftSecure} from "../shared";
+import type {DevOpt} from "../developer";
 
 export type AssertionTupleItems =
-    'notEmpty' | keyof CommonAssertionSingular
-    | keyof KeyOpt1<CommonAssertionSingular>
-    | keyof KeyOpt2<CommonAssertionSingular>
-    | keyof KeyArray1<CommonAssertionSingular>
-    | keyof KeyArray2<CommonAssertionSingular>;
+    'notEmpty' | keyof AssertionCommonSingular
+    | keyof KeyOpt1<AssertionCommonSingular>
+    | keyof KeyOpt2<AssertionCommonSingular>
+    | keyof KeyArray1<AssertionCommonSingular>
+    | keyof KeyArray2<AssertionCommonSingular>;
 export type AssertionTupleDuals =
-    'notEmpty' | keyof CommonAssertionDual
-    | keyof KeyOpt1<CommonAssertionDual>
-    | keyof KeyOpt2<CommonAssertionDual>
-    | keyof KeyArray1<CommonAssertionDual>
-    | keyof KeyArray2<CommonAssertionDual>;
+    'notEmpty' | keyof AssertionCommonDual
+    | keyof KeyOpt1<AssertionCommonDual>
+    | keyof KeyOpt2<AssertionCommonDual>
+    | keyof KeyArray1<AssertionCommonDual>
+    | keyof KeyArray2<AssertionCommonDual>;
 
 export type AssertionTupleValue = AssertionTupleItems | [AssertionTupleDuals, any];
 export type AssertionTuple = Array<AssertionTupleValue | ['or', Array<AssertionTupleValue>]>;
@@ -22,7 +22,7 @@ export type AssertionTupleDualLambda = (value: any, setting: any, opt: string | 
 /**
  * Basic assertions to easy use
  * */
-export interface CommonAssertionLike extends CommonAssertionSingular, CommonAssertionDual, ShiftSecure<CommonAssertionSecure> {
+export interface AssertionCommonLike extends AssertionCommonSingular, AssertionCommonDual, ShiftSecure<AssertionCommonSecure> {
 
     // region instanceOf
     /**
@@ -102,7 +102,7 @@ export interface CommonAssertionLike extends CommonAssertionSingular, CommonAsse
     // region general
     /**
      * Asserts value is not empty
-     * @see CommonIsLike#empty
+     * @see IsCommonLike#empty
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -447,7 +447,7 @@ export interface CommonAssertionLike extends CommonAssertionSingular, CommonAsse
 
 }
 
-export interface CommonAssertionDual {
+export interface AssertionCommonDual {
     /**
      * Asserts value is instance of class
      *
@@ -478,7 +478,7 @@ export interface CommonAssertionDual {
 
     /**
      * Asserts value is a boolean
-     * @see CommonIsLike#boolean
+     * @see IsCommonLike#boolean
      *
      * @param {any} value
      * @param {EnumMap} map
@@ -493,7 +493,7 @@ export interface CommonAssertionDual {
 
     /**
      * Asserts value is a boolean
-     * @see CommonIsLike#boolean
+     * @see IsCommonLike#boolean
      *
      * @param {any} value
      * @param {EnumLiteral} items
@@ -507,10 +507,10 @@ export interface CommonAssertionDual {
     literal<E extends KeyValue = KeyValue>(value: any, items: EnumLiteral<E>, opt?: string | AssertionCallback | DevOpt): void;
 }
 
-export interface CommonAssertionSingular {
+export interface AssertionCommonSingular {
     /**
      * Asserts value is a real value
-     * @see CommonIsLike#realValue
+     * @see IsCommonLike#realValue
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -524,7 +524,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is an object
-     * @see CommonIsLike#object
+     * @see IsCommonLike#object
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -538,7 +538,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is an object
-     * @see CommonIsLike#object
+     * @see IsCommonLike#object
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -560,7 +560,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is array like (array, Set or List) or not?
-     * @see CommonIsLike#arrayLike
+     * @see IsCommonLike#arrayLike
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -569,7 +569,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is an array
-     * @see CommonIsLike#empty
+     * @see IsCommonLike#empty
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -583,7 +583,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a primitive
-     * @see CommonIsLike#primitive
+     * @see IsCommonLike#primitive
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -597,7 +597,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a key
-     * @see CommonIsLike#key
+     * @see IsCommonLike#key
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -611,7 +611,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a function
-     * @see CommonIsLike#func
+     * @see IsCommonLike#func
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -625,7 +625,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a symbol
-     * @see CommonIsLike#func
+     * @see IsCommonLike#func
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -639,7 +639,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a number
-     * @see CommonIsLike#number
+     * @see IsCommonLike#number
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -653,7 +653,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a positive number
-     * @see CommonIsLike#number
+     * @see IsCommonLike#number
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -667,7 +667,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a non-negative number
-     * @see CommonIsLike#number
+     * @see IsCommonLike#number
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -681,7 +681,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is an integer
-     * @see CommonIsLike#integer
+     * @see IsCommonLike#integer
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -695,7 +695,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a safe integer
-     * @see CommonIsLike#safeInteger
+     * @see IsCommonLike#safeInteger
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -709,7 +709,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a positive integer
-     * @see CommonIsLike#integer
+     * @see IsCommonLike#integer
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -723,7 +723,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a positive integer
-     * @see CommonIsLike#integer
+     * @see IsCommonLike#integer
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -737,7 +737,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a string
-     * @see CommonIsLike#string
+     * @see IsCommonLike#string
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -751,7 +751,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a text
-     * @see CommonIsLike#text
+     * @see IsCommonLike#text
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -765,7 +765,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a class
-     * @see CommonIsLike#clazz
+     * @see IsCommonLike#clazz
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -780,7 +780,7 @@ export interface CommonAssertionSingular {
     /**
      * Checks value is possible func?
      * Possible class means: object as instance, string as function name, or function
-     * @see CommonIsLike#possibleFunc
+     * @see IsCommonLike#possibleFunc
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -794,7 +794,7 @@ export interface CommonAssertionSingular {
 
     /**
      * Asserts value is a boolean
-     * @see CommonIsLike#boolean
+     * @see IsCommonLike#boolean
      *
      * @param {any} value
      * @param {(string | AssertionCallback | DevOpt)?} opt
@@ -836,6 +836,6 @@ type KeyArray2<T> = {
 /**
  * Secure assertion methods
  * */
-export type CommonAssertionSecure = ShiftMain<CommonAssertionLike> & InitLike;
+export type AssertionCommonSecure = ShiftMain<AssertionCommonLike> & InitLike;
 
 export type AssertionCallback = () => string | DevOpt | [string, string | number, DevOpt?];

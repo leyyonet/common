@@ -1,9 +1,10 @@
-import {CommonNameLike, CommonNameSecure} from "./index.types";
-import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
-import {ClassLike, Fnc} from "../shared";
 
-export class CommonName implements CommonNameLike, CommonNameSecure {
+import type {NameCommonLike, NameCommonSecure} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {ClassLike, Fnc} from "../shared";
+
+export class NameCommon implements NameCommonLike, NameCommonSecure {
     private _counter = 0;
     private _pattern = /((?:[a-zA-Z_$][a-zA-Z\d_$]*\.)*)([a-zA-Z_$][a-zA-Z\d_$]*)/g;
 
@@ -72,18 +73,18 @@ export class CommonName implements CommonNameLike, CommonNameSecure {
         }
     }
 
-    get $secure(): CommonNameSecure {
+    get $secure(): NameCommonSecure {
         return this;
     }
 
-    get $back(): CommonNameLike {
+    get $back(): NameCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure
             .$lazyRun(() => {
-                this.lyy.fqn.register(null, CommonName, 'class', FQN);
+                this.lyy.fqn.register(null, NameCommon, 'class', FQN);
             });
     }
 

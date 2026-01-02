@@ -1,9 +1,9 @@
-import {Logger, LoggerSecure, LogLine} from "./index.types";
-import {LeyyoLike} from "../leyyo";
-import {DevOpt} from "../developer";
-import {Severity} from "./severity";
+import type {Logger, LoggerSecure, LogLine} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {DevOpt} from "../developer";
+import type {Severity} from "./severity";
 import {FQN} from "../internal";
-import {CommonDeploySecure} from "../deploy";
+import type {DeployCommonSecure} from "../deploy";
 
 // noinspection JSUnusedLocalSymbols
 export class LoggerInstance implements Logger, LoggerSecure {
@@ -98,7 +98,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
     }
 
 
-    get deploy(): CommonDeploySecure {
+    get deploy(): DeployCommonSecure {
         return LoggerInstance.lyy.deploy.logger(this);
     }
 

@@ -1,5 +1,5 @@
 import {Exception} from "./exception";
-import {DevOpt} from "../developer";
+import type {DevOpt} from "../developer";
 
 // noinspection Annotator
 export class InvalidValueException extends Exception {

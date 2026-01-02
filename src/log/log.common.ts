@@ -1,9 +1,9 @@
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
-import {CommonLogLike, CommonLogSecure, LogDefinedProvider, Logger, LogLine, LogLineEnhanced} from "./index.types";
-import {LoggerInstance} from "./logger-instance";
-import {Keys} from "../shared";
+import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
+import type {LogCommonLike, LogCommonSecure, LogDefinedProvider, Logger, LogLine, LogLineEnhanced} from "./index.types";
+import {LoggerInstance} from "./logger.instance";
+import type {Keys} from "../shared";
 import {FQN} from "../internal";
-import {Severity, SeverityItems} from "./severity";
+import {type Severity, SeverityItems} from "./severity";
 import {$dev} from "../index";
 
 const BLINK = '\\033[5m';
@@ -37,7 +37,7 @@ const MAGENTA_BG = '\x1b[45m';
 const CYAN_BG = '\x1b[46m';
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
-export class CommonLog implements CommonLogLike, CommonLogSecure {
+export class LogCommon implements LogCommonLike, LogCommonSecure {
     private COLORS = {
         debug: ['debug',    'DEBUG', GRAY1, CYAN_FG, '', ''],
         trace: ['trace',    'TRACE', GRAY1, CYAN_FG, '', ''],
@@ -54,7 +54,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
         this.print.bind(this);
     }
 
-    get $secure(): CommonLogSecure {
+    get $secure(): LogCommonSecure {
         return this;
     }
 
@@ -73,10 +73,10 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
                 });
 
                 // define itself temporarily for log operations
-            this.lyy.hook.defineProvider<LogDefinedProvider>(LeyyoCommonHook.logAttached, CommonLog, rec);
+            this.lyy.hook.defineProvider<LogDefinedProvider>(LeyyoHookCommon.logAttached, LogCommon, rec);
 
                 // when new log provider is defined, replace all common methods
-            this.lyy.hook.whenProviderDefined<LogDefinedProvider>(LeyyoCommonHook.logAttached, CommonLog, (ins) => {
+            this.lyy.hook.whenProviderDefined<LogDefinedProvider>(LeyyoHookCommon.logAttached, LogCommon, (ins) => {
                     fields.forEach(field => {
                         if (typeof ins[field] === 'function') {
                             this[field] = ins[field];
@@ -85,7 +85,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
                 });
             }).
             $lazyRun(() => {
-            this.lyy.fqn.register(null, CommonLog, 'class', FQN);
+            this.lyy.fqn.register(null, LogCommon, 'class', FQN);
             this.lyy.fqn.register(null, LoggerInstance, 'class', FQN);
 
             const enumMap = {
@@ -93,7 +93,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
             };
             for (const [name, value] of Object.entries(enumMap)) {
                 this.lyy.fqn.register(name, value, 'enum', FQN);
-                this.lyy.hook.queueForCallback(LeyyoCommonHook.enumPendingRegister, value);
+                this.lyy.hook.queueForCallback(LeyyoHookCommon.enumPendingRegister, value);
             }
         });
         // @formatter:off
@@ -101,7 +101,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
 
     create(clazz: Object | Function | string): Logger {
         const ins = new LoggerInstance(clazz);
-        this.lyy.hook.queueForCallback(LeyyoCommonHook.logPendingRegister, ins, clazz);
+        this.lyy.hook.queueForCallback(LeyyoHookCommon.logPendingRegister, ins, clazz);
         return ins;
     }
 
@@ -167,7 +167,7 @@ export class CommonLog implements CommonLogLike, CommonLogSecure {
         console[severity](arr.join(''));
     }
 
-    get $back(): CommonLogLike {
+    get $back(): LogCommonLike {
         return this;
     }
 

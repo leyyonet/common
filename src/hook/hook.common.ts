@@ -1,10 +1,10 @@
-import {Arr, ClassLike, Fnc,} from "../shared";
-import {LeyyoCommonHook, LeyyoLike} from "../leyyo";
+import type {Arr, ClassLike, Fnc,} from "../shared";
+import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
-import {
+import type {
     $HookDefinedProvider,
-    CommonHookLike,
-    CommonHookSecure,
+    HookCommonLike,
+    HookCommonSecure,
     HookAttachedCallback,
     HookDefinedProvider,
     HookDefinedProviderLambda,
@@ -12,7 +12,7 @@ import {
 } from "./index.types";
 
 // noinspection JSUnusedGlobalSymbols
-export class CommonHook implements CommonHookLike, CommonHookSecure {
+export class HookCommon implements HookCommonLike, HookCommonSecure {
     private _waitingForCallbacks: Map<symbol, Array<Arr>>;
     private _attachedCallbacks: Map<symbol, HookAttachedCallback>;
     private _waitingForProviders: Map<symbol, Array<HookWaitingProviderItem>>;
@@ -35,18 +35,18 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         this._definedProviders = this.lyy.repo.newMap<symbol, $HookDefinedProvider>(FQN, 'definedProviders');
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonHook, 'class', FQN);
-            this.lyy.fqn.register(null, LeyyoCommonHook, 'class', FQN);
+            this.lyy.fqn.register(null, HookCommon, 'class', FQN);
+            this.lyy.fqn.register(null, LeyyoHookCommon, 'class', FQN);
         })
     }
 
-    get $secure(): CommonHookSecure {
+    get $secure(): HookCommonSecure {
         return this;
     }
 
     attachCallback(channel: symbol, fn: Fnc): void {
-        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.CommonHook`, method: 'attachCallback'}));
-        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN}.CommonHook`, method: 'attachCallback'}));
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.HookCommon`, method: 'attachCallback'}));
+        this.lyy.assertion.func(fn, () => this.lyy.dev.opt({field: 'fn', where: `${FQN}.HookCommon`, method: 'attachCallback'}));
 
         // callback attached
         this._attachedCallbacks.set(channel, {fn});
@@ -61,7 +61,7 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
     }
 
     queueForCallback(channel: symbol, ...args: Arr): boolean {
-        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.CommonHook`, method: 'queueForCallback'}));
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.HookCommon`, method: 'queueForCallback'}));
 
         // callback already exists
         if (this._attachedCallbacks.has(channel)) {
@@ -79,13 +79,13 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
         return false;
     }
 
-    get $back(): CommonHookLike {
+    get $back(): HookCommonLike {
         return this;
     }
 
     whenProviderDefined<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, consumer: ClassLike, callback: HookDefinedProviderLambda<T>): void {
-        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.CommonHook`, method: 'whenProviderDefined'}));
-        this.lyy.assertion.func(consumer, () => this.lyy.dev.opt({field: 'consumer', where: `${FQN}.CommonHook`, method: 'whenProviderDefined'}));
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.HookCommon`, method: 'whenProviderDefined'}));
+        this.lyy.assertion.func(consumer, () => this.lyy.dev.opt({field: 'consumer', where: `${FQN}.HookCommon`, method: 'whenProviderDefined'}));
 
         if (!this._waitingForProviders.has(channel)) {
             this._waitingForProviders.set(channel, []);
@@ -100,8 +100,8 @@ export class CommonHook implements CommonHookLike, CommonHookSecure {
     }
 
     defineProvider<T extends HookDefinedProvider = HookDefinedProvider>(channel: symbol, producer: ClassLike, instance: T): void {
-        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.CommonHook`, method: 'defineProvider'}));
-        this.lyy.assertion.func(producer, () => this.lyy.dev.opt({field: 'producer', where: `${FQN}.CommonHook`, method: 'defineProvider'}));
+        this.lyy.assertion.sym(channel, () => this.lyy.dev.opt({field: 'channel', where: `${FQN}.HookCommon`, method: 'defineProvider'}));
+        this.lyy.assertion.func(producer, () => this.lyy.dev.opt({field: 'producer', where: `${FQN}.HookCommon`, method: 'defineProvider'}));
 
         const ins = {...instance, producer} as $HookDefinedProvider;
         this._definedProviders.set(channel, ins);

@@ -1,25 +1,26 @@
-import {CommonWrapperLike, CommonWrapperSecure, WrapLike, WrapType} from "./index.types";
-import {LeyyoLike} from "../leyyo";
-import {ClassLike, Fnc, Obj} from "../shared";
 import {FQN} from "../internal";
 import {Wrap} from "./wrap";
 
-export class CommonWrapper implements CommonWrapperLike, CommonWrapperSecure {
+import type {WrapperCommonLike, WrapperCommonSecure, WrapLike, WrapType} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {ClassLike, Fnc, Obj} from "../shared";
+
+export class WrapperCommon implements WrapperCommonLike, WrapperCommonSecure {
 
     constructor(private lyy: LeyyoLike) {
     }
 
-    get $secure(): CommonWrapperSecure {
+    get $secure(): WrapperCommonSecure {
         return this;
     }
 
-    get $back(): CommonWrapperLike {
+    get $back(): WrapperCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonWrapper, 'class', FQN);
+            this.lyy.fqn.register(null, WrapperCommon, 'class', FQN);
             this.lyy.fqn.register(null, Wrap, 'class', FQN);
         });
     }

@@ -1,9 +1,10 @@
-import {ClassLike, Fnc, Obj} from "../shared";
 import {FQN} from "../internal";
-import {LeyyoLike} from "../leyyo";
-import {CommonDescriptorLike, CommonDescriptorSecure, PropDescriptor} from "./index.types";
 
-export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorSecure {
+import type {ClassLike, Fnc, Obj} from "../shared";
+import type {LeyyoLike} from "../leyyo";
+import type {DescriptorCommonLike, DescriptorCommonSecure, PropDescriptor} from "./index.types";
+
+export class DescriptorCommon implements DescriptorCommonLike, DescriptorCommonSecure {
     private _funcSign: symbol;
 
     constructor(private lyy: LeyyoLike) {
@@ -105,17 +106,17 @@ export class CommonDescriptor implements CommonDescriptorLike, CommonDescriptorS
     }
 
     // region secure
-    get $back(): CommonDescriptorLike {
+    get $back(): DescriptorCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonDescriptor, 'class', FQN);
+            this.lyy.fqn.register(null, DescriptorCommon, 'class', FQN);
         });
     }
 
-    get $secure(): CommonDescriptorSecure {
+    get $secure(): DescriptorCommonSecure {
         return this;
     }
     // endregion secure

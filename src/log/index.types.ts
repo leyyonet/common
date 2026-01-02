@@ -1,15 +1,15 @@
-import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
-import {HookDefinedProvider} from "../hook";
-import {DevOpt} from "../developer";
-import {Severity} from "./severity";
-import {CommonDeploySecure} from "../deploy";
+import type {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {HookDefinedProvider} from "../hook";
+import type {DevOpt} from "../developer";
+import type {Severity} from "./severity";
+import type {DeployCommonSecure} from "../deploy";
 
-export interface CommonLogLike extends ShiftSecure<CommonLogSecure>, LogConsumer {
+export interface LogCommonLike extends ShiftSecure<LogCommonSecure>, LogConsumer {
     create(clazz: Object | Function | string): Logger;
 }
 
 
-export type CommonLogSecure = ShiftMain<CommonLogLike> & InitLike;
+export type LogCommonSecure = ShiftMain<LogCommonLike> & InitLike;
 
 
 export interface LogDefinedProvider extends HookDefinedProvider {
@@ -64,7 +64,7 @@ export interface Logger extends ShiftSecure<LoggerSecure> {
     fatal(error: Error, params?: any|DevOpt): void;
     fatal(whatever: any, params?: any|DevOpt): void;
 
-    get deploy(): CommonDeploySecure;
+    get deploy(): DeployCommonSecure;
 }
 
 export interface LoggerSecure extends ShiftMain<Logger> {

@@ -1,4 +1,4 @@
-import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
 import {List} from "../to";
 
 /**
@@ -6,7 +6,7 @@ import {List} from "../to";
  *
  * Purpose, unify all iteration based data in some place to track memory usage in your applications
  * */
-export interface CommonRepoLike extends ShiftSecure<CommonRepoSecure> {
+export interface RepoCommonLike extends ShiftSecure<RepoCommonSecure> {
     // region array
     /**
      * Creates new array with given collection
@@ -124,9 +124,9 @@ export interface CommonRepoLike extends ShiftSecure<CommonRepoSecure> {
      *
      * @param {RepoType} type
      * @param {symbol?} collection
-     * @return {CommonRepoItem}
+     * @return {RepoItem}
      * */
-    detailItem(type: RepoType, collection?: symbol): CommonRepoItem;
+    detailItem(type: RepoType, collection?: symbol): RepoItem;
 
     /**
      * Exports sizes of repositories by given type and collection
@@ -134,22 +134,22 @@ export interface CommonRepoLike extends ShiftSecure<CommonRepoSecure> {
      *
      * @param {RepoType?} type
      * @param {symbol?} collection
-     * @return {CommonRepoDetail}
+     * @return {RepoDetail}
      * */
-    details(type?: RepoType, collection?: symbol): CommonRepoDetail;
+    details(type?: RepoType, collection?: symbol): RepoDetail;
 }
 
-export type CommonRepoSecure = ShiftMain<CommonRepoLike> & InitLike;
+export type RepoCommonSecure = ShiftMain<RepoCommonLike> & InitLike;
 
 
 /**
  * Repo size dictionary which in corresponding type
  * */
-export type CommonRepoItem = Dict<number>;
+export type RepoItem = Dict<number>;
 
 /**
  * Repo export dictionary which includes items
  * */
-export type CommonRepoDetail = Record<RepoType, CommonRepoItem>;
+export type RepoDetail = Record<RepoType, RepoItem>;
 export type RepoType = 'array' | 'list' | 'map' | 'set' | 'record';
 export type RepoLengthLambda = (obj: unknown) => number;

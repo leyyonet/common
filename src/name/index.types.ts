@@ -1,6 +1,6 @@
-import {ClassLike, Fnc, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {ClassLike, Fnc, InitLike, ShiftMain, ShiftSecure} from "../shared";
 
-export interface CommonNameLike extends ShiftSecure<CommonNameSecure> {
+export interface NameCommonLike extends ShiftSecure<NameCommonSecure> {
     /**
      * Copies function name
      * */
@@ -21,5 +21,5 @@ export interface CommonNameLike extends ShiftSecure<CommonNameSecure> {
      * */
     anonymous(type?: string, counter?: number): string;
 }
-export interface CommonNameSecure extends ShiftMain<CommonNameLike>, InitLike {
+export interface NameCommonSecure extends ShiftMain<NameCommonLike>, InitLike {
 }

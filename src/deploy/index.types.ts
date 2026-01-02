@@ -1,10 +1,10 @@
-import {InitLike, ShiftMain, ShiftSecure} from "../shared";
-import {Logger} from "../log";
-import {DevOpt} from "../developer";
+import type {InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {Logger} from "../log";
+import type {DevOpt} from "../developer";
 
-export interface CommonDeployLike extends ShiftSecure<CommonDeploySecure> {
+export interface DeployCommonLike extends ShiftSecure<DeployCommonSecure> {
     clearMessages(): void;
-    logger(logger: Logger): CommonDeploySecure;
+    logger(logger: Logger): DeployCommonSecure;
     printAll(pck: string): void;
     printAll(logger: Logger): void;
     has(pck: string, testCase: number | string): DeployType;
@@ -14,7 +14,7 @@ export interface CommonDeployLike extends ShiftSecure<CommonDeploySecure> {
     warn(pck: string, deleteSelected?: boolean): Array<DevOpt>;
 
 }
-export interface CommonDeploySecure extends ShiftMain<CommonDeployLike>, InitLike {
+export interface DeployCommonSecure extends ShiftMain<DeployCommonLike>, InitLike {
     $debug(pck: string, testCase: number | string, opt: DevOpt): void;
     $info(pck: string, testCase: number | string, opt: DevOpt): void;
     $warn(pck: string, testCase: number | string, opt: DevOpt): void;

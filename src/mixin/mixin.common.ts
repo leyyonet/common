@@ -1,15 +1,15 @@
-import {CommonMixinLike, CommonMixinSecure} from "./index.types";
-import {LeyyoLike} from "../leyyo";
+import type {MixinCommonLike, MixinCommonSecure, PickPredicate} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {Obj} from "../shared";
+import type {IsCommonLike} from "../is";
+
 import {FQN} from "../internal";
-import {Obj} from "../shared";
-import {CommonIsLike} from "../is";
 
 const IGNORED_PROPS = ['constructor', '__proto__', 'prototype'];
 const IGNORED_TYPES = ['symbol', 'undefined'];
 
-export type PickPredicate = (value: unknown) => boolean;
-export class CommonMixin implements CommonMixinLike, CommonMixinSecure {
-    private readonly is: CommonIsLike;
+export class MixinCommon implements MixinCommonLike, MixinCommonSecure {
+    private readonly is: IsCommonLike;
     constructor(private lyy: LeyyoLike) {
         this.is = lyy.is;
     }
@@ -154,17 +154,17 @@ export class CommonMixin implements CommonMixinLike, CommonMixinSecure {
     };
     // region secure
 
-    get $secure(): CommonMixinSecure {
+    get $secure(): MixinCommonSecure {
         return this;
     }
 
-    get $back(): CommonMixinLike {
+    get $back(): MixinCommonLike {
         return this;
     }
 
     $init(): void {
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonMixin, 'class', FQN);
+            this.lyy.fqn.register(null, MixinCommon, 'class', FQN);
         });
     }
     // endregion secure

@@ -1,7 +1,8 @@
-import {InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
-import {PickPredicate} from "./common-mixin";
+import type {InitLike, Obj, ShiftMain, ShiftSecure} from "../shared";
 
-export interface CommonMixinLike extends ShiftSecure<CommonMixinSecure> {
+export type PickPredicate = (value: unknown) => boolean;
+
+export interface MixinCommonLike extends ShiftSecure<MixinCommonSecure> {
 
 
     mergeExisting<T extends Obj = Obj>(host: Partial<T>, source: Partial<T>, ...omittedFields: Array<keyof T | string>): void;
@@ -19,5 +20,5 @@ export interface CommonMixinLike extends ShiftSecure<CommonMixinSecure> {
     pickInverse<T extends Obj = Obj>(object: T, keys: Array<keyof T | string>): Partial<T>;
     pickInverse<T extends Obj = Obj>(object: T, predicate: PickPredicate): Partial<T>;
 }
-export interface CommonMixinSecure extends ShiftMain<CommonMixinLike>, InitLike {
+export interface MixinCommonSecure extends ShiftMain<MixinCommonLike>, InitLike {
 }

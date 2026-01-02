@@ -10,8 +10,8 @@ if (global?.leyyo_is_testing) {
 }
 console['fatal'] = (...args: Array<unknown>) => console.error(...args);
 
-import {LeyyoLike} from "./leyyo";
 import {Leyyo} from "./leyyo/leyyo";
+import type {LeyyoLike} from "./leyyo";
 
 export * from './assertion';
 export * from './developer';

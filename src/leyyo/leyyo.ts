@@ -1,81 +1,81 @@
-import {Fnc, InitLike} from "../shared";
+import type {Fnc, InitLike} from "../shared";
 import {FQN} from "../internal";
+import {SystemCommon} from "../system/system.common";
+import {IsCommon} from "../is/is.common";
+import {RepoCommon} from "../repo/repo.common";
+import {HookCommon} from "../hook/hook.common";
+import {LogCommon} from "../log/log.common";
+import {FqnCommon} from "../fqn/fqn.common";
+import {DeveloperCommon} from "../developer/developer.common";
+import {ErrorCommon} from "../error/error.common";
+import {AssertionCommon} from "../assertion/assertion.common";
+import {ToCommon} from "../to/to.common";
+import {DescriptorCommon} from "../descriptor/descriptor.common";
+import {WrapperCommon} from "../wrapper/wrapper.common";
+import {TestCommon} from "../test/test.common";
+import {DeployCommon} from "../deploy/deploy.common";
+import {NameCommon} from "../name/name.common";
+import {ConfigCommon} from "../config/config.common";
+import {MixinCommon} from "../mixin/mixin.common";
 
-import {CommonHookLike} from "../hook";
-import {LeyyoLike, LeyyoSecure} from "./index.types";
-import {CommonIsLike} from "../is";
-import {CommonAssertionLike} from "../assertion";
-import {CommonErrorLike} from "../error";
-import {CommonLogLike} from "../log";
-import {CommonRepoLike} from "../repo";
-import {CommonToLike} from "../to";
-import {CommonFqnLike} from "../fqn";
-import {CommonSystemLike} from "../system";
-import {CommonDeveloperLike} from "../developer";
-import {CommonDescriptorLike} from "../descriptor";
-import {CommonWrapperLike} from "../wrapper";
-import {CommonTestLike} from "../test";
-import {CommonSystem} from "../system/common-system";
-import {CommonIs} from "../is/common-is";
-import {CommonRepo} from "../repo/common-repo";
-import {CommonHook} from "../hook/common-hook";
-import {CommonLog} from "../log/common-log";
-import {CommonFqn} from "../fqn/common-fqn";
-import {CommonDeveloper} from "../developer/common-developer";
-import {CommonError} from "../error/common-error";
-import {CommonAssertion} from "../assertion/common-assertion";
-import {CommonTo} from "../to/common-to";
-import {CommonDescriptor} from "../descriptor/common-descriptor";
-import {CommonWrapper} from "../wrapper/common-wrapper";
-import {CommonTest} from "../test/common-test";
-import {CommonDeployLike} from "../deploy";
-import {CommonDeploy} from "../deploy/common-deploy";
-import {CommonNameLike} from "../name";
-import {CommonName} from "../name/common-name";
-import {CommonConfigLike} from "../config";
-import {CommonConfig} from "../config/common-config";
-import {CommonMixinLike} from "../mixin";
-import {CommonMixin} from "../mixin/common-mixin";
+import type {ConfigCommonLike} from "../config";
+import type {DeployCommonLike} from "../deploy";
+import type {MixinCommonLike} from "../mixin";
+import type {NameCommonLike} from "../name";
+import type {HookCommonLike} from "../hook";
+import type {LeyyoLike, LeyyoSecure} from "./index.types";
+import type {IsCommonLike} from "../is";
+import type {AssertionCommonLike} from "../assertion";
+import type {ErrorCommonLike} from "../error";
+import type {LogCommonLike} from "../log";
+import type {RepoCommonLike} from "../repo";
+import type {ToCommonLike} from "../to";
+import type {FqnCommonLike} from "../fqn";
+import type {SystemCommonLike} from "../system";
+import type {DeveloperCommonLike} from "../developer";
+import type {DescriptorCommonLike} from "../descriptor";
+import type {WrapperCommonLike} from "../wrapper";
+import type {TestCommonLike} from "../test";
 
 export class Leyyo implements LeyyoLike, LeyyoSecure {
     private _lazyCallbacks: Array<Fnc> = [];
     private _earlyCallbacks: Array<Fnc> = [];
-    readonly hook: CommonHookLike;
-    readonly is: CommonIsLike;
-    readonly assertion: CommonAssertionLike;
-    readonly error: CommonErrorLike;
-    readonly log: CommonLogLike;
-    readonly repo: CommonRepoLike;
-    readonly to: CommonToLike;
-    readonly fqn: CommonFqnLike;
-    readonly system: CommonSystemLike;
-    readonly dev: CommonDeveloperLike;
-    readonly descriptor: CommonDescriptorLike;
-    readonly wrapper: CommonWrapperLike;
-    readonly test: CommonTestLike;
-    readonly deploy: CommonDeployLike;
-    readonly name: CommonNameLike;
-    readonly config: CommonConfigLike;
-    readonly mixin: CommonMixinLike;
+    readonly hook: HookCommonLike;
+    readonly is: IsCommonLike;
+    readonly assertion: AssertionCommonLike;
+    readonly error: ErrorCommonLike;
+    readonly log: LogCommonLike;
+    readonly repo: RepoCommonLike;
+    readonly to: ToCommonLike;
+    readonly fqn: FqnCommonLike;
+    readonly system: SystemCommonLike;
+    readonly dev: DeveloperCommonLike;
+    readonly descriptor: DescriptorCommonLike;
+    readonly wrapper: WrapperCommonLike;
+    readonly test: TestCommonLike;
+    readonly deploy: DeployCommonLike;
+    readonly name: NameCommonLike;
+    readonly config: ConfigCommonLike;
+    readonly mixin: MixinCommonLike;
 
     constructor() {
-        this.system = new CommonSystem(this); // no
-        this.is = new CommonIs(this); // no
-        this.test = new CommonTest(this); // no
-        this.repo = new CommonRepo(this); // none
-        this.config = new CommonConfig(this); // is
-        this.mixin = new CommonMixin(this); // is
-        this.dev = new CommonDeveloper(this); // test
-        this.deploy = new CommonDeploy(this); // dev, test
-        this.assertion = new CommonAssertion(this); // dev, test
-        this.wrapper = new CommonWrapper(this); // assertion, dev
-        this.descriptor = new CommonDescriptor(this); // assertion, dev
-        this.name = new CommonName(this); // assertion, dev, descriptor
-        this.to = new CommonTo(this); // is, dev, wrapper
-        this.hook = new CommonHook(this) // repo, assertion, dev, sym
-        this.error = new CommonError(this); // hook
-        this.log = new CommonLog(this); // hook, test
-        this.fqn = new CommonFqn(this); // hook, descriptor, dev
+        this.system = new SystemCommon(this); // no
+        this.is = new IsCommon(this); // no
+        this.test = new TestCommon(this); // no
+        this.repo = new RepoCommon(this); // none
+        this.config = new ConfigCommon(this); // is
+        this.mixin = new MixinCommon(this); // is
+        this.dev = new DeveloperCommon(this); // test
+        this.deploy = new DeployCommon(this); // dev, test
+        this.assertion = new AssertionCommon(this); // dev, test
+        this.wrapper = new WrapperCommon(this); // assertion, dev
+        this.descriptor = new DescriptorCommon(this); // assertion, dev
+        this.name = new NameCommon(this); // assertion, dev, descriptor
+        this.to = new ToCommon(this); // is, dev, wrapper
+        this.hook = new HookCommon(this) // repo, assertion, dev, sym
+        this.error = new ErrorCommon(this); // hook
+        this.log = new LogCommon(this); // hook, test
+        this.fqn = new FqnCommon(this); // hook, descriptor, dev
 
         const members = [
             this.system.$secure,

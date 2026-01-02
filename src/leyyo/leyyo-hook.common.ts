@@ -1,8 +1,8 @@
 import {FQN} from "../internal";
 
-export class LeyyoCommonHook {
+export class LeyyoHookCommon {
     constructor() {
-        throw new Error('LeyyoCommonHook is for only static usage');
+        throw new Error('LeyyoHookCommon is for only static usage');
     }
 
     static readonly errorAttached: unique symbol = Symbol.for(`${FQN}/error.attached`);

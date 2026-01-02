@@ -1,4 +1,4 @@
-import {DevOpt} from "./index.types";
+import type {DevOpt} from "./index.types";
 
 export class LeyyoError extends Error {
     params: DevOpt;

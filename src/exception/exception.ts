@@ -1,9 +1,9 @@
-import {CommonErrorLike} from "../error";
-import {Abstract, ClassLike, ClassOrName, Dict} from "../shared";
-import {LogLine} from "../log";
-import {LeyyoLike} from "../leyyo";
-import {ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index.types";
-import {DevOpt} from "../developer";
+import type {ErrorCommonLike} from "../error";
+import type {Abstract, ClassLike, ClassOrName, Dict} from "../shared";
+import type {LogLine} from "../log";
+import type {LeyyoLike} from "../leyyo";
+import type {ExceptionLike, ExceptionParamsAppend, ExceptionSecure, ExceptionStackLine} from "./index.types";
+import type {DevOpt} from "../developer";
 
 
 export class Exception extends Error implements ExceptionLike, ExceptionSecure {
@@ -130,7 +130,7 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
         this.lyy = lyy;
     }
 
-    static get $error(): CommonErrorLike {
+    static get $error(): ErrorCommonLike {
         return this.lyy.error;
     }
 

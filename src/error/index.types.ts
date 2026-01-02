@@ -1,8 +1,8 @@
-import {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
-import {ExceptionLike} from "../exception";
-import {HookDefinedProvider} from "../hook";
+import type {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {ExceptionLike} from "../exception";
+import type {HookDefinedProvider} from "../hook";
 
-export interface CommonErrorLike extends ShiftSecure<CommonErrorSecure> {
+export interface ErrorCommonLike extends ShiftSecure<ErrorCommonSecure> {
     register(cls: Function): void;
 
     build(e: Error | string): ExceptionLike;
@@ -37,7 +37,7 @@ export interface CommonErrorLike extends ShiftSecure<CommonErrorSecure> {
 }
 
 
-export type CommonErrorSecure = ShiftMain<CommonErrorLike> & InitLike;
+export type ErrorCommonSecure = ShiftMain<ErrorCommonLike> & InitLike;
 
 export interface ErrorDefinedProvider extends HookDefinedProvider {
     register(exception: ExceptionLike): void;

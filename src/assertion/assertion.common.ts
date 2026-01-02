@@ -1,19 +1,20 @@
-import {
+import {FQN} from "../internal";
+
+import type {
     AssertionCallback,
+    AssertionCommonLike,
     AssertionTuple,
     AssertionTupleDuals,
     AssertionTupleValue,
-    CommonAssertionLike,
-    CommonAssertionSecure
+    AssertionCommonSecure
 } from "./index.types";
-import {LeyyoLike} from "../leyyo";
-import {DevOpt} from "../developer";
-import {FQN} from "../internal";
-import {ClassLike, EnumLiteral, EnumMap, Fnc, KeyValue} from "../shared";
+import type {LeyyoLike} from "../leyyo";
+import type {DevOpt} from "../developer";
+import type {ClassLike, EnumLiteral, EnumMap, Fnc, KeyValue} from "../shared";
 
 // noinspection JSUnusedGlobalSymbols
 /** @inheritDoc */
-export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecure {
+export class AssertionCommon implements AssertionCommonLike, AssertionCommonSecure {
     // region properties
     private readonly _EMPTY = [null, undefined];
 
@@ -763,7 +764,7 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
     // region secure
 
     /** @inheritDoc */
-    get $back(): CommonAssertionLike {
+    get $back(): AssertionCommonLike {
         return this;
     }
 
@@ -771,12 +772,12 @@ export class CommonAssertion implements CommonAssertionLike, CommonAssertionSecu
     $init(): void {
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonAssertion, 'class', FQN);
+            this.lyy.fqn.register(null, AssertionCommon, 'class', FQN);
         })
     }
 
     /** @inheritDoc */
-    get $secure(): CommonAssertionSecure {
+    get $secure(): AssertionCommonSecure {
         return this;
     }
 

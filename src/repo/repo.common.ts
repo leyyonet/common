@@ -1,19 +1,13 @@
-import {
-    CommonRepoDetail,
-    CommonRepoItem,
-    CommonRepoLike,
-    CommonRepoSecure,
-    RepoLengthLambda,
-    RepoType
-} from "./index.types";
-import {LeyyoLike} from "../leyyo";
 import {FQN} from "../internal";
 import {List} from "../to";
-import {Arr} from "../shared";
+
+import type {RepoCommonLike, RepoCommonSecure, RepoDetail, RepoItem, RepoLengthLambda, RepoType} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {Arr} from "../shared";
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 /** @inheritDoc */
-export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
+export class RepoCommon implements RepoCommonLike, RepoCommonSecure {
     private readonly _lists = new Map<symbol, List<unknown>>();
     private readonly _arrays = new Map<symbol, Array<unknown>>();
     private readonly _maps = new Map<symbol, Map<unknown, unknown>>();
@@ -32,11 +26,11 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
     $init(): void {
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, CommonRepo, 'class', FQN);
+            this.lyy.fqn.register(null, RepoCommon, 'class', FQN);
         });
     }
 
-    private _addDetail(map: Map<any, any>, result: CommonRepoItem, collection: symbol, fn: RepoLengthLambda): void {
+    private _addDetail(map: Map<any, any>, result: RepoItem, collection: symbol, fn: RepoLengthLambda): void {
         if (!map) {
             if (collection) {
                 result[collection.description] = -1;
@@ -143,8 +137,8 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
 
     // region detail
     /** @inheritDoc */
-    detailItem(type: RepoType, collection?: symbol): CommonRepoItem {
-        const result = {} as CommonRepoItem;
+    detailItem(type: RepoType, collection?: symbol): RepoItem {
+        const result = {} as RepoItem;
         switch (type) {
             case "array":
                 this._addDetail(this._arrays, result, collection, (v: Arr) => v.length);
@@ -168,8 +162,8 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
     }
 
     /** @inheritDoc */
-    details(type?: RepoType, collection?: symbol): CommonRepoDetail {
-        const result = {} as CommonRepoDetail;
+    details(type?: RepoType, collection?: symbol): RepoDetail {
+        const result = {} as RepoDetail;
         if (type) {
             result[type] = this.detailItem(type, collection);
         } else {
@@ -183,11 +177,11 @@ export class CommonRepo implements CommonRepoLike, CommonRepoSecure {
     }
     // endregion detail
 
-    get $back(): CommonRepoLike {
+    get $back(): RepoCommonLike {
         return this;
     }
 
-    get $secure(): CommonRepoSecure {
+    get $secure(): RepoCommonSecure {
         return this;
     }
 }

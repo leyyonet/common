@@ -1,7 +1,7 @@
-import {Arr, Describable, InitLike, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
-import {Severity} from "../log";
+import type {Arr, Describable, InitLike, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
+import type {Severity} from "../log";
 
-export interface CommonDeveloperLike extends ShiftSecure<CommonDeveloperSecure> {
+export interface DeveloperCommonLike extends ShiftSecure<DeveloperCommonSecure> {
     opt<O extends DevOpt = DevOpt>(value: O): O;
     desc<O extends DevOpt = DevOpt>(ins: Describable, value: O): O;
 
@@ -74,7 +74,7 @@ export interface CommonDeveloperLike extends ShiftSecure<CommonDeveloperSecure> 
 /**
  * Secure assertion methods
  * */
-export type CommonDeveloperSecure = ShiftMain<CommonDeveloperLike> & InitLike;
+export type DeveloperCommonSecure = ShiftMain<DeveloperCommonLike> & InitLike;
 
 
 export interface DevOpt {
@@ -96,7 +96,7 @@ export interface DevOpt {
 export type DevCallback = () => DevOpt;
 
 
-export type DeveloperReason = 'invalid' | 'not.allowed' | 'not.found' | 'duplicated' | 'empty' | 'conflicted'
+export type DeveloperReason = 'invalid' | 'not.allowed' | 'not.found' | 'duplicated' | 'empty' | 'conflicted';
 
 
 export interface DeveloperParamResult {

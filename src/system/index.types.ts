@@ -1,11 +1,11 @@
-import {InitLike, ShiftMain, ShiftSecure} from "../shared";
+import type {InitLike, ShiftMain, ShiftSecure} from "../shared";
 
-export interface CommonSystemLike extends ShiftSecure<CommonSystemSecure> {
+export interface SystemCommonLike extends ShiftSecure<SystemCommonSecure> {
     isSysFunction(method: string): boolean;
 
     isSysClass(clazz: string | Function): boolean;
 }
 
 
-export type CommonSystemSecure = ShiftMain<CommonSystemLike> & InitLike;
+export type SystemCommonSecure = ShiftMain<SystemCommonLike> & InitLike;
 
