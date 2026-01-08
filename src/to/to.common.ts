@@ -683,6 +683,45 @@ export class ToCommon implements ToCommonLike, ToCommonSecure {
         return this.$unexpectedError(value, this._EXPECTED_ARRAY, opt);
     }
 
+    delimitedStrict<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V> {
+        return this.delimited(value, opt, itemFn, true);
+    }
+    delimitedStrictNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V> {
+        const result = this.delimited(value, opt, itemFn, true);
+        if (result.length < 1) {
+            this.$emptyError('array', opt);
+        }
+        return result;
+    }
+    delimitedNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V> {
+        const result = this.delimited(value, opt, itemFn, false);
+        if (result && result.length < 1) {
+            this.$emptyError('array', opt);
+        }
+        return result;
+    }
+    delimited<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>, notNull?: boolean): Array<V> {
+        if (this._EMPTY.includes(value)) {
+            if (notNull) {
+                this.$nullError(this._EXPECTED_ARRAY, opt);
+            }
+            return value;
+        }
+        switch (typeof value) {
+            case "string":
+                return this.array(value.split(',').map(v => v.trim()), opt, itemFn, notNull);
+            case "boolean":
+            case "number":
+            case "bigint":
+                return this.array([value], opt, itemFn, notNull);
+            case 'object':
+                return this.array(value, opt, itemFn, notNull);
+            case 'function':
+                return this.$runFn(v => this.delimited(v, opt, itemFn, notNull), value, opt);
+        }
+        return this.$unexpectedError(value, this._EXPECTED_ARRAY, opt);
+    }
+
     setStrict<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V> {
         return this.set(value, opt, itemFn, true);
     }

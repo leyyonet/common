@@ -68,12 +68,6 @@ export interface Describable {
 export interface Nameable {
     name: string;
 }
-/**
- * Serialized version of another type
- */
-export type Serialized<T> = {
-    [P in keyof T]: T[P];
-};
 export type ClassOrName = ClassLike | string;
 export type FuncOrName = Function | string;
 export type ClassOrFuncOrName = ClassLike | Function | string;
@@ -126,16 +120,10 @@ export type OneOf<Obj> = ValueOf<OneOfByKey<Obj>>;
 export type Xor<A, B> =
     | XorIn<A & { [K in keyof B]?: undefined }>
     | XorIn<B & { [K in keyof A]?: undefined }>;
-export type Mutable<A> = {
-    -readonly [K in keyof A]: A[K];
-}
 export type OneOrMore<T> = T | Array<T>;
 export type ValueOrCallback<T> = T | ValueCallback<T> | ValueCallbackAsync<T>;
 export type ValueCallback<T> = () => T;
 export type ValueCallbackAsync<T> = () => Promise<T>;
-export type SameType<A, T> = {
-    [K in keyof A]: T;
-}
 type OneOnly<T, K extends keyof T> = Omit<T, Exclude<keyof T, K>> | Pick<T, K>;
 type OneOfByKey<T> = { [key in keyof T]: OneOnly<T, key> };
 type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
@@ -235,3 +223,25 @@ export type I18nAny<V = unknown> = I18nRaw<V> | V;
 export type EnumMap<E extends KeyValue = KeyValue> = Dict<E>;
 export type EnumAlt<E extends KeyValue = KeyValue> = Dict<E>;
 export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|unknown;
+
+// region replace or ignore property type
+export type IgnoreFieldsByType<T, I> = {
+    [K in keyof T]: T[K] extends I ? K : never
+}[keyof T];
+export type ReplaceType<T, O, N> = {
+    [P in keyof T]: T[P] extends O ? N : T[P];
+};
+export type SameType<A, T> = {
+    [K in keyof A]: T;
+}
+/**
+ * Serialized version of another type
+ */
+export type Serialized<T> = {
+    [P in keyof T]: T[P];
+};
+export type Mutable<A> = {
+    -readonly [K in keyof A]: A[K];
+}
+
+// endregion

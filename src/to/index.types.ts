@@ -46,6 +46,11 @@ export interface ToCommonLike extends ShiftSecure<ToCommonSecure> {
     arrayNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
     array<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>, notNull?: boolean): Array<V>;
 
+    delimitedStrict<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
+    delimitedStrictNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
+    delimitedNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Array<V>;
+    delimited<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>, notNull?: boolean): Array<V>;
+
     setStrict<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V>;
     setStrictNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V>;
     setNotEmpty<V = any>(value: any, opt?: ToOptAny, itemFn?: ToSubIndexFnLambda<V>): Set<V>;
