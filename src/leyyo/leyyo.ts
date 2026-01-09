@@ -15,10 +15,8 @@ import {WrapperCommon} from "../wrapper/wrapper.common";
 import {TestCommon} from "../test/test.common";
 import {DeployCommon} from "../deploy/deploy.common";
 import {NameCommon} from "../name/name.common";
-import {ConfigCommon} from "../config/config.common";
 import {MixinCommon} from "../mixin/mixin.common";
 
-import type {ConfigCommonLike} from "../config";
 import type {DeployCommonLike} from "../deploy";
 import type {MixinCommonLike} from "../mixin";
 import type {NameCommonLike} from "../name";
@@ -55,7 +53,6 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
     readonly test: TestCommonLike;
     readonly deploy: DeployCommonLike;
     readonly name: NameCommonLike;
-    readonly config: ConfigCommonLike;
     readonly mixin: MixinCommonLike;
 
     constructor() {
@@ -63,7 +60,6 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
         this.is = new IsCommon(this); // no
         this.test = new TestCommon(this); // no
         this.repo = new RepoCommon(this); // none
-        this.config = new ConfigCommon(this); // is
         this.mixin = new MixinCommon(this); // is
         this.dev = new DeveloperCommon(this); // test
         this.deploy = new DeployCommon(this); // dev, test
@@ -82,7 +78,6 @@ export class Leyyo implements LeyyoLike, LeyyoSecure {
             this.is.$secure,
             this.test.$secure,
             this.repo.$secure,
-            this.config.$secure,
             this.mixin.$secure,
             this.dev.$secure,
             this.deploy.$secure,

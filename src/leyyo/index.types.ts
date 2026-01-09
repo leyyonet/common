@@ -14,7 +14,6 @@ import type {WrapperCommonLike} from "../wrapper";
 import type {TestCommonLike} from "../test";
 import type {DeployCommonLike} from "../deploy";
 import type {NameCommonLike} from "../name";
-import type {ConfigCommonLike} from "../config";
 import type {MixinCommonLike} from "../mixin";
 
 export interface LeyyoLike extends ShiftSecure<LeyyoSecure> {
@@ -33,7 +32,6 @@ export interface LeyyoLike extends ShiftSecure<LeyyoSecure> {
     readonly test: TestCommonLike;
     readonly deploy: DeployCommonLike;
     readonly name: NameCommonLike;
-    readonly config: ConfigCommonLike;
     readonly mixin: MixinCommonLike;
 }
 export interface LeyyoSecure extends ShiftMain<LeyyoLike> {
