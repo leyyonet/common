@@ -1,4 +1,4 @@
-export const SysClassItems = [
+const literals = [
     'Function', 'Object', 'Boolean', 'Symbol',
     'Error', 'AggregateError', 'EvalError', 'InternalError', 'RangeError', 'ReferenceError', 'SyntaxError', 'TypeError', 'URIError',
     `Number`, `BigInt`, `Math`, `Date`,
@@ -18,4 +18,5 @@ export const SysClassItems = [
     'WebAssembly', 'WebAssembly.Module', 'WebAssembly.Instance', 'WebAssembly.Memory', 'WebAssembly.Table',
     'WebAssembly.CompileError', 'WebAssembly.LinkError', 'WebAssembly.RuntimeError'
 ] as const;
-export type SysClass = typeof SysClassItems[number];
+export type SysClass = typeof literals[number];
+export const SysClassItems = literals as ReadonlyArray<SysClass>;

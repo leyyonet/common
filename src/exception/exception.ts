@@ -76,7 +76,7 @@ export class Exception extends Error implements ExceptionLike, ExceptionSecure {
         }
         params.where = this._holder;
         // todo collect properties
-        const line = {severity: 'error', message: this, params} as LogLine;
+        const line = {level: 'error', message: this, params} as LogLine;
         this.$addSign('printed');
         Exception.lyy.log.apply(line);
         return this;

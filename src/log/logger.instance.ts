@@ -1,7 +1,7 @@
 import type {Logger, LoggerSecure, LogLine} from "./index.types";
 import type {LeyyoLike} from "../leyyo";
 import type {DevOpt} from "../developer";
-import type {Severity} from "./severity";
+import type {LogLevel} from "./log-level";
 import {FQN} from "../internal";
 import type {DeployCommonSecure} from "../deploy";
 
@@ -49,7 +49,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
         }
     }
 
-    private _prepare(severity: Severity, info: any, params: any): LogLine {
+    private _prepare(level: LogLevel, info: any, params: any): LogLine {
         const extra = {} as DevOpt;
         let e: Error;
         if (info instanceof Error) {
@@ -70,7 +70,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
                 opt['where'] = where;
             }
         }
-        return {severity, message, params: opt};
+        return {level, message, params: opt};
     }
 
     debug(message: any, params?: any|DevOpt): void {
@@ -123,7 +123,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
         this.lyy = lyy;
     }
 
-    $refresh(severity: Severity): void {
+    $refresh(level: LogLevel): void {
         const rec= {
             debug: false,
             trace: false,
@@ -131,8 +131,8 @@ export class LoggerInstance implements Logger, LoggerSecure {
             warn: false,
             error: true,
             fatal: true,
-        } as Record<Severity, boolean>;
-        switch (severity) {
+        } as Record<LogLevel, boolean>;
+        switch (level) {
             case 'debug':
                 rec.debug = true;
                 rec.trace = true;
@@ -157,7 +157,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
         for (const [k, active] of Object.entries(rec)) {
             if (active) {
                 this[k] = (message: any, params?: any|DevOpt): void => {
-                    LoggerInstance.lyy.log.apply(this._prepare(k as Severity, message, params));
+                    LoggerInstance.lyy.log.apply(this._prepare(k as LogLevel, message, params));
                 }
             }
             else {

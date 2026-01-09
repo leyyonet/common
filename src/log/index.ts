@@ -1,3 +1,3 @@
 export * from './index.types';
 export * from './logger.instance';
-export * from './severity';
+export * from './log-level';

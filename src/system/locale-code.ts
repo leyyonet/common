@@ -1,7 +1,4 @@
-/**
- * Locale code items
- * */
-export const LocaleCodeItems = ['af', 'an', 'ar', 'ar-ae', 'ar-bh', 'ar-dz', 'ar-eg', 'ar-iq', 'ar-jo', 'ar-kw', 'ar-lb', 'ar-ly',
+const literals = ['af', 'an', 'ar', 'ar-ae', 'ar-bh', 'ar-dz', 'ar-eg', 'ar-iq', 'ar-jo', 'ar-kw', 'ar-lb', 'ar-ly',
     'ar-ma', 'ar-om', 'ar-qa', 'ar-sa', 'ar-sy', 'ar-tn', 'ar-ye', 'as', 'ast', 'az', 'be', 'bg', 'bn', 'br', 'bs', 'ca', 'ce', 'ch',
     'co', 'cr', 'cs', 'cv', 'cy', 'da', 'de', 'de-at', 'de-ch', 'de-de', 'de-li', 'de-lu', 'el', 'en', 'en-au', 'en-bz', 'en-ca',
     'en-gb', 'en-ie', 'en-jm', 'en-nz', 'en-ph', 'en-tt', 'en-us', 'en-za', 'en-zw', 'eo', 'es', 'es-ar', 'es-bo', 'es-cl', 'es-co',
@@ -17,4 +14,5 @@ export const LocaleCodeItems = ['af', 'an', 'ar', 'ar-ae', 'ar-bh', 'ar-dz', 'ar
  *
  * Pattern: [Language Code]-[Country Code]
  * */
-export type LocaleCode = typeof LocaleCodeItems[number];
+export type LocaleCode = typeof literals[number];
+export const LocaleCodeItems = literals as ReadonlyArray<LocaleCode>;

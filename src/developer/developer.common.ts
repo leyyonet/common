@@ -4,7 +4,7 @@ import {CausedError, DeveloperError, InvalidValueError} from "./index.errors";
 import type {DeveloperCommonLike, DeveloperCommonSecure, DeveloperParamResult, DevOpt} from "./index.types";
 import type {LeyyoLike} from "../leyyo";
 import type {Arr, Describable, Obj} from "../shared";
-import type {Severity} from "../log";
+import type {LogLevel} from "../log";
 
 export class DeveloperCommon implements DeveloperCommonLike, DeveloperCommonSecure {
 
@@ -148,24 +148,24 @@ export class DeveloperCommon implements DeveloperCommonLike, DeveloperCommonSecu
         return new CausedError(`${issue}/${e.message}`, opt, e);
     }
 
-    log(v1: Error | DevOpt, v2: DevOpt|Severity, v3?: Severity): void {
+    log(v1: Error | DevOpt, v2: DevOpt|LogLevel, v3?: LogLevel): void {
         let error: Error = undefined;
         let opt: DevOpt;
-        let severity: Severity;
+        let level: LogLevel;
         if (v1 instanceof Error) {
             error = v1;
             opt = v2 as DevOpt;
-            severity = (typeof v3 === 'string') ? v3 : 'info';
+            level = (typeof v3 === 'string') ? v3 : 'info';
         } else {
             opt = v1;
-            severity = (typeof v2 === 'string') ? v2 : 'info';
+            level = (typeof v2 === 'string') ? v2 : 'info';
         }
         // todo
         const {opt: opt2, message} = this.buildParameters(opt, {}, error);
-        if (typeof console[severity] !== 'function') {
-            severity = 'info';
+        if (typeof console[level] !== 'function') {
+            level = 'info';
         }
-        console[severity](message, opt2);
+        console[level](message, opt2);
     }
 
     get $secure(): DeveloperCommonSecure {

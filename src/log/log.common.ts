@@ -3,7 +3,7 @@ import type {LogCommonLike, LogCommonSecure, LogDefinedProvider, Logger, LogLine
 import {LoggerInstance} from "./logger.instance";
 import type {Keys} from "../shared";
 import {FQN} from "../internal";
-import {type Severity, SeverityItems} from "./severity";
+import {type LogLevel, LogLevelItems} from "./log-level";
 import {$dev} from "../index";
 
 const BLINK = '\\033[5m';
@@ -45,7 +45,7 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
         warn:  ['warn',     ' WARN', YELLOW_BG, YELLOW_FG, YELLOW_FG, END],
         error: ['error',    'ERROR', RED_BG, RED_FG, RED_BG, END],
         fatal: ['error',    'FATAL', MAGENTA_BG, MAGENTA_FG, MAGENTA_BG, END],
-    } as Record<Severity, [string, string, string, string, string, string]>;
+    } as Record<LogLevel, [string, string, string, string, string, string]>;
 
     constructor(private lyy: LeyyoLike) {
         this.create.bind(this);
@@ -89,7 +89,7 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
             this.lyy.fqn.register(null, LoggerInstance, 'class', FQN);
 
             const enumMap = {
-                Severity: SeverityItems,
+                level: LogLevelItems,
             };
             for (const [name, value] of Object.entries(enumMap)) {
                 this.lyy.fqn.register(name, value, 'enum', FQN);
@@ -151,8 +151,8 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
         if (line.params && Object.keys(line.params).length > 0) {
             json = GRAY1 + ' => ' + this.lyy.dev.secureJson(line.params, true) + END;
         }
-        const colors = this.COLORS[line.severity] ?? this.COLORS.trace;
-        const [severity, short, bg, clr1, clr2S, cls2E] = colors;
+        const colors = this.COLORS[line.level] ?? this.COLORS.trace;
+        const [level, short, bg, clr1, clr2S, cls2E] = colors;
 
         const arr = [
             BLUE1, date.substring(11, 23), END,
@@ -164,7 +164,7 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
             clr2S, line.message, cls2E,
             json,
         ];
-        console[severity](arr.join(''));
+        console[level](arr.join(''));
     }
 
     get $back(): LogCommonLike {

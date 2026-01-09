@@ -1,7 +1,7 @@
 import type {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
 import type {HookDefinedProvider} from "../hook";
 import type {DevOpt} from "../developer";
-import type {Severity} from "./severity";
+import type {LogLevel} from "./log-level";
 import type {DeployCommonSecure} from "../deploy";
 
 export interface LogCommonLike extends ShiftSecure<LogCommonSecure>, LogConsumer {
@@ -27,7 +27,7 @@ export interface LogConsumer {
 }
 
 export interface LogLine {
-    severity: Severity;
+    level: LogLevel;
     message: string | Error;
     params?: Dict;
 }
@@ -72,5 +72,5 @@ export interface LoggerSecure extends ShiftMain<Logger> {
 
     get $name(): string;
 
-    $refresh(severity: Severity): void;
+    $refresh(level: LogLevel): void;
 }

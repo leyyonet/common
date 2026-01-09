@@ -1,8 +1,6 @@
-/**
- * Primitive items
- * */
-export const PrimitiveItems = ['string', 'number', 'boolean'] as const;
+const literals = ['string', 'number', 'boolean'] as const;
 /**
  * Primitive
  * */
-export type Primitive = typeof PrimitiveItems[number];
+export type Primitive = typeof literals[number];
+export const PrimitiveItems = literals as ReadonlyArray<Primitive>;

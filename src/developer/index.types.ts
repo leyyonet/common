@@ -1,5 +1,5 @@
 import type {Arr, Describable, InitLike, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
-import type {Severity} from "../log";
+import type {LogLevel} from "../log";
 
 export interface DeveloperCommonLike extends ShiftSecure<DeveloperCommonSecure> {
     opt<O extends DevOpt = DevOpt>(value: O): O;
@@ -43,11 +43,11 @@ export interface DeveloperCommonLike extends ShiftSecure<DeveloperCommonSecure> 
      * Asserts value is an object
      * @param {Error} e
      * @param {DevOpt} opt
-     * @param {Severity?} severity
+     * @param {LogLevel?} level
      * */
-    log(e: Error, opt: DevOpt, severity?: Severity): void;
+    log(e: Error, opt: DevOpt, level?: LogLevel): void;
 
-    log(opt: DevOpt, severity?: Severity): void;
+    log(opt: DevOpt, level?: LogLevel): void;
 
     /**
      * Empty function, it can be more useful sometimes

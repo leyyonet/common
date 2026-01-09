@@ -1,8 +1,6 @@
 /**
- * Weak True items
- * */
-export const WeakTrueItems = ['1', 'true', 't', 'yes', 'y', 'on'] as const;
-/**
  * Weak True
  * */
-export type WeakTrue = typeof WeakTrueItems[number];
+const literals = ['1', 'true', 't', 'yes', 'y', 'on'] as const;
+export type WeakTrue = typeof literals[number];
+export const WeakTrueItems = literals as ReadonlyArray<WeakTrue>;
