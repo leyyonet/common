@@ -1,0 +1,96 @@
+const IGNORED_KEYS = ['constructor', 'prototype', 'message', 'stack', 'name'];
+    private _item(value: any, set: WeakSet<any>): any {
+        if (value === null || value === undefined) {
+            return undefined;
+        }
+        switch (typeof value) {
+            case "string":
+            case "boolean":
+            case "number":
+            case "bigint":
+                return value;
+            case "object": {
+                if (set.has(value)) {
+                    return `#ref: circular dependency: ${value?.constructor?.name}`
+                }
+                set.add(value);
+                if (Array.isArray(value)) {
+                    return value
+                        .map(item => this._item(item, set));
+                }
+                else if (value instanceof Set) {
+                    return Array.from(value.values())
+                        .map(item => this._item(item, set));
+                }
+                else if (value instanceof Map) {
+                    const result = {};
+                    for (const [k, v] of value.entries()) {
+                        if (typeof k === 'symbol') {
+                            continue;
+                        }
+                        result[k] = this._item(v, set);
+                    }
+                    return result;
+                }
+                const result = {};
+                for (const [k, v] of Object.entries(value)) {
+                    if (typeof k === 'symbol') {
+                        continue;
+                    }
+                    result[k] = this._item(v, set);
+                }
+                return result;
+            }
+            case "function":
+                return `#ref: function: ${(value as {name: string})?.name}`
+            case "symbol":
+                return `#ref: symbol: ${(value as symbol)?.description}`
+        }
+        return undefined;
+    }
+    checkParams(exception: ExceptionLike): void {
+        const set = new WeakSet();
+        set.add(exception);
+        exception.params = this._item(exception.params, set);
+    }
+    export(exception: ExceptionLike): ExceptionExported {
+        const result = {} as ExceptionExported;
+
+        this.checkParams(exception);
+        const all = {...exception};
+        if (all.params) {
+            if (typeof all.params['$name'] === 'string') {
+                result.name = all.params['$name'] as string;
+                delete all.params['$name'];
+            }
+            else {
+                result.name = all.name;
+            }
+        }
+        if (all.name && result.name !== all.name && all.name !== 'BaseException') {
+            if ( !all.params) {
+                all.params = {};
+            }
+            all.params['$name'] = all.name;
+        }
+        delete all.name;
+
+        result.message = all.message ?? result.name;
+        delete all.message;
+
+        if (all.params !== undefined) {
+            if (Object.keys(all.params).length > 0) {
+                result.params = {...all.params};
+            }
+            delete all.params;
+        }
+        if (all.stackTrace !== undefined) {
+            result.stackTrace = [...all.stackTrace];
+            delete all.stackTrace;
+            delete all.stack;
+        }
+        if (all.stack !== undefined) {
+            delete all.stack;
+        }
+        return result;
+    }

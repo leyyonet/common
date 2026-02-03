@@ -12,7 +12,7 @@ export interface NameCommonLike extends ShiftSecure<NameCommonSecure> {
     set(target: Fnc | ClassLike, name: string): void;
 
     /**
-     * Validates fqn or function name
+     * Validates function name
      * */
     validate(value: string, hasPackage?: boolean): void;
 

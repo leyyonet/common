@@ -1,6 +1,3 @@
-import {FQN} from "../internal";
-import {List} from "../to";
-
 import type {RepoCommonLike, RepoCommonSecure, RepoDetail, RepoItem, RepoLengthLambda, RepoType} from "./index.types";
 import type {LeyyoLike} from "../leyyo";
 import type {Arr} from "../shared";
@@ -8,7 +5,6 @@ import type {Arr} from "../shared";
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 /** @inheritDoc */
 export class RepoCommon implements RepoCommonLike, RepoCommonSecure {
-    private readonly _lists = new Map<symbol, List<unknown>>();
     private readonly _arrays = new Map<symbol, Array<unknown>>();
     private readonly _maps = new Map<symbol, Map<unknown, unknown>>();
     private readonly _sets = new Map<symbol, Set<unknown>>();
@@ -26,7 +22,6 @@ export class RepoCommon implements RepoCommonLike, RepoCommonSecure {
     $init(): void {
 
         this.lyy.$secure.$lazyRun(() => {
-            this.lyy.fqn.register(null, RepoCommon, 'class', FQN);
         });
     }
 
@@ -59,21 +54,6 @@ export class RepoCommon implements RepoCommonLike, RepoCommonSecure {
             }
         }
     }
-
-    // region list
-    /** @inheritDoc */
-    newList<V>(...names: Array<string>): List<V> {
-        const list = new List<V>();
-        this._lists.set(Symbol.for(names.join('/')), list);
-        return list;
-    }
-
-    /** @inheritDoc */
-    getList<V>(collection: symbol): List<V> {
-        return this._lists.get(collection) as List<V>;
-    }
-
-    // endregion list
 
     // region array
     /** @inheritDoc */
@@ -143,9 +123,6 @@ export class RepoCommon implements RepoCommonLike, RepoCommonSecure {
             case "array":
                 this._addDetail(this._arrays, result, collection, (v: Arr) => v.length);
                 return result;
-            case "list":
-                this._addDetail(this._lists, result, collection, (v: List<unknown>) => v.length);
-                return result;
             case "map":
                 this._addDetail(this._maps, result, collection, (v: Map<unknown, unknown>) => v.size);
                 return result;
@@ -168,7 +145,6 @@ export class RepoCommon implements RepoCommonLike, RepoCommonSecure {
             result[type] = this.detailItem(type, collection);
         } else {
             result['array'] = this.detailItem('array', collection);
-            result['list'] = this.detailItem('list', collection);
             result['map'] = this.detailItem('map', collection);
             result['set'] = this.detailItem('set', collection);
             result['record'] = this.detailItem('record', collection);

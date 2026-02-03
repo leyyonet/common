@@ -1,6 +1,6 @@
 import type {InitLike, ShiftMain, ShiftSecure} from "../shared";
 import type {Logger} from "../log";
-import type {DevOpt} from "../developer";
+import type {Opt} from "../opt";
 
 export interface DeployCommonLike extends ShiftSecure<DeployCommonSecure> {
     clearMessages(): void;
@@ -9,22 +9,27 @@ export interface DeployCommonLike extends ShiftSecure<DeployCommonSecure> {
     printAll(logger: Logger): void;
     has(pck: string, testCase: number | string): DeployType;
 
-    debug(pck: string, deleteSelected?: boolean): Array<DevOpt>;
-    info(pck: string, deleteSelected?: boolean): Array<DevOpt>;
-    warn(pck: string, deleteSelected?: boolean): Array<DevOpt>;
+    debug(pck: string, deleteSelected?: boolean): Array<Opt>;
+    info(pck: string, deleteSelected?: boolean): Array<Opt>;
+    warn(pck: string, deleteSelected?: boolean): Array<Opt>;
+
+    title(testCase: string|number, title: string): string;
+    code(pck: string, testCase: string|number): string;
+    get isTest(): boolean;
 
 }
 export interface DeployCommonSecure extends ShiftMain<DeployCommonLike>, InitLike {
-    $debug(pck: string, testCase: number | string, opt: DevOpt): void;
-    $info(pck: string, testCase: number | string, opt: DevOpt): void;
-    $warn(pck: string, testCase: number | string, opt: DevOpt): void;
+    $debug(pck: string, testCase: number | string, opt: Opt): void;
+    $info(pck: string, testCase: number | string, opt: Opt): void;
+    $warn(pck: string, testCase: number | string, opt: Opt): void;
     $printAll(): void;
+    $ok(): void;
 }
 
 export interface DeployItem {
     logger: Logger;
     type: DeployType;
-    opt: DevOpt;
+    opt: Opt;
 }
 
 export type DeployType = 'debug' | 'info' | 'warn';

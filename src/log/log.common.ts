@@ -1,50 +1,51 @@
-import {LeyyoHookCommon, type LeyyoLike} from "../leyyo";
-import type {LogCommonLike, LogCommonSecure, LogDefinedProvider, Logger, LogLine, LogLineEnhanced} from "./index.types";
+import type {LeyyoLike} from "../leyyo";
+import type {LogCommonLike, LogCommonSecure, Logger, LogLine, LogLineEnhanced} from "./index.types";
 import {LoggerInstance} from "./logger.instance";
-import type {Keys} from "../shared";
 import {FQN} from "../internal";
 import {type LogLevel, LogLevelItems} from "./log-level";
-import {$dev} from "../index";
+import type {Opt} from "../opt";
+import {secureJson} from "../util";
 
-const BLINK = '\\033[5m';
-const RED1 = '\x1b[31m';
-const RED2 = '\x1b[101m';
-const GREEN1 = '\x1b[32m';
-const GREEN2 = '\x1b[102m';
-const YELLOW1 = '\x1b[33m';
-const YELLOW2 = '\x1b[103m';
+// const BLINK = '\\033[5m';
+// const RED1 = '\x1b[31m';
+// const RED2 = '\x1b[101m';
+// const GREEN1 = '\x1b[32m';
+// const GREEN2 = '\x1b[102m';
+// const YELLOW1 = '\x1b[33m';
+// const YELLOW2 = '\x1b[103m';
 const BLUE1 = '\x1b[34m';
-const BLUE2 = '\x1b[104m';
-const MAGENTA1 = '\x1b[35m';
-const MAGENTA2 = '\x1b[105m';
-const CYAN1 = '\x1b[36m';
-const CYAN2 = '\x1b[106m';
+// const BLUE2 = '\x1b[104m';
+// const MAGENTA1 = '\x1b[35m';
+// const MAGENTA2 = '\x1b[105m';
+// const CYAN1 = '\x1b[36m';
+// const CYAN2 = '\x1b[106m';
 const GRAY1 = '\x1b[37m';
 const END = '\x1b[0m';
 
 const RED_FG = '\x1b[31m';
 const GREEN_FG = '\x1b[32m';
 const YELLOW_FG = '\x1b[33m';
-const BLUE_FG = '\x1b[34m';
+// const BLUE_FG = '\x1b[34m';
 const MAGENTA_FG = '\x1b[35m';
 const CYAN_FG = '\x1b[36m';
 
 const RED_BG = '\x1b[41m';
 const GREEN_BG = '\x1b[42m';
 const YELLOW_BG = '\x1b[43m';
-const BLUE_BG = '\x1b[44m';
+// const BLUE_BG = '\x1b[44m';
 const MAGENTA_BG = '\x1b[45m';
-const CYAN_BG = '\x1b[46m';
+// const CYAN_BG = '\x1b[46m';
+
 
 // noinspection JSUnusedLocalSymbols,JSUnusedGlobalSymbols
 export class LogCommon implements LogCommonLike, LogCommonSecure {
     private COLORS = {
-        debug: ['debug',    'DEBUG', GRAY1, CYAN_FG, '', ''],
-        trace: ['trace',    'TRACE', GRAY1, CYAN_FG, '', ''],
-        info:  ['info',     ' INFO', GREEN_BG, GREEN_FG, '', ''],
-        warn:  ['warn',     ' WARN', YELLOW_BG, YELLOW_FG, YELLOW_FG, END],
-        error: ['error',    'ERROR', RED_BG, RED_FG, RED_BG, END],
-        fatal: ['error',    'FATAL', MAGENTA_BG, MAGENTA_FG, MAGENTA_BG, END],
+        debug: ['debug', 'DEBUG', GRAY1, CYAN_FG, '', ''],
+        trace: ['trace', 'TRACE', GRAY1, CYAN_FG, '', ''],
+        info: ['info', ' INFO', GREEN_BG, GREEN_FG, '', ''],
+        warn: ['warn', ' WARN', YELLOW_BG, YELLOW_FG, YELLOW_FG, END],
+        error: ['error', 'ERROR', RED_BG, RED_FG, RED_BG, END],
+        fatal: ['error', 'FATAL', MAGENTA_BG, MAGENTA_FG, MAGENTA_BG, END],
     } as Record<LogLevel, [string, string, string, string, string, string]>;
 
     constructor(private lyy: LeyyoLike) {
@@ -66,52 +67,25 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
                 LoggerInstance.$setLeyyo(this.lyy);
             }).
             $lazyRun(() => {
-                const fields = ['create', 'apply', 'check', 'print'] as Keys<LogDefinedProvider>;
-                const rec = {proper: false} as LogDefinedProvider;
-                fields.forEach(field => {
-                    rec[field] = this[field];
+                this.lyy.event.overwrite('ly:log', (level: LogLevel, _ctx: unknown, message: unknown, params: Opt) => {
+                  console[level](message, params);
                 });
-
-                // define itself temporarily for log operations
-            this.lyy.hook.defineProvider<LogDefinedProvider>(LeyyoHookCommon.logAttached, LogCommon, rec);
-
-                // when new log provider is defined, replace all common methods
-            this.lyy.hook.whenProviderDefined<LogDefinedProvider>(LeyyoHookCommon.logAttached, LogCommon, (ins) => {
-                    fields.forEach(field => {
-                        if (typeof ins[field] === 'function') {
-                            this[field] = ins[field];
-                        }
-                    });
-                });
-            }).
-            $lazyRun(() => {
-            this.lyy.fqn.register(null, LogCommon, 'class', FQN);
-            this.lyy.fqn.register(null, LoggerInstance, 'class', FQN);
-
-            const enumMap = {
-                level: LogLevelItems,
-            };
-            for (const [name, value] of Object.entries(enumMap)) {
-                this.lyy.fqn.register(name, value, 'enum', FQN);
-                this.lyy.hook.queueForCallback(LeyyoHookCommon.enumPendingRegister, value);
-            }
-        });
+                this.lyy.event.emit('ly:enum:register', 'literal', LogLevelItems, 'LogLevelItems', FQN)
+            });
         // @formatter:off
     }
 
     create(clazz: Object | Function | string): Logger {
-        const ins = new LoggerInstance(clazz);
-        this.lyy.hook.queueForCallback(LeyyoHookCommon.logPendingRegister, ins, clazz);
-        return ins;
+        return new LoggerInstance(clazz);
     }
 
     apply(line: LogLine): void {
-        if (global?.leyyo_is_testing || this.lyy.test.is || !line) {
+        if (this.lyy.deploy.isTest || !line) {
             return;
         }
         const lineEnhanced = line as LogLineEnhanced;
         lineEnhanced.time = new Date();
-        lineEnhanced.where = this.lyy.dev.fetch(lineEnhanced.params, 'where');
+        lineEnhanced.where = 'aaa'; // todo
         this.check(lineEnhanced);
         this.print(lineEnhanced);
     }
@@ -121,7 +95,7 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
     }
     private where(where: string): string {
         if (typeof where !== 'string') {
-            where = $dev.secureJson(where, true);
+            where = secureJson(where);
         }
         if (!where) {
             where = ''.padStart(20);
@@ -149,7 +123,7 @@ export class LogCommon implements LogCommonLike, LogCommonSecure {
         const date = line.time.toISOString();
         let json = '';
         if (line.params && Object.keys(line.params).length > 0) {
-            json = GRAY1 + ' => ' + this.lyy.dev.secureJson(line.params, true) + END;
+            json = GRAY1 + ' => ' + secureJson(line.params) + END;
         }
         const colors = this.COLORS[line.level] ?? this.COLORS.trace;
         const [level, short, bg, clr1, clr2S, cls2E] = colors;

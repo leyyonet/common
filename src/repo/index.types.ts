@@ -1,5 +1,4 @@
 import type {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
-import {List} from "../to";
 
 /**
  * Common Repository factory
@@ -28,28 +27,6 @@ export interface RepoCommonLike extends ShiftSecure<RepoCommonSecure> {
     getArray<V>(collection: symbol): Array<V>;
 
     // endregion array
-
-    // region list
-    /**
-     * Creates new list with given collection
-     *
-     * @param {Array<string>} names
-     * @return {List<any>}
-     * */
-    newList<V>(...names: Array<string>): List<V>;
-
-    /**
-     * Returns a list by given collection
-     *
-     * @param {symbol} collection
-     * @return {List<any>}
-     *
-     * Note:
-     * If the list does not exist than it returns null
-     * */
-    getList<V>(collection: symbol): List<V>;
-
-    // endregion list
 
     // region map
     /**
@@ -151,5 +128,5 @@ export type RepoItem = Dict<number>;
  * Repo export dictionary which includes items
  * */
 export type RepoDetail = Record<RepoType, RepoItem>;
-export type RepoType = 'array' | 'list' | 'map' | 'set' | 'record';
+export type RepoType = 'array' | 'map' | 'set' | 'record';
 export type RepoLengthLambda = (obj: unknown) => number;

@@ -1,21 +1,25 @@
 // noinspection JSUnusedGlobalSymbols
 
-// region basic
-import type {LanguageCode, LocaleCode} from "../system";
+// region alias
+export type HttpStatus = number;
+// endregion alias
 
+// region basic
 export type BasicType = 'undefined' | 'string' | 'object' | 'number' | 'boolean' | 'function' | 'symbol' | 'bigint';
+export type ExtendedType = BasicType | 'array' | 'class' | 'null'|'empty'|'nan'|'integer'|'date'|'enum';
+export type KeyValue = string | number;
+export type AnyKey = string | number | symbol;
+export type Obj = Object & {};
 export type Dict<T = unknown> = Record<KeyValue, T>;
 export type Arr<T = unknown> = Array<T>;
-export type KeyValue = string | number;
+// endregion basic
 
+// region alias
 export type Id = string | number;
-export type Unknown = unknown;
 export type Integer = number;
 export type Float = number;
-export type Boolean = boolean;
-export type Enum = string; // enumeration
 export type Alpha = string; // alphaType
-export type String = string; // stringType
+export type Text = string; // trimmed string
 export type Digit = string; // digitType, 0-9
 export type Title = string; //Single-line clear-text (no html)
 export type Description = string; //Multi-line clear-text (no html)
@@ -29,62 +33,32 @@ export type Timestamp = number;
 export type IsoDatetime = string; // yyyy-mm-ddThh:mm:ii.eeeZ
 export type IsoDate = string; // yyyy-mm-dd
 export type IsoTime = string; // hh:mm:ii.eeeZ
-// endregion basic
-
+// endregion alias
 
 // region function-class
-interface _BaseFunc {
-    readonly name?: string;
-    readonly length?: number;
-    bind(thisArg: unknown, ...args: Array<unknown>): unknown;
+export type Fnc<R = unknown> = ((...args: Arr) => R) & Function;
+export type Async<R = unknown> = ((...args: Arr) => Promise<R>) & AsyncGeneratorFunction;
 
-    apply(thisArg: unknown, args: Array<unknown>): unknown;
-
-    call(thisArg: unknown, ...args: Array<unknown>): unknown;
+export interface Abstract<T = {}> extends Function {
+    prototype: T;
+    readonly name: string;
+    readonly length: number;
+    bind(thisArg: unknown, ...args: Arr): unknown;
+    apply(thisArg: unknown, args: Arr): unknown;
+    call(thisArg: unknown, ...args: Arr): unknown;
 }
 
-interface _SyncFnc<R> extends _BaseFunc {
-    (...args: Array<unknown>): R;
+export interface ClassLike<T = {}> extends Abstract<T> {
+    new(...args: Arr): T;
 }
-interface _AsyncFnc<R> extends _BaseFunc {
-    (...args: Array<unknown>): Promise<R>;
-}
-
-export type Fnc<R = unknown> = _SyncFnc<R> & Function;
-export type Async<R = unknown> = _AsyncFnc<R> & AsyncGeneratorFunction;
-export type AnyFnc<R = unknown> = Fnc<R> | Async<R>;
-
-export type _Type<T> = {
-    new(...args: Array<unknown>): T;
-    prototype?: unknown;
-}
-export type ClassLike<T = {}> = (_BaseFunc & _Type<T>) | _SyncFnc<T>;
 
 export type TypeOf<C = ClassLike> = C extends ClassLike<infer T> ? T : C;
-
-export interface Describable {
-    description: string;
-}
-export interface Nameable {
-    name: string;
-}
-export type ClassOrName = ClassLike | string;
-export type FuncOrName = Function | string;
-export type ClassOrFuncOrName = ClassLike | Function | string;
-/**
- * Referenced from Object
- * */
-export type Obj = Object & {};
-
-export interface Abstract<T> extends Function {
-    prototype: T;
-}
 
 // endregion function-class
 
 
 // region express
-declare namespace Express {
+export declare namespace Express {
     export interface Request {
         custom?: Dict;
     }
@@ -95,38 +69,46 @@ declare namespace Express {
 }
 // endregion express
 
-// region entity
-export interface Entity<I extends Id = Uuid> {
-    id?: I;
-}
-
-export interface Pair<I extends Id = Uuid> extends Entity<I> {
-    name?: string;
-}
-
-// endregion entity
-
-
 // region utility
+export interface Describable {
+    description: string;
+}
+export interface Nameable {
+    name: string;
+}
+export interface HasId {
+    id?: string|number;
+}
+
 export type TypeOfMethod<T, M extends keyof T> = T[M] extends Function ? T[M] : never;
+export type TypeOfFnc<F extends Fnc> = F extends (...args: Arr) => infer R ? R : never;
+export type TypeOfAsync<F extends Async> = TypeOfPromise<TypeOfFnc<F>>;
+export type TypeOfPromise<P> = P extends Promise<infer R> ? R : P;
+
+/**
+ * String keys of a interface
+ * - Note: keyof keywords returns string|number|symbol, but it's ignore nuöber and symbol keys
+ * */
+export type StrKey<T> = Extract<keyof T, string>;
+
+/**
+ * Serialized version of another type
+ */
+export type Serialized<T> = { [P in keyof T]: T[P]; };
+
+/**
+ * Makes mutable an interface
+ *
+ * @see Readonly
+ * */
+export type Mutable<A> = { -readonly [K in keyof A]: A[K]; }
+
 export type KeyOf<T> = keyof T;
 export type Keys<T> = Array<keyof T>;
 export type ValueOf<T> = T[KeyOf<T>];
 export type Values<T> = Array<T[KeyOf<T>]>;
-export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T ? {
-    [P in K]: T[K];
-} & Partial<Record<Exclude<keyof T, K>, never>> : never;
-export type OneOf<Obj> = ValueOf<OneOfByKey<Obj>>;
-export type Xor<A, B> =
-    | XorIn<A & { [K in keyof B]?: undefined }>
-    | XorIn<B & { [K in keyof A]?: undefined }>;
 export type OneOrMore<T> = T | Array<T>;
-export type ValueOrCallback<T> = T | ValueCallback<T> | ValueCallbackAsync<T>;
-export type ValueCallback<T> = () => T;
-export type ValueCallbackAsync<T> = () => Promise<T>;
-type OneOnly<T, K extends keyof T> = Omit<T, Exclude<keyof T, K>> | Pick<T, K>;
-type OneOfByKey<T> = { [key in keyof T]: OneOnly<T, key> };
-type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
+export type SetOrMore<T> = T | Set<T>;
 // endregion utility
 
 // region shift
@@ -180,51 +162,15 @@ export interface InitLike {
 
 // endregion shift
 
-
-// region json
-/**
- * JSON Object
- */
-export type JsonObject = { [K in string]?: JsonValue };
-/**
- * JSON Array
- */
-export type JsonArray = Array<JsonValue>;
-
-/**
- * JSON Primitives
- */
-export type JsonPrimitive = string | number | boolean | null;
-
-/**
- * JSON Values
- */
-export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
-// endregion json
-
-// region i18n
-/**
- * Primitive language key
- *
- * It can be language (xx), local (xx-xx) or string (not preferred)
- * */
-export type I18nKey = LanguageCode | LocaleCode | string;
-/**
- * Language map
- *
- * @example
- * const name = {en: "Apple", tr: "Elma"};
- *
- * */
-export type I18nRaw<V = unknown> = Dict<V>;
-export type I18nAny<V = unknown> = I18nRaw<V> | V;
-// endregion i18n
-
-export type EnumMap<E extends KeyValue = KeyValue> = Dict<E>;
+// region enum
+export type EnumMap<E extends KeyValue = KeyValue> = { [K in E]: KeyValue };
 export type EnumAlt<E extends KeyValue = KeyValue> = Dict<E>;
-export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|unknown;
+export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|ReadonlyArray<E>;
+// endregion enum
 
 // region replace or ignore property type
+
+
 export type IgnoreFieldsByType<T, I> = {
     [K in keyof T]: T[K] extends I ? K : never
 }[keyof T];
@@ -234,14 +180,69 @@ export type ReplaceType<T, O, N> = {
 export type SameType<A, T> = {
     [K in keyof A]: T;
 }
-/**
- * Serialized version of another type
- */
-export type Serialized<T> = {
-    [P in keyof T]: T[P];
+
+
+export type PickByType<T, I> = {
+    [K in keyof T]: T[K] extends I ? K : never
 };
-export type Mutable<A> = {
-    -readonly [K in keyof A]: A[K];
-}
+export type PickKeyByType<T, I> = PickByType<T, I>[keyof T];
+
+export type OmitByType<T, I> = {
+    [K in keyof T]: T[K] extends I ? never : K;
+};
+export type OmitKeysByType<T, I> = OmitByType<T, I>[keyof T];
+
+// ========================================================
+// LOOK
+// ========================================================
+
+export type ValueOrCallback<T> = T | ValueCallback<T> | ValueCallbackAsync<T>;
+export type ValueCallback<T> = () => T;
+export type ValueCallbackAsync<T> = () => Promise<T>;
+
+
+export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T ? {
+    [P in K]: T[K];
+} & Partial<Record<Exclude<keyof T, K>, never>> : never;
+export type OneOf<Obj> = ValueOf<OneOfByKey<Obj>>;
+export type Xor<A, B> =
+    | XorIn<A & { [K in keyof B]?: undefined }>
+    | XorIn<B & { [K in keyof A]?: undefined }>;
+type OneOnly<T, K extends keyof T> = Omit<T, Exclude<keyof T, K>> | Pick<T, K>;
+type OneOfByKey<T> = { [key in keyof T]: OneOnly<T, key> };
+type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
 
 // endregion
+
+
+/*
+
+// export type StrObject<T> = {
+//     [K in keyof T ]: K extends string ? K : never;
+// };
+// export type StrKey<T> = keyof StrObject<T>;
+
+interface _BaseFunc {
+    readonly name?: string;
+    readonly length?: number;
+    bind(thisArg: unknown, ...args: Array<unknown>): unknown;
+
+    apply(thisArg: unknown, args: Array<unknown>): unknown;
+
+    call(thisArg: unknown, ...args: Array<unknown>): unknown;
+}
+
+interface _SyncFnc<R> extends _BaseFunc {
+    (...args: Array<unknown>): R;
+}
+interface _AsyncFnc<R> extends _BaseFunc {
+    (...args: Array<unknown>): Promise<R>;
+}
+
+// export type ClassOrName = ClassLike | string;
+// export type FuncOrName = Function | string;
+// export type ClassOrFuncOrName = ClassLike | Function | string;
+// export type ClassLike<T = {}> = (_BaseFunc & _Type<T>) | _SyncFnc<T>;
+// export type AnyFnc<R = unknown> = Fnc<R> | Async<R>;
+
+*/

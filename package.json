@@ -1,6 +1,6 @@
 {
   "name": "@leyyo/common",
-  "version": "1.0.13",
+  "version": "1.2.1",
   "description": "Common library",
   "keywords": [
     "common"
@@ -49,6 +49,6 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "yaml": "^2.8.0"
+    "stacktrace-parser": "^0.1.11"
   }
 }

@@ -1,74 +1,44 @@
-import type {Dict, InitLike, ShiftMain, ShiftSecure} from "../shared";
-import type {ExceptionLike} from "../exception";
-import type {HookDefinedProvider} from "../hook";
+import type {ClassLike, InitLike, OneOrMore, ShiftMain, ShiftSecure} from "../shared";
+import type {Logger} from "../log";
+import type {Opt} from "../opt";
+
+export type ErrorCastType = 'leyyo' | 'silent' | 'caused';
 
 export interface ErrorCommonLike extends ShiftSecure<ErrorCommonSecure> {
-    register(cls: Function): void;
-
-    build(e: Error | string): ExceptionLike;
-
-    afterCreate(e: ExceptionLike): void;
-
-    causedBy(e: Error | string): ExceptionLike;
-
-    initSign(err: Error): boolean;
-
-    addSign(err: Error, ...keys: Array<string>): boolean;
-
-    getSign(err: Error): Array<string>;
-
-    removeSign(err: Error, ...keys: Array<string>): boolean;
-
-    hasSign(err: Error, key: string): boolean;
-
-    toObject(e: Error, ...omittedFields: Array<string>): Dict;
-
-    buildStack(e: Error): void;
-
-    copyStack(exception: ExceptionLike, error: Error): void;
-
-    initOmit(clz: Function): boolean;
-
-    addOmit(clz: Function, ...properties: Array<string>): boolean;
-
-    getOmit(clz: Function): Array<string>;
-
-    inheritOmit(clz: Function): Array<string>;
+    register(cls: ClassLike, fqn?: string): void;
+    castForClass<E extends LeyyoErrorLike>(clazz: ClassLike<E>, e: Error, opt?: Opt): E;
+    cast(e: Error, opt?: Opt, type?: ErrorCastType): LeyyoErrorLike;
+    addKnownPackage(packageName: string, shortName: string): void;
+    stack(source: LeyyoErrorLike, force?: boolean): void;
 }
 
+/**
+ * Stack line
+ * */
+export interface ErrorStackLine {
+    file: string;
+    method?: string;
+    pos?: string;
+}
 
 export type ErrorCommonSecure = ShiftMain<ErrorCommonLike> & InitLike;
+export interface LeyyoErrorLike extends Error, ShiftSecure<LeyyoErrorSecure> {
+    params?: Opt;
+    causedBy?: OneOrMore<Error>;
+    stackTrace?: Array<ErrorStackLine>;
+}
+export interface LeyyoErrorSecure extends ShiftMain<LeyyoErrorLike> {
+    $setName(name: string): this;
+    $errorLog(logger?: Logger): void;
+    $warnLog(logger?: Logger): void;
+    $debugLog(logger?: Logger): void;
+    $infoLog(logger?: Logger): void;
+    $traceLog(logger?: Logger): void;
 
-export interface ErrorDefinedProvider extends HookDefinedProvider {
-    register(exception: ExceptionLike): void;
+    $list(): Array<string>;
+    $append(key: string): boolean;
+    $get(key: string): Array<string>;
+    $remove(key: string): boolean;
+    $has(key: string): boolean;
 
-    build?(e: Error | string): ExceptionLike;
-
-    afterCreate?(e: ExceptionLike): void;
-
-    causedBy?(e: Error | string): ExceptionLike;
-
-    initSign?(err: Error): boolean;
-
-    addSign?(err: Error, ...keys: Array<string>): boolean;
-
-    getSign?(err: Error): Array<string>;
-
-    removeSign?(err: Error, ...keys: Array<string>): boolean;
-
-    hasSign?(err: Error, key: string): boolean;
-
-    toObject?(e: Error, ...omittedFields: Array<string>): Dict;
-
-    buildStack?(e: Error): void;
-
-    copyStack?(exception: ExceptionLike, error: Error): void;
-
-    initOmit?(clz: Function): boolean;
-
-    addOmit?(clz: Function, ...properties: Array<string>): boolean;
-
-    getOmit?(clz: Function): Array<string>;
-
-    inheritOmit?(clz: Function): Array<string>;
 }
