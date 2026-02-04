@@ -9,23 +9,38 @@ import * as stackTraceParser from "stacktrace-parser";
 import {FQN} from "../internal";
 
 // noinspection JSUnusedLocalSymbols
+/**
+ * Error common class
+ * */
 export class ErrorCommon implements ErrorCommonLike, ErrorCommonSecure {
     private _knownPackages: Map<string, string>; // package-name, short name
 
     constructor(private lyy: LeyyoLike) {
     }
 
-    register(cls: ClassLike, fqn?: string): void { // @todo ClassLike<LeyyoErrorLike>
-        this.lyy.event.emit('ly:error:register', cls, fqn);
-    }
-
-    protected _copyProperties(err: LeyyoErrorLike, e: Error): void {
-        for (const [k, v] of Object.entries(e)) {
+    /**
+     * Copy source properties into target parameters
+     *
+     * @param {LeyyoErrorLike} target - target error
+     * @param {Error} source - source error
+     * */
+    protected _copyProperties(target: LeyyoErrorLike, source: Error): void {
+        if (!(source instanceof Error)) {
+            return;
+        }
+        for (const [k, v] of Object.entries(source)) {
             if ( !['name', 'message', 'stack'].includes(k) && (typeof k === 'string') && !['symbol', 'function', 'undefined'].includes(typeof v)) {
-                this.lyy.opt.add(err.params, k, v);
+                target.params = this.lyy.opt.add(target.params, k, v);
             }
         }
     }
+
+    /** @inheritDoc */
+    register(clazz: ClassLike, fqn?: string): void { // @todo ClassLike<LeyyoErrorLike>
+        this.lyy.event.emit('ly:error:register', clazz, fqn);
+    }
+
+    /** @inheritDoc */
     castForClass<E extends LeyyoErrorLike>(clazz: ClassLike<E>, e: Error, opt?: Opt): E {
         const err = new clazz(e.message, opt);
         this._copyProperties(err, e);
@@ -33,18 +48,20 @@ export class ErrorCommon implements ErrorCommonLike, ErrorCommonSecure {
         err.causedBy = e;
         return err;
     }
-    cast(e: Error, o: Opt = {}, type: ErrorCastType = 'leyyo'): LeyyoErrorLike {
+
+    /** @inheritDoc */
+    cast(e: Error, params: Opt, type: ErrorCastType = 'leyyo'): LeyyoErrorLike {
         let err: LeyyoErrorLike;
         if ( !(e instanceof LeyyoError)) {
             switch (type) {
                 case "caused":
-                    err = new CausedError(e.message, o, e);
+                    err = new CausedError(e.message, params, e);
                     break;
                 case "silent":
-                    err = new SilentError(e, o);
+                    err = new SilentError(e, params);
                     break;
                 default:
-                    err = new LeyyoError(e.message, o);
+                    err = new LeyyoError(e.message, params);
                     err.causedBy = e;
                     break;
             }
@@ -52,11 +69,12 @@ export class ErrorCommon implements ErrorCommonLike, ErrorCommonSecure {
         }
         else {
             err = e;
-            err.params = this.lyy.opt.append(err.params, o);
+            err.params = this.lyy.opt.append(err.params, params);
         }
         return err;
     }
 
+    /** @inheritDoc */
     addKnownPackage(packageName: string, shortName: string): void {
         if (typeof packageName !== 'string' || packageName.trim() !== packageName || packageName.trim() === '') {
             throw new LeyyoError('Invalid package name', {where: `${FQN}.ErrorCommon`, method: 'addKnownPackage', value: packageName, field: 'packageName'});
@@ -66,6 +84,29 @@ export class ErrorCommon implements ErrorCommonLike, ErrorCommonSecure {
         }
         this._knownPackages.set(packageName, shortName);
     }
+
+    /** @inheritDoc */
+    logText(e: Error, ...parts: Array<string|number>): string {
+        parts = parts.map(p => {
+            if (typeof p === 'string') {
+                p = p.trim();
+                return (p !== '') ? p : undefined;
+            }
+            else if (typeof p === 'number') {
+                return p.toString(10);
+            }
+            else {
+                return undefined;
+            }
+        }).filter(p => p !== undefined);
+        const info = parts.length > 0 ? '<' + parts.join('/') + '> ' : '';
+        if (!(e instanceof Error)) {
+            return info;
+        }
+        return `${info}[${e.name ?? 'UnknownError'}] => ${e.message ?? 'Unknown message'}`;
+    }
+
+    /** @inheritDoc */
     stack(source: LeyyoErrorLike, force?: boolean): void {
         if (!force && Array.isArray(source.stackTrace)) {
             return;
