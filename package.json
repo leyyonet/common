@@ -1,7 +1,7 @@
 {
   "name": "@leyyo/common",
-  "version": "1.2.3",
-  "description": "Common library",
+  "version": "1.3.1",
+  "description": "Leyyo common library",
   "keywords": [
     "common"
   ],
@@ -22,7 +22,7 @@
     "lint": "eslint src/**/*.ts",
     "asset": "node -r ts-node/register commands/assets.ts",
     "build": "npm run clear && tsc && npm run asset",
-    "test": "jest --config=jest.json --verbose",
+    "test": "npx jest --config=jest.json --clearCache && npx jest --config=jest.json --verbose",
     "test:watch": "jest --watch --config=jest.json",
     "test:coverage": "jest --config=jest.json --coverage --coverageDirectory=coverage",
     "~publish": "npm run build && npm publish -access=public"
@@ -33,6 +33,8 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
+    "@types/express": "^5.0.6",
+    "@types/geoip-lite": "^1.4.4",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.14.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
