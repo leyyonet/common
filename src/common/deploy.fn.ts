@@ -3,6 +3,7 @@ import {isText} from "../function";
 import {DeveloperError} from "../error";
 import {FQN} from "../internal";
 import {newRepoMap} from "./map.fn";
+import {testCase} from "./test.fn";
 
 // region properties
 const where = `${FQN}.DeployFn`;
@@ -18,26 +19,27 @@ const alreadyDeployed = newRepoMap<string, Array<unknown>>(`${where}.alreadyDepl
  * @param {function} callback - callback for creator of component, if it completes it, this callback will be called
  * */
 export function waitDeploy(name: string, callback: Fnc): void {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid event name', 'onDeployed#01', where);
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid component name', testCase(FQN, 120), where);
     }
     if (typeof callback !== 'function') {
-        throw new DeveloperError('Invalid event callback', 'onDeployed#02', where);
+        throw new DeveloperError(`Invalid caller callback [${name}]`, testCase(FQN, 121), where);
     }
     if (alreadyDeployed.has(name)) {
         try {
             callback(...alreadyDeployed.get(name));
         } catch (e) {
-            new DeveloperError('Raised callback run', 'onDeployed#03', where).log(e);
+            new DeveloperError(`Callback error during caller's callback [${name}]`, testCase(FQN, 122), where).log(e);
         }
         return;
     }
 
-    if (!waitingCallbacks.has(name)) {
+    if ( !waitingCallbacks.has(name)) {
         waitingCallbacks.set(name, []);
     }
     waitingCallbacks.get(name).push(callback);
 }
+
 // noinspection JSUnusedGlobalSymbols
 
 /**
@@ -50,8 +52,8 @@ export function waitDeploy(name: string, callback: Fnc): void {
  * @param {...Array} values - They will be sent to callback of waiting component, {@link waitDeploy}
  * */
 export function completeDeploy(name: string, ...values: Array<unknown>): void {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid event name', 'onDeployed#04', where);
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid component name', testCase(FQN, 123), where);
     }
     const isNew = !alreadyDeployed.has(name);
     alreadyDeployed.set(name, values);
@@ -64,7 +66,7 @@ export function completeDeploy(name: string, ...values: Array<unknown>): void {
                 try {
                     callback(...values);
                 } catch (e) {
-                    new DeveloperError('Raised callback run', 'onDeployed#05', where).log(e);
+                    new DeveloperError(`Callback error during pending callback [${name}]`, testCase(FQN, 124), where).log(e);
                 }
             });
         }

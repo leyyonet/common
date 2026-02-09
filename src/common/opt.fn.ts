@@ -14,7 +14,7 @@ const where = `${FQN}.OptFn`;
  * @param {Opt} options - options
  * @return {Opt} - options
  * */
-export function optFn <O extends Opt = Opt>(options: O|Opt): O {
+export function optFn<O extends Opt = Opt>(options: O | Opt): O {
     return (isObj(options) ? options : {}) as O;
 }
 
@@ -25,7 +25,7 @@ export function optFn <O extends Opt = Opt>(options: O|Opt): O {
  * @param {(Opt|OptFn)} options - options or options callback
  * @return {Opt} - checked options
  * */
-export function optCheck<O extends Opt = Opt>(options: O|OptFn<O>|Opt): O {
+export function optCheck<O extends Opt = Opt>(options: O | OptFn<O> | Opt): O {
     let o = options as O;
     if (typeof options === 'function') {
         try {
@@ -35,7 +35,7 @@ export function optCheck<O extends Opt = Opt>(options: O|OptFn<O>|Opt): O {
             new DeveloperError('Raised callback run', 'optCheck#01', where).log(e);
         }
     }
-    else if (!isObj(options)) {
+    else if ( !isObj(options)) {
         o = {} as O;
     }
     return o;
@@ -48,7 +48,7 @@ export function optCheck<O extends Opt = Opt>(options: O|OptFn<O>|Opt): O {
  * @param {Opt} options - source options
  * @return {Opt} - cloned options
  * */
-export function optClone<O extends Opt = Opt>(options: O|Opt): O {
+export function optClone<O extends Opt = Opt>(options: O | Opt): O {
     return secureClone(isObj(options) ? options : {}) as O;
 }
 
@@ -59,9 +59,9 @@ export function optClone<O extends Opt = Opt>(options: O|Opt): O {
  * @param {Opt} appended - appended options
  * @return {Opt} - merged options
  * */
-export function optAppend<O extends Opt = Opt>(options: O|Opt, appended: O|Opt): O {
+export function optAppend<O extends Opt = Opt>(options: O | Opt, appended: O | Opt): O {
     const o = (isObj(options) ? options : {}) as O;
-    if (!isObj(appended)) {
+    if ( !isObj(appended)) {
         return o;
     }
     for (const [k, v] of Object.entries(appended)) {
@@ -83,7 +83,7 @@ export function optAppend<O extends Opt = Opt>(options: O|Opt, appended: O|Opt):
  * @param {any} value - value
  * @return {Opt} - added options
  * */
-export function optAdd<O extends Opt = Opt>(options: O|OptFn<O>|Opt, key: keyof O|string, value: unknown): O {
+export function optAdd<O extends Opt = Opt>(options: O | OptFn<O> | Opt, key: keyof O | string, value: unknown): O {
     const o = (isObj(options) ? options : {}) as O;
     if (value === undefined || typeof key !== 'string') {
         return o;
@@ -111,10 +111,10 @@ export function optAdd<O extends Opt = Opt>(options: O|OptFn<O>|Opt, key: keyof 
  * @param {KeyValue} field - value
  * @return {Opt} - added options
  * */
-export function optField <O extends Opt = Opt>(options: O|OptFn<O>|Opt, field: KeyValue): O {
+export function optField<O extends Opt = Opt>(options: O | OptFn<O> | Opt, field: KeyValue): O {
     const o = (isObj(options) ? options : {}) as O;
     const t = typeof field;
-    if (!['string', 'number'].includes(t)) {
+    if ( !['string', 'number'].includes(t)) {
         return o;
     }
     if (o.field !== undefined) {
@@ -126,7 +126,7 @@ export function optField <O extends Opt = Opt>(options: O|OptFn<O>|Opt, field: K
         o.field = '';
     }
 
-    if (o.field === '') {
+    if ( !o.field) {
         o.field = (t === 'string') ? (field as string) : `$.[${field}]`;
     }
     else {

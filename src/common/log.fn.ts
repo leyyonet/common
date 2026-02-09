@@ -1,12 +1,26 @@
+// noinspection JSUnusedGlobalSymbols
+
 import {emitEvent, listenEvent} from "./event.fn";
 import {DeveloperError} from "../error";
 import {FQN} from "../internal";
 import {testCase} from "./test.fn";
 import {errorText, isEmpty, isFilledObj, isObj, secureJson} from "../function";
-import {ContextFinderLambda, LocalColorLike, LogFormatterLambda, LogItem, LogStylerLambda, Opt} from "../index.types";
+import {
+    ClassLike,
+    ContextFinderLambda,
+    Fnc,
+    LocalColorLike,
+    LogFormatterLambda,
+    Logger,
+    LogItem,
+    LogStylerLambda,
+    Obj,
+    Opt
+} from "../index.types";
 import {LY_LOG_ALREADY} from "../const";
 import {toErrorJsonBasic} from "./error.fn";
 import {LogLevel} from "../enum";
+import {LoggerInstance} from "../class";
 
 // region properties
 const where = `${FQN}.LogFn`;
@@ -38,6 +52,40 @@ const localColor: LocalColorLike = {
     }
 };
 
+/**
+ * Create new logger with class name
+ *
+ * @param {string} className - name of class
+ * @return {Logger} - logger instance
+ * */
+export function newLogger(className: string): Logger;
+
+/**
+ * Create new logger with class name
+ *
+ * @param {object} instance - instance
+ * @return {Logger} - logger instance
+ * */
+export function newLogger(instance: Obj): Logger;
+
+/**
+ * Create new logger with class
+ *
+ * @param {function} clazz - class
+ * @return {Logger} - logger instance
+ * */
+export function newLogger(clazz: ClassLike | Fnc): Logger;
+
+/**
+ * Create new logger with any option
+ *
+ * @param {unknown} value - class info
+ * @return {Logger} - logger instance
+ * */
+export function newLogger(value: ClassLike | Fnc | Obj | string): Logger {
+    return new LoggerInstance(value);
+}
+
 // region setters
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -47,7 +95,7 @@ const localColor: LocalColorLike = {
  * */
 export function setLogFormatter(fn: LogFormatterLambda): void {
     if (typeof fn !== 'function') {
-        throw new DeveloperError('Invalid log formatter', testCase(FQN, 161), where);
+        throw new DeveloperError('Invalid log formatter', testCase(FQN, 200), where);
     }
     logFormatter = fn;
 }
@@ -58,9 +106,9 @@ export function setLogFormatter(fn: LogFormatterLambda): void {
  *
  * @param {function} fn - lambda for styler
  * */
-export function setLogDeploymentStylerLog(fn: LogStylerLambda): void {
+export function setLogDeploymentStyler(fn: LogStylerLambda): void {
     if (typeof fn !== 'function') {
-        throw new DeveloperError('Invalid log styler', testCase(FQN, 162), where);
+        throw new DeveloperError('Invalid log styler', testCase(FQN, 201), where);
     }
     logDeploymentStyler = fn;
 
@@ -75,9 +123,9 @@ export function setLogDeploymentStylerLog(fn: LogStylerLambda): void {
  *
  * @param {function} fn - lambda for styler
  * */
-export function setLogLocalStylerLog(fn: LogStylerLambda): void {
+export function setLogLocalStyler(fn: LogStylerLambda): void {
     if (typeof fn !== 'function') {
-        throw new DeveloperError('Invalid log local styler', testCase(FQN, 162), where);
+        throw new DeveloperError('Invalid log local styler', testCase(FQN, 202), where);
     }
     logLocalStyler = fn;
 
@@ -85,6 +133,7 @@ export function setLogLocalStylerLog(fn: LogStylerLambda): void {
         logStyler = logLocalStyler;
     }
 }
+
 // endregion setters
 
 // region local-functions
@@ -95,10 +144,10 @@ export function setLogLocalStylerLog(fn: LogStylerLambda): void {
  * @param {string} - short style
  * */
 function shortenWhere(where: string): string {
-    if (!where) {
+    if ( !where) {
         return undefined;
     }
-    if (!where.includes('.')) {
+    if ( !where.includes('.')) {
         return where;
     }
     const parts = where.split('.');
@@ -115,7 +164,7 @@ function shortenWhere(where: string): string {
  * @param {LogItem} item
  * */
 function consumeLog(item: LogItem): void {
-    if (!isObj(item)) {
+    if ( !isObj(item)) {
         return;
     }
     item.where = shortenWhere(item.where);
@@ -136,6 +185,7 @@ function consumeLog(item: LogItem): void {
     }
     console[item.level](message);
 }
+
 // endregion local-functions
 
 // region defaults
@@ -146,7 +196,7 @@ function consumeLog(item: LogItem): void {
  * */
 logFormatter = (item: LogItem): void => {
     if (item?.ctx) {
-        const ctx = item.ctx as {id: number, req: {headers: {'correlation-id': string}}};
+        const ctx = item.ctx as { id: number, req: { headers: { 'correlation-id': string } } };
         item.ctx = {
             tid: ctx?.id,
             cid: ctx?.req?.headers ? ctx?.req?.headers["correlation-id"] : undefined,
@@ -240,6 +290,7 @@ if (process.env['NODE_ENV'] === 'local') {
 else {
     logStyler = logDeploymentStyler;
 }
+
 // endregion defaults
 
 export function emitLog(level: LogLevel, where: string, message: any, params?: any | Opt): void {
@@ -284,7 +335,7 @@ export function emitLog(level: LogLevel, where: string, message: any, params?: a
         item.params = isFilledObj(params) ? params : {};
     }
 
-    if (!item.where && params?.where) {
+    if ( !item.where && params?.where) {
         try {
             if (typeof params.where === 'string') {
                 item.where = params.where;
@@ -307,14 +358,15 @@ export function emitLog(level: LogLevel, where: string, message: any, params?: a
 
     emitEvent('log', item);
 }
+
 // region binding
 
-listenEvent('context:finder', (v: ContextFinderLambda) => {
+listenEvent('context:set-finder', (v: ContextFinderLambda) => {
     if (typeof v === 'function') {
         contextFinder = v;
     }
     else {
-        new DeveloperError('Invalid context finder lambda', testCase(FQN, '150'), where).log();
+        new DeveloperError('Invalid context finder lambda', testCase(FQN, 203), where).log();
     }
 })
 

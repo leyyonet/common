@@ -7,7 +7,7 @@ import {ExporterData, ExporterDepot, ExporterValue} from "../index.types";
  *
  * @return {Promise<ExporterData>}
  * */
-export async function runExporter (): Promise<ExporterData> {
+export async function runExporter(): Promise<ExporterData> {
     const data: ExporterData = {};
     const depot: ExporterDepot = {
         add(name: string, value: ExporterValue) {

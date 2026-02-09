@@ -9,7 +9,7 @@ import {Fnc} from "../index.types";
  * @param {any} obj - given value
  * @return {boolean} - is bare object?
  * */
-export function isObj (obj: unknown): boolean {
+export function isObj(obj: unknown): boolean {
     return obj && typeof obj === 'object' && !Array.isArray(obj);
 }
 
@@ -22,7 +22,7 @@ export function isObj (obj: unknown): boolean {
  * @param {any} obj - given value
  * @return {boolean} - is filled object?
  * */
-export function isFilledObj (obj: unknown): boolean {
+export function isFilledObj(obj: unknown): boolean {
     return isObj(obj) && Object.keys(obj).length > 0;
 }
 
@@ -35,7 +35,7 @@ export function isFilledObj (obj: unknown): boolean {
  * @param {any} arr - given value
  * @return {boolean} - is filled array?
  * */
-export function isFilledArr (arr: unknown): boolean {
+export function isFilledArr(arr: unknown): boolean {
     return Array.isArray(arr) && arr.length > 0;
 }
 
@@ -49,8 +49,8 @@ export function isFilledArr (arr: unknown): boolean {
  * @param {any} str - given value
  * @return {boolean} - is text?
  * */
-export function isText (str: unknown): boolean {
-    return typeof str === 'string' && str !== '' && str.trim() === str;
+export function isText(str: unknown): boolean {
+    return typeof str === 'string' && str.trim() && str.trim() === str;
 }
 
 /**
@@ -61,10 +61,14 @@ export function isText (str: unknown): boolean {
  * - `not empty string`
  *
  * @param {any} value - given value
+ * @param {boolean?} notSpace - yes: ignore empty string
  * @return {boolean} - is empty?
  * */
-export function isEmpty (value: unknown): boolean {
-    return EMPTY_VALUES.includes(value) || (typeof value === 'string' && value.trim() === '');
+export function isEmpty(value: unknown, notSpace?: boolean): boolean {
+    if (notSpace) {
+        return EMPTY_VALUES.includes(value);
+    }
+    return EMPTY_VALUES.includes(value) || (typeof value === 'string' && !!value.trim());
 }
 
 /**
@@ -75,12 +79,12 @@ export function isEmpty (value: unknown): boolean {
  * */
 export function isClass(fn: unknown): boolean {
     // Class constructor is also a function
-    if(!(fn && fn.constructor === Function) || (fn as Fnc).prototype === undefined) {
+    if ( !(fn && fn.constructor === Function) || (fn as Fnc).prototype === undefined) {
         return false;
     }
 
     // This is a class that extends other class
-    if(Function.prototype !== Object.getPrototypeOf(fn)) {
+    if (Function.prototype !== Object.getPrototypeOf(fn)) {
         return true;
     }
 

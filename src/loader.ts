@@ -20,52 +20,59 @@ export const loader_leyyoCommon = defineLoader(FQN,
 // noinspection JSUnusedGlobalSymbols
 export const foretell_leyyoCommon = [
     () => defineLazyError({
-        name: 'CausedError',
-        fqn: FQN,
-        i18n: true,
-        emit: true,
-        lazyClass: import('./error').then(m => m.CausedError)}
+            name: 'CausedError',
+            fqn: FQN,
+            i18n: true,
+            emit: true,
+            lazyTarget: import('./error').then(m => m.CausedError)
+        }
     ),
     () => defineLazyError({
-        name: 'DeveloperError',
-        fqn: FQN,
-        i18n: false,
-        emit: true,
-        lazyClass: import('./error').then(m => m.DeveloperError)}
+            name: 'DeveloperError',
+            fqn: FQN,
+            i18n: false,
+            emit: true,
+            lazyTarget: import('./error').then(m => m.DeveloperError)
+        }
     ),
     () => defineLazyError({
-        name: 'CausedError',
-        fqn: FQN,
-        i18n: true,
-        emit: true,
-        lazyClass: import('./error').then(m => m.CausedError)}
+            name: 'CausedError',
+            fqn: FQN,
+            i18n: true,
+            emit: true,
+            lazyTarget: import('./error').then(m => m.CausedError)
+        }
     ),
     () => defineLazyError({
-        name: 'CausedError',
-        fqn: FQN,
-        i18n: true,
-        emit: true,
-        lazyClass: import('./error').then(m => m.CausedError)}
+            name: 'CausedError',
+            fqn: FQN,
+            i18n: true,
+            emit: true,
+            lazyTarget: import('./error').then(m => m.CausedError)
+        }
     ),
     () => defineLazyError({
-        name: 'CausedError',
-        fqn: FQN,
-        i18n: true,
-        emit: true,
-        lazyClass: import('./error').then(m => m.CausedError)}
+            name: 'CausedError',
+            fqn: FQN,
+            i18n: true,
+            emit: true,
+            lazyTarget: import('./error').then(m => m.CausedError)
+        }
     ),
     () => defineLazyError({
-        name: 'CausedError',
-        fqn: FQN,
-        i18n: true,
-        emit: true,
-        lazyClass: import('./error').then(m => m.CausedError)}
+            name: 'CausedError',
+            fqn: FQN,
+            i18n: true,
+            emit: true,
+            lazyTarget: import('./error').then(m => m.CausedError)
+        }
     ),
 
     () => defineLazyEnum({
-        name: 'LogLevel',
-        fqn: FQN,
-        i18n: true,
-        lazyData: import('./enum').then(m => m.LogLevelItems)}
+            name: 'LogLevel',
+            fqn: FQN,
+            i18n: true,
+            lazyTarget: import('./enum').then(m => m.LogLevelItems)
+        }
     )
 ];

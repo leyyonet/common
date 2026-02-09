@@ -23,9 +23,11 @@ export class MultipleError extends LeyyoError {
         errors.forEach(e => {
             if (e instanceof MultipleError) {
                 this.causedBy.push(...e.causedBy);
-            } else if (e instanceof LeyyoError) {
+            }
+            else if (e instanceof LeyyoError) {
                 this.causedBy.push(e);
-            } else {
+            }
+            else {
                 this.causedBy.push(CausedError.of(e));
             }
         })

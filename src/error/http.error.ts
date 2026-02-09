@@ -7,6 +7,7 @@ import {Opt} from "../index.types";
  * */
 export class HttpError extends LeyyoError {
     status: number;
+
     // noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
 
     /**
@@ -29,7 +30,7 @@ export class HttpError extends LeyyoError {
      * @param {(string|Opt)} p1 - error message or error parameters
      * @param {Opt?} p2 - error parameters
      * */
-    constructor(p1: string|Opt, p2?: Opt) {
+    constructor(p1: string | Opt, p2?: Opt) {
         super(p1 as string, p2);
         const clazz = this.constructor;
         if (Number.isSafeInteger(clazz[LY_ERROR_HTTP_STATUS])) {
@@ -39,6 +40,7 @@ export class HttpError extends LeyyoError {
             this.status = 400;
         }
     }
+
     static {
         this[LY_ERROR_DEFAULT_MESSAGE] = 'Http error';
     }

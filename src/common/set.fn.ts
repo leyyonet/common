@@ -1,17 +1,19 @@
 import {isText} from "../function";
 import {DeveloperError} from "../error";
 import {FQN} from "../internal";
+import {addLifecycleStage} from "./lifecycle.fn";
+import {testCase} from "./test.fn";
 
 // region properties
 /**
  * Internal items which stores collections
  * */
-const items = new Map<symbol, Set<unknown>>();
+const _items = new Map<symbol, Set<unknown>>();
 
 /**
  * Internal volatiles repo which could be cleared after lifecycle run
  * */
-const volatiles = new Set<symbol>();
+const _volatiles = new Set<symbol>();
 
 /**
  * Identifier of file
@@ -28,14 +30,14 @@ const where = `${FQN}.SetFn`;
  * @return {Set<any>}
  * */
 export function newRepoSet<V>(name: string, volatile?: boolean): Set<V> {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid new set name', 'newSet#01', where);
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid repository set name', testCase(FQN, 143), where);
     }
     const item = new Set<V>();
     const code = Symbol.for(name.split('#').join(''));
-    items.set(code, item);
+    _items.set(code, item);
     if (volatile) {
-        volatiles.add(code);
+        _volatiles.add(code);
     }
     return item;
 }
@@ -52,12 +54,12 @@ export function newRepoSet<V>(name: string, volatile?: boolean): Set<V> {
  *  - `-1`: key does not exist
  *  - `>= 0`: length of removed items in collection
  * */
-export function removeRepoSet (key: symbol): number {
+export function removeRepoSet(key: symbol): number {
     const cleared = clearRepoSet(key);
     if (cleared >= 0) {
-        items.delete(key);
-        if (volatiles.has(key)) {
-            volatiles.delete(key);
+        _items.delete(key);
+        if (_volatiles.has(key)) {
+            _volatiles.delete(key);
         }
     }
     return cleared;
@@ -78,10 +80,10 @@ export function clearRepoSet(key: symbol): number {
     if (typeof key !== 'symbol') {
         return -2;
     }
-    if (!items.has(key)) {
+    if ( !_items.has(key)) {
         return -1;
     }
-    const item = items.get(key);
+    const item = _items.get(key);
     const length = item.size;
     item.clear();
     return length;
@@ -94,7 +96,7 @@ export function clearRepoSet(key: symbol): number {
  * @return {Array<symbol>}
  * */
 export function listRepoSets(): Array<symbol> {
-    return Array.from(items.keys());
+    return Array.from(_items.keys());
 }
 
 // noinspection JSUnusedGlobalSymbols
@@ -108,7 +110,7 @@ export function listRepoSets(): Array<symbol> {
 export function printRepoSets(): Record<string, number> {
     const result = {} as Record<string, number>;
     let index = 0;
-    for (const [sym, item] of items.entries()) {
+    for (const [sym, item] of _items.entries()) {
         const key = sym.description;
         if (result[key] === undefined) {
             result[key] = item.size;
@@ -121,3 +123,10 @@ export function printRepoSets(): Record<string, number> {
     }
     return result;
 }
+
+// clear volatile items
+addLifecycleStage('clear', 'repo-set', () => {
+    Array.from(_volatiles.values())
+        .forEach(key => _items.delete(key));
+    _volatiles.clear();
+});

@@ -6,6 +6,7 @@ import {FQN} from "../internal";
 import {defLogger} from "../class";
 import {newRepoSet} from "./set.fn";
 import {newRepoMap} from "./map.fn";
+import {testCase} from "./test.fn";
 
 // region properties
 const where = `${FQN}.EventFn`;
@@ -14,6 +15,7 @@ const listenedEvents = newRepoMap<string, Fnc>(`${where}.listened`);
 const waitingEvents = newRepoMap<string, Array<Array<unknown>>>(`${where}.waiting`);
 const removedEvents = newRepoMap<string, [number, number]>(`${where}.removed`); // stored, emitted
 const deactivatedEvents = newRepoSet<string>(`${where}.deactivated`);
+
 // endregion properties
 
 /**
@@ -26,11 +28,11 @@ const deactivatedEvents = newRepoSet<string>(`${where}.deactivated`);
  * Note:
  * - If there is not any listener for this event yet, events will be collected
  * */
-export function emitEvent<T extends string = string>(name: EventType|T, ...values: Array<unknown>): boolean {
-    if (typeof name !== 'string') {
-        return false;
+export function emitEvent<T extends string = string>(name: EventType | T, ...values: Array<unknown>): boolean {
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid event name', testCase(FQN, 130), where);
     }
-    if (!emitter.emit(name, ...values)) {
+    if ( !emitter.emit(name, ...values)) {
 
         // It is deactivated, no collect it anymore
         if (deactivatedEvents.has(name)) {
@@ -38,7 +40,7 @@ export function emitEvent<T extends string = string>(name: EventType|T, ...value
         }
 
         let item = waitingEvents.get(name) as Array<Array<unknown>>;
-        if (!item) {
+        if ( !item) {
             item = [];
             waitingEvents.set(name, item);
         }
@@ -51,7 +53,7 @@ export function emitEvent<T extends string = string>(name: EventType|T, ...value
                 item.shift();
                 removedEvents.set(name, parts);
             }
-            else if (parts[0] >= 10_000 ) {
+            else if (parts[0] >= 10_000) {
                 // there are too many events, and there is no any listener, close it
                 if (parts[1] > 50_000) {
                     deactivateEvent(name);
@@ -85,12 +87,12 @@ export function emitEvent<T extends string = string>(name: EventType|T, ...value
  * Note:
  * - If there are previous emitted events, it will listen them immediately (lazy event driven)
  * */
-export function listenEvent<T extends string = string>(name: EventType|T, callback: Fnc): void {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid event name', 'listenEvent#01', where);
+export function listenEvent<T extends string = string>(name: EventType | T, callback: Fnc): void {
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid event name', testCase(FQN, 130), where);
     }
     if (typeof callback !== 'function') {
-        throw new DeveloperError('Invalid event callback', 'listenEvent#02', where);
+        throw new DeveloperError(`Invalid listener callback [${name}]`, testCase(FQN, 131), where);
     }
 
     const exists = listenedEvents.has(name);
@@ -103,7 +105,7 @@ export function listenEvent<T extends string = string>(name: EventType|T, callba
 
     activateEvent(name);
     listenedEvents.set(name, callback);
-    if (!exists) {
+    if ( !exists) {
         if (waitingEvents.has(name)) {
             waitingEvents.get(name).forEach(values => {
                 emitter.emit(name, ...values);
@@ -125,8 +127,8 @@ export function listenEvent<T extends string = string>(name: EventType|T, callba
  * @return {boolean} - if it is previously activated (default) then true
  * */
 export function deactivateEvent(name: string): boolean {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid event name', 'listenEvent#01', where);
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid event name', testCase(FQN, 132), where);
     }
     if (waitingEvents.has(name)) {
         defLogger.warn(`Deactivated and cleared all messages. name: ${name}`, {where, eventName: name});
@@ -135,7 +137,7 @@ export function deactivateEvent(name: string): boolean {
     if (removedEvents.has(name)) {
         removedEvents.delete(name);
     }
-    if (!deactivatedEvents.has(name)) {
+    if ( !deactivatedEvents.has(name)) {
         return false;
     }
     deactivatedEvents.add(name);
@@ -153,8 +155,8 @@ export function deactivateEvent(name: string): boolean {
  * @return {boolean} - if it is previously deactivated then true
  * */
 export function activateEvent(name: string): boolean {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid event name', 'listenEvent#01', where);
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid event name', testCase(FQN, 133), where);
     }
     if (deactivatedEvents.has(name)) {
         deactivatedEvents.delete(name);

@@ -5,10 +5,11 @@ import {FQN} from "../internal";
 import {isText} from "../function";
 import {DeveloperError} from "../error";
 import {newRepoMap} from "./map.fn";
+import {testCase} from "./test.fn";
 
 // region properties
 const where = `${FQN}.LifecycleFn`;
-const stages = newRepoMap<LifecycleStage, Map<string, Array<Fnc>>>(`${where}.stages`);
+const _stages = newRepoMap<LifecycleStage, Map<string, Array<Fnc>>>(`${where}.stages`);
 let lifecycleSortLambda: LifecycleSortLambda;
 // endregion properties
 
@@ -19,7 +20,7 @@ let lifecycleSortLambda: LifecycleSortLambda;
  * @param {LifecycleStage} stage - stage
  * */
 const init = (stage: LifecycleStage): void => {
-    stages.set(stage, new Map<string, Array<Fnc>>());
+    _stages.set(stage, new Map<string, Array<Fnc>>());
 }
 
 /**
@@ -29,21 +30,21 @@ const init = (stage: LifecycleStage): void => {
  * @param {string} name - your callback name
  * @param {function} callback - it will be called on {@link runLifecycleStage}
  * */
-export function addLifecycle(stage: LifecycleStage, name: string, callback: Fnc) : void {
-    if (!isText(stage)) {
-        throw new DeveloperError('Invalid lifecycle stage', 'addLifecycle#01', where);
+export function addLifecycleStage(stage: LifecycleStage, name: string, callback: Fnc): void {
+    if ( !isText(stage)) {
+        throw new DeveloperError('Invalid lifecycle stage', testCase(FQN, 100), where);
     }
-    if (!stages.has(stage)) {
-        throw new DeveloperError('Absent lifecycle stage', 'addLifecycle#02', where);
+    if ( !_stages.has(stage)) {
+        throw new DeveloperError(`Lifecycle stage could not be found [${stage}]`, testCase(FQN, 101), where);
     }
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid lifecycle name', 'addLifecycle#03', where);
+    if ( !isText(name)) {
+        throw new DeveloperError(`Invalid lifecycle name [${stage}]`, testCase(FQN, 102), where);
     }
     if (typeof callback !== 'function') {
-        throw new DeveloperError('Invalid lifecycle callback', 'addLifecycle#04', where);
+        throw new DeveloperError(`Invalid lifecycle callback [${stage}/${name}]`, testCase(FQN, 103), where);
     }
-    const item = stages.get(stage);
-    if (!item.has(name)) {
+    const item = _stages.get(stage);
+    if ( !item.has(name)) {
         item.set(name, []);
     }
     item.get(name).push(callback);
@@ -56,28 +57,27 @@ export function addLifecycle(stage: LifecycleStage, name: string, callback: Fnc)
  * @param {...Array} params
  * @return {number} - called callbacks number
  * */
-export async function runLifecycleStage (stage: LifecycleStage, ...params: Array<unknown>): Promise<number> {
-    if (!isText(stage)) {
-        throw new DeveloperError('Invalid lifecycle stage', 'runLifecycleStage#01', where);
+export async function runLifecycleStage(stage: LifecycleStage, ...params: Array<unknown>): Promise<number> {
+    if ( !isText(stage)) {
+        throw new DeveloperError('Invalid lifecycle stage', testCase(FQN, 104), where);
     }
-    if (!stages.has(stage)) {
-        throw new DeveloperError('Absent lifecycle stage', 'runLifecycleStage#02', where);
+    if ( !_stages.has(stage)) {
+        throw new DeveloperError(`Lifecycle stage could not be found [${stage}]`, testCase(FQN, 105), where);
     }
     let count = 0;
-    const item = stages.get(stage);
+    const item = _stages.get(stage);
     if (item.size < 1) {
         return count;
     }
     let sorted: Array<LifecycleTuple>;
     if (lifecycleSortLambda) {
         try {
-            sorted = lifecycleSortLambda(stages.get(stage));
-        }
-        catch (e) {
-            new DeveloperError(`Raised sort-lambda run [${stage}]`, 'runLifecycleStage#03', where).log(e);
+            sorted = lifecycleSortLambda(_stages.get(stage));
+        } catch (e) {
+            new DeveloperError(`Callback error during lifecycle order lambda [${stage}]`, testCase(FQN, 106), where).log(e);
         }
     }
-    if (!sorted) {
+    if ( !sorted) {
         sorted = [];
         for (const [name, callbacks] of item.entries()) {
             sorted.push([name, callbacks]);
@@ -88,9 +88,8 @@ export async function runLifecycleStage (stage: LifecycleStage, ...params: Array
             try {
                 await callback(...params);
                 count++;
-            }
-            catch (e) {
-                new DeveloperError(`Raised callback run [${stage}/${name}]`, 'runLifecycleStage#04', where).log(e);
+            } catch (e) {
+                new DeveloperError(`Callback error during lifecycle callback [${stage}/${name}]`, testCase(FQN, 107), where).log(e);
             }
         }
     }
@@ -103,15 +102,15 @@ export async function runLifecycleStage (stage: LifecycleStage, ...params: Array
  * @param {LifecycleStage} stage
  * @param {LifecycleSortLambda} lambda - function that sorts map items
  * */
-export function setLifecycleSort(stage: LifecycleStage, lambda: LifecycleSortLambda): void {
-    if (!isText(stage)) {
-        throw new DeveloperError('Invalid lifecycle stage', 'setLifecycleSort#01', where);
+export function setLifecycleOrderLambda(stage: LifecycleStage, lambda: LifecycleSortLambda): void {
+    if ( !isText(stage)) {
+        throw new DeveloperError('Invalid lifecycle stage', testCase(FQN, 108), where);
     }
-    if (!stages.has(stage)) {
-        throw new DeveloperError('Absent lifecycle stage', 'setLifecycleSort#02', where);
+    if ( !_stages.has(stage)) {
+        throw new DeveloperError(`Lifecycle stage could not be found [${stage}]`, testCase(FQN, 109), where);
     }
     if (typeof lambda !== 'function') {
-        throw new DeveloperError('Invalid lifecycle callback', 'setLifecycleSort#03', where);
+        throw new DeveloperError(`Invalid lifecycle callback [${stage}]`, testCase(FQN, 110), where);
     }
     lifecycleSortLambda = lambda;
 }

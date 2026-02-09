@@ -2,85 +2,58 @@
 
 import {
     ClassLike,
-    ErrorDefineEagerOpt,
-    ErrorDefineLazyOpt,
-    ErrorItem,
+    ErrorInertEagerOpt,
+    ErrorInertItem,
+    ErrorInertLazyOpt,
     ErrorStackLine,
     LeyyoErrorLike,
     LeyyoErrorSecure,
     LeyyoStackLike,
     Opt
 } from "../index.types";
-import {isClass, isEmpty, isFilledArr, isFilledObj, isObj, isText} from "../function";
+import {isClass, isEmpty, isFilledArr, isFilledObj, isObj, isText, secureJson} from "../function";
 import {LY_ERROR_DECORATE_I18N, LY_ERROR_DEFAULT_MESSAGE, LY_ERROR_EMIT, LY_ERROR_EMITTED} from "../const";
 import {FQN} from "../internal";
 import {emitEvent} from "./event.fn";
 import {DeveloperError} from "../error";
-import {newRepoSet} from "./set.fn";
 import {newRepoMap} from "./map.fn";
 import * as stackTraceParser from "stacktrace-parser";
+import {testCase} from "./test.fn";
+import {
+    buildInert,
+    defineInertEager,
+    defineInertLazy,
+    getInert,
+    isInertDefined,
+    isInertEager,
+    isInertLazy,
+    loadInertLazy
+} from "./inert.fn";
 
 // region properties
 const where = `${FQN}.ErrorFn`;
-const _items = newRepoSet<ClassLike>(`${where}.items`);
-const _names = newRepoMap<string, ErrorItem>(`${where}.names`);
 const _knownPackages = newRepoMap<string, string>(`${where}.knownPackages`);
+let _leyyoError: ClassLike;
 // endregion properties
 
-// noinspection JSUnusedGlobalSymbols
+// region inert
 /**
  * Define an error
  *
  * @param {ClassLike} clazz - error class
- * @param {ErrorDefineEagerOpt} options - options
+ * @param {ErrorInertEagerOpt} options - options
  * */
-export function defineError(clazz: ClassLike, options: ErrorDefineEagerOpt): void {
-    if (!isClass(clazz)) {
-        throw new DeveloperError('Invalid error class', 'defineError#01', where);
-    }
-    if (!isFilledObj(options)) {
-        throw new DeveloperError('Invalid error options', 'defineError#02', where);
-    }
-
-    _items.add(clazz);
-    _names.set(clazz.name, {...options, name: clazz.name, mode: 'eager', clazz});
-
-    if (isText(options.message)) {
-        clazz[LY_ERROR_DEFAULT_MESSAGE] = options.message;
-    }
-    if (!isEmpty(options.emit)) {
-        clazz[LY_ERROR_EMIT] = options.emit;
-    }
-    if (!isEmpty(options.i18n)) {
-        clazz[LY_ERROR_DECORATE_I18N] = options.i18n;
-    }
-}
-
-
-/**
- * Check conflict case
- *
- * @param {string} name - error name
- * @param {EnumData} clazz - error class
- * @return {boolean} - if yes: it was already defined
- * */
-function isAlreadyDefined(name: string, clazz: ClassLike): boolean {
-    return _items.has(clazz) && _names.has(name);
+export function defineError(clazz: ClassLike, options: ErrorInertEagerOpt): void {
+    defineInertEager<ErrorInertItem, ClassLike>('error', clazz, options);
 }
 
 /**
  * Define an error as lazy (with path)
  *
- * @param {ErrorDefineLazyOpt} opt - error options
+ * @param {ErrorInertLazyOpt} options - error options
  * */
-export function defineLazyError(opt: ErrorDefineLazyOpt): void {
-    if (!isFilledObj(opt)) {
-        throw new DeveloperError('Invalid error options', 'onDeployed#01', where);
-    }
-    if (!(opt.lazyClass instanceof Promise)) {
-        throw new DeveloperError('Invalid error class path', 'onDeployed#01', where);
-    }
-    _names.set(opt.name, {...opt, mode: 'lazy'});
+export function defineLazyError(options: ErrorInertLazyOpt): void {
+    defineInertLazy<ErrorInertItem, ClassLike>('error', options);
 }
 
 /**
@@ -92,7 +65,7 @@ export function defineLazyError(opt: ErrorDefineLazyOpt): void {
  * @return {boolean}
  * */
 export function isErrorLazy(name: string): boolean {
-    return getError(name)?.mode === 'lazy';
+    return isInertLazy('error', name);
 }
 
 /**
@@ -102,7 +75,7 @@ export function isErrorLazy(name: string): boolean {
  * @return {boolean}
  * */
 export function isErrorEager(name: string): boolean {
-    return getError(name)?.mode === 'eager';
+    return isInertEager('error', name);
 }
 
 /**
@@ -112,7 +85,7 @@ export function isErrorEager(name: string): boolean {
  * @return {boolean}
  * */
 export function isErrorDefined(name: string): boolean {
-    return !!getError(name);
+    return isInertDefined('error', name);
 }
 
 /**
@@ -123,14 +96,8 @@ export function isErrorDefined(name: string): boolean {
  * @param {string} name - error name
  * @return {EnumItem}
  * */
-export function getError(name: string): ErrorItem {
-    if (!isText(name)) {
-        return undefined;
-    }
-    if (!_names.has(name)) {
-        return undefined;
-    }
-    return _names.get(name);
+export function getError(name: string): ErrorInertItem {
+    return getInert('error', name);
 }
 
 /**
@@ -141,38 +108,39 @@ export function getError(name: string): ErrorItem {
  * @param {string} name - name of error
  * @return {Promise<EnumItem>}
  * */
-export async function getLazyError(name: string): Promise<ErrorItem> {
-    if (!isText(name)) {
-        return undefined;
-    }
-    if (!_names.has(name)) {
-        return undefined;
-    }
-    const item = _names.get(name);
-    if (item.mode === 'eager') {
-        return item;
-    }
-    try {
-        item.clazz = await item.lazyClass;
-        if (isClass(item.clazz)) {
-            if (isAlreadyDefined(name, item.clazz)) {
-                delete item.lazyClass;
-                return item;
-            }
-            item.mode = 'eager';
-        }
-    } catch (e) {
-        new DeveloperError('Raised callback run', 'optCheck#01', where).log(e);
-    }
-    delete item.lazyClass;
-    return item;
+export async function loadLazyError(name: string): Promise<ErrorInertItem> {
+    return loadInertLazy('error', name);
 }
+
+buildInert<ErrorInertItem, ClassLike>({
+    cluster: 'error',
+    validateLambda: t => isClass(t),
+    getNameLambda: t => t?.name,
+    setNameLambda: undefined,
+    stampLambda: _stampIt,
+    nextLoadLambda: undefined,
+    anonymousName: 'Error',
+});
+
+function _stampIt(item: ErrorInertItem): void {
+    if (isText(item.message)) {
+        item.target[LY_ERROR_DEFAULT_MESSAGE] = item.message;
+    }
+    if ( !isEmpty(item.emit)) {
+        item.target[LY_ERROR_EMIT] = item.emit;
+    }
+    if ( !isEmpty(item.i18n)) {
+        item.target[LY_ERROR_DECORATE_I18N] = item.i18n;
+    }
+}
+
+// endregion inert
 
 /**
  * It will be called when an error raised
  * */
 export function emitError(err: Error): void {
-    if (!(err instanceof Error)) {
+    if ( !(err instanceof Error)) {
         return;
     }
     // already emitted
@@ -182,7 +150,7 @@ export function emitError(err: Error): void {
     const clazz = err.constructor;
 
     // error does not support to emit
-    if (!clazz[LY_ERROR_EMIT]) {
+    if ( !clazz[LY_ERROR_EMIT]) {
         return;
     }
 
@@ -296,7 +264,7 @@ export function toErrorJsonFull(err: Error, existing: Opt): Opt {
  * @return {Opt?} - bare error object
  * */
 function _toErrorJson(err: Error, existing: Opt, ignoreNameMessage: boolean, weakSet: WeakSet<Error>): Opt {
-    if (!(err instanceof Error)) {
+    if ( !(err instanceof Error)) {
         return undefined;
     }
     if (weakSet.has(err)) {
@@ -315,7 +283,7 @@ function _toErrorJson(err: Error, existing: Opt, ignoreNameMessage: boolean, wea
         switch (k) {
             case 'name':
             case 'message':
-                if (!ignoreNameMessage) {
+                if ( !ignoreNameMessage) {
                     result[k] = v;
                 }
                 break;
@@ -351,18 +319,73 @@ function _toErrorJson(err: Error, existing: Opt, ignoreNameMessage: boolean, wea
 }
 
 /**
- * Cast a native error to given error class
+ * Cast a native error to leyyo error
+ *
+ * @param {Error} e - native error instance
+ * @param {Opt?} params - params for error
+ * @return {LeyyoErrorLike} - new error instance
+ * */
+export function errorCast<E extends LeyyoErrorLike>(e: Error, params?: Opt): E {
+    if ( !(e instanceof Error)) {
+        return new _leyyoError(secureJson(e)) as E;
+    }
+    if (e instanceof _leyyoError) {
+        return e as E;
+    }
+    const err = new _leyyoError(e.message, params) as E;
+    (err as unknown as LeyyoErrorSecure).$copyProperties(e);
+    err.causedBy = e;
+    return err;
+}
+
+/**
+ * Cast a native error by given error class
  *
  * @param {function} clazz - new error class
  * @param {Error} e - native error instance
  * @param {Opt?} params - params for error
  * @return {LeyyoErrorLike} - new error instance
  * */
-export function errorCast<E extends LeyyoErrorLike>(clazz: ClassLike, e: Error, params?: Opt): E {
+export function errorForceCast<E extends LeyyoErrorLike>(clazz: ClassLike, e: Error, params?: Opt): E {
+    if ( !(e instanceof Error)) {
+        return new _leyyoError(secureJson(e)) as E;
+    }
+    if ( !isClass(clazz)) {
+        return errorCast(e, params);
+    }
+    if (e instanceof clazz) {
+        return e as E;
+    }
     const err = new clazz(e.message, params) as E;
     (err as unknown as LeyyoErrorSecure).$copyProperties(e);
     err.causedBy = e;
     return err;
 }
 
+/**
+ * Add known package to shorten stack paths
+ *
+ * @param {string} packageName - original package name, like @package/component
+ * @param {string} shortName - short name for given package
+ * */
+export function addErrorKnownPackage(packageName: string, shortName: string): void {
+    if ( !isText(packageName)) {
+        throw new DeveloperError('Invalid package name', testCase(FQN, 230), where);
+    }
+    if ( !isText(shortName)) {
+        throw new DeveloperError(`Invalid short name [${packageName}]`, testCase(FQN, 231), where);
+    }
+    if (_knownPackages.has(shortName)) {
+        throw new DeveloperError(`Duplicated package name [${packageName}]`, testCase(FQN, 232), where);
+    }
+    _knownPackages.set(packageName, shortName);
+}
+
+
 DeveloperError.stackBuilder(errorStack);
+
+export function $setLeyyoError(clazz: ClassLike): void {
+    if ( !_leyyoError && typeof clazz === 'function') {
+        _leyyoError = clazz;
+    }
+}

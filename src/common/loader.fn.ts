@@ -9,10 +9,10 @@ import {isFilledArr, isText} from "../function";
  * @param {...LoaderItem[]} items - items
  * */
 export function defineLoader(fqn: string, ...items: Array<LoaderItem>): LoaderLike {
-    if (!isText(fqn)) {
+    if ( !isText(fqn)) {
         fqn = `leyyo/@${Date.now()}`;
     }
-    if (!isFilledArr(items)) {
+    if ( !isFilledArr(items)) {
         items = [];
     }
     const loader: LoaderLike = [...items];

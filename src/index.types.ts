@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 // region alias
-import type {LogLevel} from "./enum";
+import {LogLevel} from "./enum";
 
 export type HttpStatus = number;
 // endregion alias
@@ -50,8 +50,11 @@ export interface Abstract<T = {}> extends Function {
     prototype: T;
     readonly name: string;
     readonly length: number;
+
     bind(thisArg: unknown, ...args: Arr): unknown;
+
     apply(thisArg: unknown, args: Arr): unknown;
+
     call(thisArg: unknown, ...args: Arr): unknown;
 }
 
@@ -79,11 +82,13 @@ export declare namespace Express {
 export interface Describable {
     description: string;
 }
+
 export interface Nameable {
     name: string;
 }
+
 export interface HasId {
-    id?: string|number;
+    id?: string | number;
 }
 
 export type TypeOfMethod<T, M extends keyof T> = T[M] extends Function ? T[M] : never;
@@ -171,16 +176,40 @@ export interface InitLike {
 // region enum
 export type EnumMap<E extends KeyValue = KeyValue> = { [K in E]: KeyValue };
 export type EnumAlt<E extends KeyValue = KeyValue> = Dict<E>;
-export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E>|ReadonlyArray<E>;
+export type EnumLiteral<E extends KeyValue = KeyValue> = Array<E> | ReadonlyArray<E>;
 export type EnumData<E extends KeyValue = KeyValue> = EnumMap<E> | EnumLiteral<E>;
 
-export type EnumType = 'map'|'literal';
-export interface EnumItem extends EnumDefineOpt {
-    mode: LoaderMode;
+export type EnumType = 'map' | 'literal';
+
+export interface EnumInertOpt {
+    /**
+     * Will be the error decorated for context language?
+     * */
+    i18n?: unknown; // todo
+}
+
+export interface EnumInertItem extends InertItem<EnumData>, EnumInertOpt {
     type?: EnumType; // for lazy load, we will learn it later
-    data?: EnumMap|EnumLiteral;
+
     alt?: EnumAlt;
-    lazyData?: Promise<EnumMap|EnumLiteral>;
+    altTarget?: Promise<EnumAlt>;
+}
+
+export interface EnumInertEagerOpt extends InertEagerOpt, EnumInertOpt {
+    alt?: EnumAlt;
+}
+
+export interface EnumInertLazyOpt extends InertLazyOpt<EnumData>, EnumInertOpt {
+    altTarget?: Promise<EnumAlt>;
+}
+
+
+export interface EnumItem extends EnumDefineOpt {
+    mode: InertMode;
+    type?: EnumType; // for lazy load, we will learn it later
+    data?: EnumMap | EnumLiteral;
+    alt?: EnumAlt;
+    lazyData?: Promise<EnumMap | EnumLiteral>;
     lazyAlt?: Promise<EnumAlt>;
 }
 
@@ -193,10 +222,12 @@ export interface EnumDefineOpt {
 export interface EnumDefineEagerOpt extends EnumDefineOpt {
     alt?: EnumAlt;
 }
+
 export interface EnumDefineLazyOpt extends EnumDefineOpt {
-    lazyData: Promise<EnumMap|EnumLiteral>;
+    lazyData: Promise<EnumMap | EnumLiteral>;
     lazyAlt?: Promise<EnumAlt>;
 }
+
 // endregion enum
 
 // region replace or ignore property type
@@ -341,6 +372,26 @@ export type ListPredicate<T = unknown> = (value: T, index?: number, arr?: Array<
 // endregion list
 
 // region error
+export interface ErrorInertOpt {
+    /**
+     * Default error message
+     * */
+    message?: string;
+
+    /**
+     * Will be error emitted?
+     * */
+    emit?: unknown; // todo
+
+    /**
+     * Will be the error decorated for context language?
+     * */
+    i18n?: unknown; // todo
+}
+
+export type ErrorInertItem = InertItem<ClassLike> & ErrorInertOpt;
+export type ErrorInertEagerOpt = InertEagerOpt & ErrorInertOpt;
+export type ErrorInertLazyOpt = InertLazyOpt<ClassLike> & ErrorInertOpt;
 
 /**
  * Bare omit error without any property
@@ -352,12 +403,6 @@ export interface ErrorObject {
     message: string;
 }
 
-export interface ErrorItem extends ErrorDefineOpt {
-    name: string;
-    mode: LoaderMode;
-    clazz?: ClassLike;
-    lazyClass?: Promise<ClassLike>;
-}
 
 /**
  * Stack line
@@ -386,6 +431,7 @@ export interface LeyyoStackLike extends Error {
      * */
     stackTrace?: Array<ErrorStackLine>;
 }
+
 export interface LeyyoErrorLike extends Error, LeyyoStackLike, ShiftSecure<LeyyoErrorSecure> {
     /**
      * Parameters for error
@@ -534,40 +580,125 @@ export interface LeyyoErrorSecure extends ShiftMain<LeyyoErrorLike> {
 
 export type LeyyoErrorTag = 'printed' | 'sent';
 
-export interface ErrorDefineOpt {
+export type ErrorStackBuilder = (err: LeyyoStackLike, force?: boolean) => void;
+// endregion error
+
+// region inert
+export type InertMode = 'eager' | 'lazy' | 'failed' | 'conflicted';
+export type InertStage = 'persistent' | 'fqn-waiting' | 'loading-waiting';
+
+export interface InertBuildOpt<L extends InertItem<T>, T> {
+    cluster: string;
+    validateLambda: InertValidateLambda<T>;
+    getNameLambda: InertGetNameLambda<T>;
+    setNameLambda?: InertSetNameLambda<T>;
+    stampLambda?: InertStampLambda<L, T>;
+    nextLoadLambda?: InertNextLoadLambda<L, T>;
+    anonymousName?: string;
+}
+
+export interface InertRepo<L extends InertItem<T>, T> extends InertBuildOpt<L, T> {
+    uniqueLoaded: Set<T>; // targets
+    fullNames: Map<string, L>; // fullName, item
+    basicNames: Map<string, L>; // basicName, item
+    aliases: Map<string, string>; // alias, fullName
+    pendingFqn: Map<string, L>; // basicName, item
+    pendingLazy: Map<string, L>; // basicName, item
+}
+
+export type InertValidateLambda<T> = (target: T) => boolean;
+export type InertGetNameLambda<T> = (target: T) => string;
+export type InertSetNameLambda<T> = (target: T, name: string) => void;
+export type InertStampLambda<L extends InertItem<T>, T> = (item: L) => void;
+export type InertNextLoadLambda<L extends InertItem<T>, T> = (item: L) => Promise<void>;
+
+export interface InertItem<T> {
     /**
-     * Fqn name
+     * Name of target
+     * */
+    name: string;
+
+    /**
+     * Full name of target (FQN)
+     * */
+    full?: string;
+
+    /**
+     * Alias for it
+     * */
+    aliases?: Array<string>;
+
+    /**
+     * Fqn package name
      * */
     fqn?: string;
 
     /**
-     * Default error message
+     * Lazy mode
      * */
-    message?: string;
+    mode: InertMode;
 
     /**
-     * Will be error emitted?
+     * Lazy stage
      * */
-    emit?: unknown; // todo
+    stage: InertStage;
 
     /**
-     * Will be the error decorated for context language?
+     * Target
      * */
-    i18n?: unknown; // todo
+    target?: T;
+
+    /**
+     * Lazy target promise
+     * */
+    lazyTarget?: Promise<T>;
 }
 
-export interface ErrorDefineEagerOpt extends ErrorDefineOpt {
+export interface InertEagerOpt {
+    /**
+     * Fqn package name
+     * */
+    fqn?: string;
+
+    /**
+     * Alias for it
+     * */
+    aliases?: Array<string>;
 }
 
-export interface ErrorDefineLazyOpt extends ErrorDefineOpt {
+export interface InertLazyOpt<T> {
+    /**
+     * Name of target
+     * */
     name: string;
-    lazyClass: Promise<ClassLike>;
-}
-export type ErrorStackBuilder = (err: LeyyoStackLike, force?: boolean) => void;
-// endregion error
 
+    /**
+     * Lazy target promise
+     * */
+    lazyTarget: Promise<T>;
+
+    /**
+     * Alias for it
+     * */
+    aliases?: Array<string>;
+
+    /**
+     * Fqn name
+     * */
+    fqn?: string;
+}
+
+// endregion inert
 // region lifecycle
-export type LifecycleStage = 'initialize' | 'print' | 'validate' | 'process' | 'clear' | 'ota-before' | 'ota-after' | 'kill';
+export type LifecycleStage =
+    'initialize'
+    | 'print'
+    | 'validate'
+    | 'process'
+    | 'clear'
+    | 'ota-before'
+    | 'ota-after'
+    | 'kill';
 export type LifecycleTuple = [string, Array<Fnc>];
 export type LifecycleSortLambda = (map: Map<string, Array<Fnc>>) => Array<LifecycleTuple>;
 // endregion lifecycle
@@ -575,41 +706,56 @@ export type LifecycleSortLambda = (map: Map<string, Array<Fnc>>) => Array<Lifecy
 // region exporter
 export type ExporterData = Record<string, ExporterValue>;
 export type ExporterValue = Record<string, unknown>;
+
 export interface ExporterDepot {
     add(name: string, value: ExporterValue): void;
 }
+
 // endregion exporter
 
 // region log
 export interface Logger extends ShiftSecure<LoggerSecure> {
 
-    debug(message: string, params?: any|Opt): void;
-    debug(error: Error, params?: any|Opt): void;
-    debug(whatever: any, params?: any|Opt): void;
+    debug(message: string, params?: any | Opt): void;
 
-    trace(message: string, params?: any|Opt): void;
-    trace(error: Error, params?: any|Opt): void;
-    trace(whatever: any, params?: any|Opt): void;
+    debug(error: Error, params?: any | Opt): void;
 
-    info(message: string, params?: any|Opt): void;
-    info(error: Error, params?: any|Opt): void;
-    info(whatever: any, params?: any|Opt): void;
+    debug(whatever: any, params?: any | Opt): void;
 
-    warn(message: string, params?: any|Opt): void;
-    warn(error: Error, params?: any|Opt): void;
-    warn(whatever: any, params?: any|Opt): void;
+    trace(message: string, params?: any | Opt): void;
 
-    error(message: string, params?: any|Opt): void;
-    error(error: Error, params?: any|Opt): void;
-    error(whatever: any, params?: any|Opt): void;
+    trace(error: Error, params?: any | Opt): void;
 
-    fatal(message: string, params?: any|Opt): void;
-    fatal(error: Error, params?: any|Opt): void;
-    fatal(whatever: any, params?: any|Opt): void;
+    trace(whatever: any, params?: any | Opt): void;
+
+    info(message: string, params?: any | Opt): void;
+
+    info(error: Error, params?: any | Opt): void;
+
+    info(whatever: any, params?: any | Opt): void;
+
+    warn(message: string, params?: any | Opt): void;
+
+    warn(error: Error, params?: any | Opt): void;
+
+    warn(whatever: any, params?: any | Opt): void;
+
+    error(message: string, params?: any | Opt): void;
+
+    error(error: Error, params?: any | Opt): void;
+
+    error(whatever: any, params?: any | Opt): void;
+
+    fatal(message: string, params?: any | Opt): void;
+
+    fatal(error: Error, params?: any | Opt): void;
+
+    fatal(whatever: any, params?: any | Opt): void;
 }
 
 export interface LoggerSecure extends ShiftMain<Logger> {
     get $name(): string;
+
     $refresh(level: LogLevel): void;
 }
 
@@ -618,7 +764,7 @@ export interface LogItem {
     where?: string;
     ctx?: unknown;
     now: string;
-    message: string|Error;
+    message: string | Error;
     params?: Opt;
     paramStr?: string;
 }
@@ -631,6 +777,7 @@ export interface LocalColorLike {
     param: string;
     levels: Record<LogLevel, LocalColorLevel>;
 }
+
 export type LogFormatterLambda = (item: LogItem) => void;
 export type LogConsumerLambda = (item: LogItem) => void;
 export type LogStylerLambda = (item: LogItem) => string;
@@ -642,15 +789,22 @@ export type ContextFinderLambda = <T = unknown>(...p: Array<unknown>) => T;
 // endregion context
 
 // region loader
-export type LoaderMode = 'eager'|'lazy';
 export type LoaderLike = Array<LoaderItem>;
 export type LeyyoStampLambda = () => LoaderItem;
 export type LeyyoStampEmpty = () => symbol;
-export type LoaderItem = ClassLike | Fnc | EnumMap | EnumLiteral | Obj | LeyyoStampLambda | LeyyoStampEmpty | LoaderLike;
+export type LoaderItem =
+    ClassLike
+    | Fnc
+    | EnumMap
+    | EnumLiteral
+    | Obj
+    | LeyyoStampLambda
+    | LeyyoStampEmpty
+    | LoaderLike;
 // endregion loader
 
 // region event
-export type EventType = 'log'|'error:emit'|'context:finder';
+export type EventType = 'log' | 'error:emit' | 'context:set-finder';
 // endregion event
 
 /*

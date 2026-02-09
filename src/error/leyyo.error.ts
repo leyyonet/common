@@ -10,24 +10,24 @@ import {
     Opt,
     StrKey
 } from "../index.types";
-import {FQN} from "../internal";
-import {emitError, errorStack, getFqn, optAdd, optAppend} from "../common";
-import {errorText, isFilledObj, isObj, isText} from "../function";
-import {DeveloperError} from "./developer.error";
-import {LY_ERROR_DEFAULT_MESSAGE, LY_ERROR_EMIT, LY_ERROR_FLAGS, LY_ERROR_UNKNOWN_MESSAGE} from "../const";
+import {$setLeyyoError, emitError, emitLog, errorStack, getFqn, optAdd, optAppend} from "../common";
+import {isFilledObj, isObj} from "../function";
+import {
+    LY_ERROR_DEFAULT_MESSAGE,
+    LY_ERROR_EMIT,
+    LY_ERROR_FLAGS,
+    LY_ERROR_UNKNOWN_MESSAGE,
+    LY_ERROR_WHERE
+} from "../const";
 import {LogLevel} from "../enum";
-import {emitLog} from "../common/log.fn";
 
 type T2 = LeyyoErrorTag;
 
 // region property
-const ERROR_FIELDS = ['name', 'message', 'stack'] as Array<StrKey<Error>>;
-const LEYYO_ERROR_FIELDS = [...ERROR_FIELDS, 'params', 'causedBy', 'stackTrace'] as Array<StrKey<LeyyoErrorLike>>;
-const where = `${FQN}.LeyyoError`;
-const knownPackages = new Map<string, string>;
+const _errorField = ['name', 'message', 'stack'] as Array<StrKey<Error>>;
+const _leyyoErrorFields = [..._errorField, 'params', 'causedBy', 'stackTrace'] as Array<StrKey<LeyyoErrorLike>>;
 
-const LY_ERROR_WHERE = '1';
-// endregion property
+// endregion property"
 
 /**
  * Leyyo base error
@@ -52,7 +52,11 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
      * Stack trace
      * */
     stackTrace?: Array<ErrorStackLine>;
-    private [LY_ERROR_WHERE]?: string;
+
+    /**
+     * Where value
+     * */
+    [LY_ERROR_WHERE]?: string;
 
     /**
      * @param {string} message - error message
@@ -106,7 +110,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     // region bind
     causes(err: Error): this {
         if (err instanceof Error) {
-            if (!this.causedBy) {
+            if ( !this.causedBy) {
                 this.causedBy = err;
             }
             else if (this.causedBy instanceof Error) {
@@ -122,7 +126,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
         return this;
     }
 
-    where(p1: ClassLike|Obj|string, fqn?: string): this {
+    where(p1: ClassLike | Obj | string, fqn?: string): this {
         if (typeof p1 === 'function') {
             this[LY_ERROR_WHERE] = getFqn(p1);
         }
@@ -141,72 +145,8 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
         }
         return this;
     }
+
     // endregion bind
-
-    // region static
-    /**
-     * Cast a native error to given error class
-     *
-     * @param {function} clazz - new error class
-     * @param {Error} e - native error instance
-     * @param {Opt?} params - params for error
-     * @return {LeyyoErrorLike} - new error instance
-     * */
-    static cast<E extends LeyyoErrorLike>(clazz: ClassLike, e: Error, params?: Opt): E {
-        const err = new clazz(e.message, params) as E;
-        (err as unknown as LeyyoErrorSecure).$copyProperties(e);
-        err.causedBy = e;
-        return err;
-    }
-
-    // noinspection JSUnusedGlobalSymbols
-    /**
-     * Add known package to shorten stack paths
-     *
-     * @param {string} packageName - original package name, like @package/component
-     * @param {string} shortName - short name for given package
-     * */
-    static addKnownPackage(packageName: string, shortName: string): void {
-        if ( !isText(packageName)) {
-            throw new DeveloperError('Invalid package name', 'addKnownPackage#01', where);
-        }
-        if ( !isText(shortName)) {
-            throw new DeveloperError('Invalid short name', 'addKnownPackage#02', where);
-        }
-        if (knownPackages.has(shortName)) {
-            throw new DeveloperError('Duplicated package name', 'addKnownPackage#03', where);
-        }
-        knownPackages.set(packageName, shortName);
-    }
-
-    /**
-     * Build easy error text as `<info> [err:error.name] => [error.message]`
-     *
-     * @param {Error} e - error instance
-     * @param {...Array<string|number>} parts - parts for info
-     * @return {string}
-     * */
-    static text(e: Error, ...parts: Array<string | number>): string {
-        parts = parts.map(p => {
-            if (typeof p === 'string') {
-                p = p.trim();
-                return (p !== '') ? p : undefined;
-            }
-            else if (typeof p === 'number') {
-                return p.toString(10);
-            }
-            else {
-                return undefined;
-            }
-        }).filter(p => p !== undefined);
-        const info = parts.length > 0 ? '<' + parts.join('/') + '> ' : '';
-        if ( !(e instanceof Error)) {
-            return info;
-        }
-        return `${info}${errorText(e)}`;
-    }
-
-    // endregion static
 
     // region log
     private _log(level: LogLevel, logger?: Logger): void {
@@ -307,7 +247,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
         }
         if (source instanceof LeyyoError) {
             for (const [k, v] of Object.entries(source)) {
-                if ( !LEYYO_ERROR_FIELDS.includes(k as StrKey<LeyyoErrorLike>) && (typeof k === 'string') && !['symbol', 'function', 'undefined'].includes(typeof v)) {
+                if ( !_leyyoErrorFields.includes(k as StrKey<LeyyoErrorLike>) && (typeof k === 'string') && !['symbol', 'function', 'undefined'].includes(typeof v)) {
                     optAdd(this.params, k, v);
                 }
                 if (isFilledObj(source.params)) {
@@ -317,7 +257,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
         }
         else {
             for (const [k, v] of Object.entries(source)) {
-                if ( !ERROR_FIELDS.includes(k as StrKey<Error>) && (typeof k === 'string') && !['symbol', 'function', 'undefined'].includes(typeof v)) {
+                if ( !_errorField.includes(k as StrKey<Error>) && (typeof k === 'string') && !['symbol', 'function', 'undefined'].includes(typeof v)) {
                     optAdd(this.params, k, v);
                 }
             }
@@ -337,3 +277,6 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
 
     // endregion modes
 }
+
+// binding
+$setLeyyoError(LeyyoError);

@@ -2,21 +2,25 @@ import {isText} from "../function";
 import {DeveloperError} from "../error";
 import {FQN} from "../internal";
 import {List} from "../class";
+import {addLifecycleStage} from "./lifecycle.fn";
+import {testCase} from "./test.fn";
 
+// region properties
 /**
  * Internal items which stores collections
  * */
-const items = new Map<symbol, List>();
+const _items = new Map<symbol, List>();
 
 /**
  * Internal volatiles repo which could be cleared after lifecycle run
  * */
-const volatiles = new Set<symbol>();
+const _volatiles = new Set<symbol>();
 
 /**
  * Identifier of file
  * */
 const where = `${FQN}.ListFn`;
+// endregion properties
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -27,14 +31,14 @@ const where = `${FQN}.ListFn`;
  * @return {List<any>}
  * */
 export function newRepoList<V>(name: string, volatile?: boolean): List<V> {
-    if (!isText(name)) {
-        throw new DeveloperError('Invalid new list name', 'newList#01', where);
+    if ( !isText(name)) {
+        throw new DeveloperError('Invalid repository list name', testCase(FQN, 141), where);
     }
     const item = new List<V>();
     const code = Symbol.for(name.split('#').join(''));
-    items.set(code, item);
+    _items.set(code, item);
     if (volatile) {
-        volatiles.add(code);
+        _volatiles.add(code);
     }
     return item;
 }
@@ -54,9 +58,9 @@ export function newRepoList<V>(name: string, volatile?: boolean): List<V> {
 export function removeRepoList(key: symbol): number {
     const cleared = clearRepoList(key);
     if (cleared >= 0) {
-        items.delete(key);
-        if (volatiles.has(key)) {
-            volatiles.delete(key);
+        _items.delete(key);
+        if (_volatiles.has(key)) {
+            _volatiles.delete(key);
         }
     }
     return cleared;
@@ -77,10 +81,10 @@ export function clearRepoList(key: symbol): number {
     if (typeof key !== 'symbol') {
         return -2;
     }
-    if (!items.has(key)) {
+    if ( !_items.has(key)) {
         return -1;
     }
-    const item = items.get(key);
+    const item = _items.get(key);
     const length = item.length;
     item.clear();
     return length;
@@ -93,7 +97,7 @@ export function clearRepoList(key: symbol): number {
  * @return {Array<symbol>}
  * */
 export function listRepoLists(): Array<symbol> {
-    return Array.from(items.keys());
+    return Array.from(_items.keys());
 }
 
 // noinspection JSUnusedGlobalSymbols
@@ -107,7 +111,7 @@ export function listRepoLists(): Array<symbol> {
 export function printRepoLists(): Record<string, number> {
     const result = {} as Record<string, number>;
     let index = 0;
-    for (const [sym, item] of items.entries()) {
+    for (const [sym, item] of _items.entries()) {
         const key = sym.description;
         if (result[key] === undefined) {
             result[key] = item.length;
@@ -120,3 +124,10 @@ export function printRepoLists(): Record<string, number> {
     }
     return result;
 }
+
+// clear volatile items
+addLifecycleStage('clear', 'repo-list', () => {
+    Array.from(_volatiles.values())
+        .forEach(key => _items.delete(key));
+    _volatiles.clear();
+});

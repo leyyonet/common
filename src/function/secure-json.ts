@@ -40,7 +40,8 @@ function _secureObject(value: unknown, depth: number, set: WeakSet<Obj>): unknow
                         obj[k] = _secureObject(v, depth + 1, set);
                     }
                 }
-            } else {
+            }
+            else {
                 let exists: boolean;
                 for (const [k, v] of Object.entries(value)) {
                     if (typeof k === 'string' && !['function', 'symbol', 'undefined'].includes(typeof value)) {
@@ -48,7 +49,7 @@ function _secureObject(value: unknown, depth: number, set: WeakSet<Obj>): unknow
                         obj[k] = _secureObject(v, depth + 1, set);
                     }
                 }
-                if (!exists) {
+                if ( !exists) {
                     try {
                         return JSON.parse(JSON.stringify(value));
                     } catch (e) {

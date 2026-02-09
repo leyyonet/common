@@ -14,7 +14,7 @@ export function extendedType(value: unknown): ExtendedType {
     switch (typeof value) {
         case "string":
             const trimmed = value.trim();
-            if (trimmed === '') {
+            if ( !trimmed) {
                 return 'empty';
             }
             else if (trimmed === value) {
@@ -27,7 +27,7 @@ export function extendedType(value: unknown): ExtendedType {
             }
             return Number.isInteger(value) ? 'integer' : 'number';
         case 'object':
-            if (!value) {
+            if ( !value) {
                 return 'null';
             }
             if (Array.isArray(value)) {

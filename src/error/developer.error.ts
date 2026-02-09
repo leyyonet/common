@@ -44,6 +44,7 @@ export class DeveloperError extends Error implements LeyyoStackLike {
             _stackBuilder(this);
         }
     }
+
     log(err?: Error): void {
         if (err instanceof Error) {
             this['causedBy'] = err;
@@ -62,13 +63,15 @@ export class DeveloperError extends Error implements LeyyoStackLike {
             console.error(secureJson(item));
         }
     }
+
     static boundLog(fn: LogConsumerLambda): void {
         if (typeof fn === 'function') {
             _logConsumer = fn;
         }
     }
+
     static stackBuilder(fn: ErrorStackBuilder): void {
-        if (!_stackBuilder && typeof fn === 'function') {
+        if ( !_stackBuilder && typeof fn === 'function') {
             _stackBuilder = fn;
         }
     }

@@ -7,7 +7,7 @@ import {OneOrMore} from "../index.types";
  * @param {OneOrMore} value - it can be one value or array value
  * @return {Array}
  * */
-export function oneOrMore<T = unknown>(value: OneOrMore<T>): Array<T>|undefined {
+export function oneOrMore<T = unknown>(value: OneOrMore<T>): Array<T> | undefined {
     if (Array.isArray(value)) {
         return value as Array<T>;
     }

@@ -1,10 +1,9 @@
 import {FQN} from "../internal";
 import {ClassLike, Fnc, Logger, LoggerSecure, Obj, Opt} from "../index.types";
-import {getFqn, newRepoMap, testCase} from "../common";
+import {emitLog, getFqn, newRepoMap, testCase} from "../common";
 import {DeveloperError} from "../error";
 import {isText} from "../function";
 import {LogLevel} from "../enum";
-import {emitLog} from "../common/log.fn";
 
 const loggerDepot = newRepoMap<string, Logger>(`${FQN}.loggerDepot`);
 
@@ -37,17 +36,18 @@ export class LoggerInstance implements Logger, LoggerSecure {
     static instances(): Array<string> {
         return Array.from(loggerDepot.keys());
     }
+
     // noinspection JSUnusedGlobalSymbols
     static refresh(name: string, level: LogLevel): void {
-        if (!isText(name)) {
+        if ( !isText(name)) {
             throw new DeveloperError('Invalid logger name!', testCase(FQN, 162), where);
         }
-        if (!loggerDepot.has(name)) {
+        if ( !loggerDepot.has(name)) {
             throw new DeveloperError(`Logger could not be found! name: ${name}`, testCase(FQN, 162), where);
         }
         const instance = loggerDepot.get(name);
 
-        if (!isText(level)) {
+        if ( !isText(level)) {
             throw new DeveloperError(`Invalid logger level! name: ${name}`, testCase(FQN, 163), where);
         }
         if (level.startsWith('$')) {
@@ -62,6 +62,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
             new DeveloperError(`Logger refresh raises! name: ${name}, level: ${level}`, testCase(FQN, 162), where).log(e);
         }
     }
+
     // endregion static
 
     // region levels
@@ -88,6 +89,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
     fatal(message: any, params?: any | Opt): void {
         emitLog('fatal', this._name, message, params);
     }
+
     // endregion levels
 
     // region secure
