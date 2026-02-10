@@ -1,34 +1,19 @@
-import {
-    ClassLike,
-    ErrorStackLine,
-    LeyyoErrorLike,
-    LeyyoErrorSecure,
-    LeyyoErrorTag,
-    Logger,
-    Obj,
-    OneOrMore,
-    Opt,
-    StrKey
-} from "../index.types";
-import {$setLeyyoError, emitError, emitLog, errorStack, getFqn, optAdd, optAppend} from "../common";
-import {isFilledObj, isObj} from "../function";
-import {
-    LY_ERROR_DEFAULT_MESSAGE,
-    LY_ERROR_EMIT,
-    LY_ERROR_FLAGS,
-    LY_ERROR_UNKNOWN_MESSAGE,
-    LY_ERROR_WHERE
-} from "../const";
+import {Logger} from "../common";
+import {ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure, LeyyoErrorTag} from "./index.types";
+import {ClassLike, LeyyoLike, Obj, OneOrMore, StrKey} from "../base";
+import {getFqn, getSymbol, isFilledObj, isObj, Opt, optAdd, optAppend, setSymbol} from "../function";
+import {KEY_ERROR_FLAGS, KEY_ERROR_WHERE, KEY_SECURE_1, VAL_ERROR_UNKNOWN_MESSAGE} from "../const";
 import {LogLevel} from "../enum";
 
+
 type T2 = LeyyoErrorTag;
+let _leyyo: LeyyoLike;
 
 // region property
 const _errorField = ['name', 'message', 'stack'] as Array<StrKey<Error>>;
 const _leyyoErrorFields = [..._errorField, 'params', 'causedBy', 'stackTrace'] as Array<StrKey<LeyyoErrorLike>>;
 
-// endregion property"
-
+// endregion property
 /**
  * Leyyo base error
  * */
@@ -36,7 +21,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     /**
      * Error flags
      * */
-    private [LY_ERROR_FLAGS]: Set<T2>;
+    private [KEY_ERROR_FLAGS]: Set<T2>;
 
     /**
      * Error parameters
@@ -54,9 +39,8 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     stackTrace?: Array<ErrorStackLine>;
 
     /**
-     * Where value
      * */
-    [LY_ERROR_WHERE]?: string;
+    constructor();
 
     /**
      * @param {string} message - error message
@@ -75,10 +59,10 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     constructor(message: string, params: Opt);
 
     /**
-     * @param {(string|Opt)} p1 - error message or error parameters
+     * @param {(string|Opt)?} p1 - error message or error parameters
      * @param {Opt?} p2 - error parameters
      * */
-    constructor(p1: string | Opt, p2?: Opt) {
+    constructor(p1?: string | Opt, p2?: Opt) {
         let message: string;
         let params: Opt;
         if (typeof p1 === 'string') {
@@ -86,24 +70,29 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
             params = p2;
         }
         else {
-            message = LY_ERROR_UNKNOWN_MESSAGE;
+            message = VAL_ERROR_UNKNOWN_MESSAGE;
             params = p1;
         }
         super(message);
 
         const clazz = this.constructor;
-        if ( !message && typeof clazz[LY_ERROR_DEFAULT_MESSAGE] === 'string') {
-            this.message = clazz[LY_ERROR_DEFAULT_MESSAGE];
+        if ( !message) {
+            const conf = _leyyo.errorCommon.getConfigItem(clazz as ClassLike);
+            this.message = conf?.message;
         }
 
         if (params && typeof params === 'object' && !Array.isArray(params)) {
             this.params = params;
         }
         this.name = getFqn(clazz);
-        errorStack(this);
+        _leyyo.errorCommon.buildStack(this);
 
-        if (clazz[LY_ERROR_EMIT]) {
-            emitError(this);
+        _leyyo.errorCommon.emit(this);
+    }
+
+    static [KEY_SECURE_1](leyyo: LeyyoLike) {
+        if ( !_leyyo) {
+            _leyyo = leyyo;
         }
     }
 
@@ -128,10 +117,10 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
 
     where(p1: ClassLike | Obj | string, fqn?: string): this {
         if (typeof p1 === 'function') {
-            this[LY_ERROR_WHERE] = getFqn(p1);
+            setSymbol(this, KEY_ERROR_WHERE, getFqn(p1));
         }
         else if (p1 && typeof p1 === 'object') {
-            this[LY_ERROR_WHERE] = getFqn(p1);
+            setSymbol(this, KEY_ERROR_WHERE, getFqn(p1));
         }
         else if (p1 && typeof p1 === 'string' && p1.trim()) {
             if (typeof fqn === 'string') {
@@ -141,7 +130,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
             else {
                 fqn = '';
             }
-            this[LY_ERROR_WHERE] = fqn + p1.trim();
+            setSymbol(this, KEY_ERROR_WHERE, fqn + p1.trim());
         }
         return this;
     }
@@ -154,7 +143,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
             logger[level](this);
         }
         else {
-            emitLog(level, undefined, this, {});
+            _leyyo.logCommon.emitLog(level, undefined, this, {});
         }
     }
 
@@ -194,43 +183,47 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     // endregion log
 
     // region flags
+    get $where(): string {
+        return getSymbol(this, KEY_ERROR_WHERE);
+    }
+
     $list<T extends T2 | string = T2 | string>(): Array<T> {
-        if (this[LY_ERROR_FLAGS] === undefined) {
+        if (this[KEY_ERROR_FLAGS] === undefined) {
             return [];
         }
-        return Array.from(this[LY_ERROR_FLAGS].values()) as Array<T>;
+        return Array.from(this[KEY_ERROR_FLAGS].values()) as Array<T>;
     }
 
     $append<T extends T2 | string = T2 | string>(key: T): boolean {
-        if (this[LY_ERROR_FLAGS] === undefined) {
-            this[LY_ERROR_FLAGS] = new Set<T2>();
+        if (this[KEY_ERROR_FLAGS] === undefined) {
+            this[KEY_ERROR_FLAGS] = new Set<T2>();
         }
-        else if (this[LY_ERROR_FLAGS].has(key as T2)) {
+        else if (this[KEY_ERROR_FLAGS].has(key as T2)) {
             return false;
         }
-        this[LY_ERROR_FLAGS].add(key as T2);
+        this[KEY_ERROR_FLAGS].add(key as T2);
         return true;
     }
 
     $remove<T extends LeyyoErrorTag | string = LeyyoErrorTag | string>(key: T): boolean {
-        if (this[LY_ERROR_FLAGS] === undefined) {
+        if (this[KEY_ERROR_FLAGS] === undefined) {
             return false;
         }
-        if ( !this[LY_ERROR_FLAGS].has(key as T2)) {
+        if ( !this[KEY_ERROR_FLAGS].has(key as T2)) {
             return false;
         }
-        this[LY_ERROR_FLAGS].delete(key as T2);
-        if (this[LY_ERROR_FLAGS].size === 0) {
-            delete this[LY_ERROR_FLAGS];
+        this[KEY_ERROR_FLAGS].delete(key as T2);
+        if (this[KEY_ERROR_FLAGS].size === 0) {
+            delete this[KEY_ERROR_FLAGS];
         }
         return true;
     }
 
     $has<T extends LeyyoErrorTag | string = LeyyoErrorTag | string>(key: T): boolean {
-        if (this[LY_ERROR_FLAGS] === undefined) {
+        if (this[KEY_ERROR_FLAGS] === undefined) {
             return false;
         }
-        return this[LY_ERROR_FLAGS].has(key as T2);
+        return this[KEY_ERROR_FLAGS].has(key as T2);
     }
 
     // endregion flags
@@ -277,6 +270,3 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
 
     // endregion modes
 }
-
-// binding
-$setLeyyoError(LeyyoError);

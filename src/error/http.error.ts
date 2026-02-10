@@ -1,6 +1,6 @@
 import {LeyyoError} from "./leyyo.error";
-import {LY_ERROR_DEFAULT_MESSAGE, LY_ERROR_HTTP_STATUS} from "../const";
-import {Opt} from "../index.types";
+import {KEY_ERROR_DEFAULT_MESSAGE, KEY_ERROR_HTTP_STATUS} from "../const";
+import {Opt} from "../function";
 
 /**
  * Http error
@@ -33,8 +33,8 @@ export class HttpError extends LeyyoError {
     constructor(p1: string | Opt, p2?: Opt) {
         super(p1 as string, p2);
         const clazz = this.constructor;
-        if (Number.isSafeInteger(clazz[LY_ERROR_HTTP_STATUS])) {
-            this.status = clazz[LY_ERROR_HTTP_STATUS];
+        if (Number.isSafeInteger(clazz[KEY_ERROR_HTTP_STATUS])) {
+            this.status = clazz[KEY_ERROR_HTTP_STATUS];
         }
         else {
             this.status = 400;
@@ -42,6 +42,6 @@ export class HttpError extends LeyyoError {
     }
 
     static {
-        this[LY_ERROR_DEFAULT_MESSAGE] = 'Http error';
+        this[KEY_ERROR_DEFAULT_MESSAGE] = 'Http error';
     }
 }

@@ -1,5 +1,5 @@
 import {LeyyoError} from "./leyyo.error";
-import {Opt} from "../index.types";
+import {Opt} from "../function";
 
 /**
  * Caused error

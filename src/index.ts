@@ -1,22 +1,26 @@
 // noinspection JSUnusedGlobalSymbols
+import {init} from "./init";
+import {leyyo} from "./base";
 
-if (global?.leyyo_is_testing) {
-    ['log', 'warn', 'info', 'debug', 'trace', 'error'].forEach(name => {
-        global.console[name] = (): void => {
-        };
-        console[name] = (): void => {
-        };
-    });
-}
-console['fatal'] = (...args: Array<unknown>) => console.error(...args);
+init();
 
+export const defLogger = leyyo.logger;
+export const deployCommon = leyyo.deployCommon;
+export const enumPool = leyyo.enumPool;
+export const errorCommon = leyyo.errorCommon;
+export const errorPool = leyyo.errorPool;
+export const eventCommon = leyyo.eventCommon;
+export const lifecycleCommon = leyyo.lifecycleCommon;
+export const logCommon = leyyo.logCommon;
+export const repoCommon = leyyo.repoCommon;
 
-export * from './index.types';
-
+export * from './base';
 export * from './class';
+export * from './common';
 export * from './const';
 export * from './enum';
 export * from './error';
-export * from './common';
 export * from './function';
-export * from './loader';
+
+export * from './index.loader';
+export * from './index.foretell';

@@ -1,4 +1,4 @@
-import {Obj} from "../index.types";
+import {Obj} from "../base";
 
 export function _secureClone<T>(value: T, weakSet: WeakSet<Obj>): T {
     if (value === undefined || value === null) {

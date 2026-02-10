@@ -1,5 +1,3 @@
-import {Arr} from "../index.types";
-
 // noinspection JSUnusedGlobalSymbols
 /**
  * Empty function, it can be more useful sometimes
@@ -7,5 +5,5 @@ import {Arr} from "../index.types";
  * @param {Arr} _args - insignificant parameters
  * @return {any}
  * */
-export function emptyFn<R = unknown>(..._args: Arr): R | void {
+export function emptyFn<R = unknown>(..._args: Array<unknown>): R | void {
 }

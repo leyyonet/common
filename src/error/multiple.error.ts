@@ -1,5 +1,5 @@
+import {LeyyoErrorLike} from "./index.types";
 import {LeyyoError} from "./leyyo.error";
-import {LeyyoErrorLike} from "../index.types";
 import {CausedError} from "./caused.error";
 
 // noinspection Annotator

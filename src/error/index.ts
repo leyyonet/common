@@ -1,3 +1,5 @@
+export * from './index.types';
+
 export * from './caused.error';
 export * from './developer.error';
 export * from './http.error';

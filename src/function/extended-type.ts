@@ -1,7 +1,8 @@
-import {ExtendedType} from "../index.types";
-import {isClass} from "./is";
+import {ExtendedType} from "../base";
 import {List} from "../class";
-import {LY_ENUM_NAME} from "../const";
+import {KEY_ENUM_NAME, KEY_LITERAL_NAME} from "../const";
+import {isClass} from "./is.fn";
+
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -31,8 +32,8 @@ export function extendedType(value: unknown): ExtendedType {
                 return 'null';
             }
             if (Array.isArray(value)) {
-                if (value[LY_ENUM_NAME]) {
-                    return 'enum';
+                if (value[KEY_LITERAL_NAME]) {
+                    return 'literal-items';
                 }
                 return (value instanceof List) ? 'list' : 'array';
             }
@@ -45,7 +46,10 @@ export function extendedType(value: unknown): ExtendedType {
             if (value instanceof Set) {
                 return 'set';
             }
-            return value[LY_ENUM_NAME] ? 'enum' : 'object';
+            if (value[KEY_ENUM_NAME]) {
+                return 'enum-map';
+            }
+            return 'object';
         case "function":
             return isClass(value) ? 'class' : 'function';
         default:

@@ -1,13 +1,11 @@
 import {strict as assert} from 'assert';
-import {describe} from "node:test";
-import {$assert, leyyo} from "../src";
+import {CausedError} from "../src";
 
 
-describe('assertion', () => {
+describe('error', () => {
     it('not symbol', () => {
-        assert.throws(() => $assert.sym('a', {where: 'test'}));
-    });
-    it('is symbol', () => {
-        assert.doesNotThrow(() => $assert.sym(Symbol.for('a'), {where: 'test'}));
+        assert.throws(() => {
+            throw new CausedError('invalid')
+        });
     });
 });

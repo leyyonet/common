@@ -1,5 +1,5 @@
 import {LeyyoError} from "./leyyo.error";
-import {LY_ERROR_DEFAULT_MESSAGE} from "../const";
+import {KEY_ERROR_DEFAULT_MESSAGE} from "../const";
 
 /**
  * Invalid value error
@@ -7,6 +7,6 @@ import {LY_ERROR_DEFAULT_MESSAGE} from "../const";
 export class InvalidValueError extends LeyyoError {
 
     static {
-        this[LY_ERROR_DEFAULT_MESSAGE] = 'Invalid value';
+        this[KEY_ERROR_DEFAULT_MESSAGE] = 'Invalid value';
     }
 }
