@@ -1,6 +1,6 @@
-import {LeyyoError} from "./leyyo.error";
-import {KEY_ERROR_DEFAULT_MESSAGE, KEY_ERROR_HTTP_STATUS} from "../const";
-import {Opt} from "../function";
+import {LeyyoError} from "./leyyo.error.js";
+import {KEY_ERROR_DEFAULT_MESSAGE, KEY_ERROR_HTTP_STATUS} from "../const/index.js";
+import {Opt} from "../function/index.js";
 
 /**
  * Http error

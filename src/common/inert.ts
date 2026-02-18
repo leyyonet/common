@@ -1,5 +1,5 @@
-import {FQN} from "../internal";
-import {Fnc, LeyyoLike} from "../base";
+import {FQN} from "../internal.js";
+import {Fnc, LeyyoLike} from "../base/index.js";
 import {
     getFqn,
     isFilledArr,
@@ -10,8 +10,8 @@ import {
     setAnonymousName,
     setFqn,
     testCase
-} from "../function";
-import {InertBuildOpt, InertItem, InertLike, InertOpt, InertRepo} from "./index.types";
+} from "../function/index.js";
+import {InertBuildOpt, InertItem, InertLike, InertOpt, InertRepo} from "./index.types.js";
 
 const where = `${FQN}.Inert`;
 
@@ -60,7 +60,7 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
     // region private
     protected _inFqnStage(item: L): boolean {
         item.full = getFqn(item.target);
-        if ( !item.full.includes('.')) {
+        if ( !item.full || !item.full.includes('.')) {
             if (isText(item.fqn)) {
                 item.full = setFqn(item.target, item.fqn)
             }
@@ -96,7 +96,7 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
     protected _onFqnCompleted(item: L): void {
         let ignore: boolean;
         const {fullNames, basicNames, aliases} = this._repo;
-        if (item.full) {
+        if (isText(item.full)) {
             ignore = false;
             if (fullNames.has(item.full)) {
                 const anotherItem = fullNames.get(item.full);
@@ -197,6 +197,11 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
         else {
             throw new this.leyyo.developerError(`Invalid target or lazy target [${options.name}]`, testCase(FQN, 224), where);
         }
+    }
+
+    /** @inheritDoc */
+    lazy(fqn: string, name: string, lazyTarget: Promise<T>, opt?: Omit<O, 'name'|'target'|'lazyTarget'|'fqn'>): void {
+        this.register({...(opt ?? {}), fqn, name, lazyTarget});
     }
 
     /** @inheritDoc */

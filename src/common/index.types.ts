@@ -1,8 +1,8 @@
-import {ClassLike, Dict, Fnc, KeyValue, Obj, ShiftMain, ShiftSecure} from "../base";
-import {LogLevel} from "../enum";
-import {LeyyoErrorLike} from "../error";
-import {List} from "../class";
-import {Opt} from "../function";
+import {ClassLike, Dict, Fnc, KeyValue, Obj, ShiftMain, ShiftSecure} from "../base/index.js";
+import {LogLevel} from "../enum/index.js";
+import {LeyyoErrorLike} from "../error/index.js";
+import {List} from "../class/index.js";
+import {Opt} from "../function/index.js";
 
 // region inert
 export type InertMode = 'eager' | 'lazy' | 'failed' | 'conflicted';
@@ -73,6 +73,16 @@ export interface InertLike<L extends InertItem<T>, T, O extends InertOpt<T>> {
      * @param {InertOpt} options - options
      * */
     register(options: O): void;
+
+    /**
+     * Define an inert as eager
+     *
+     * @param {string} fqn - package name
+     * @param {string} name - name
+     * @param {Promise} lazyTarget
+     * @param {InertOpt?} opt
+     * */
+    lazy(fqn: string, name: string, lazyTarget: Promise<T>, opt?: Omit<O, 'name'|'target'|'lazyTarget'|'fqn'>): void;
 
     /**
      * Check inert defined as lazy, by name
@@ -167,7 +177,19 @@ export interface ErrorItemConfig {
 export type ErrorPoolOpt = InertOpt<ClassLike> & ErrorItemConfig;
 
 export type ErrorPoolItem = InertItem<ClassLike> & ErrorPoolOpt;
-export type ErrorPoolLike = InertLike<InertItem<ClassLike>, ClassLike, ErrorPoolOpt>;
+
+export interface ErrorPoolLike extends InertLike<InertItem<ClassLike>, ClassLike, ErrorPoolOpt> {
+
+    /**
+     * Define an error
+     *
+     * @param {string} fqn - package name
+     * @param {any} clazz
+     * @param {InertOpt?} opt
+     * */
+    define(fqn: string, clazz: ClassLike, opt?: Omit<ErrorPoolOpt, 'name'|'target'|'lazyTarget'|'fqn'>): void;
+
+}
 // endregion error-pool
 
 // region error-common
@@ -175,6 +197,9 @@ export type ErrorPoolLike = InertLike<InertItem<ClassLike>, ClassLike, ErrorPool
  * Bare omit error without any property
  * */
 export type OmitError = Omit<Error, 'name' | 'message' | 'stack'>;
+export interface ErrorCtor extends Fnc {
+    new(...args: Array<unknown>): OmitError;
+}
 
 export interface ErrorObject {
     name: string;
@@ -271,6 +296,52 @@ export interface ErrorCommonLike {
      * @return {string} - error text
      * */
     text(err: Error, ...parts: Array<string | number>): string;
+
+    /**
+     * Add error statistics with instance
+     *
+     * @param {Error} error
+     * @return {number} - total raised count
+     * */
+    addStat(error: Error): number;
+
+    /**
+     * Add error statistics
+     *
+     * @param {ErrorCtor} clazz
+     * @return {number} - total raised count
+     * */
+    addStat(clazz: ErrorCtor): number;
+
+    /**
+     * Get error statistics with instance
+     *
+     * @param {Error} error
+     * @return {number} - total raised count
+     * */
+    getStat(error: Error): number;
+
+    /**
+     * Get error statistics
+     *
+     * @param {ErrorCtor} clazz
+     * @return {number} - total raised count
+     * */
+    getStat(clazz: ErrorCtor): number;
+
+
+
+    /**
+     * Clear statistics
+     * */
+    clearStats(): void;
+
+    /**
+     * List statistics
+     *
+     * @return {Record} - as {[error-name]: number}
+     * */
+    listStats(): Record<string, number>;
 }
 
 // endregion error-common
@@ -325,6 +396,17 @@ export interface EnumPoolLike extends InertLike<InertItem<Enum>, Enum, EnumPoolO
      * @return {EnumItemConfig} - configuration
      * */
     getConfigItem(enm: Enum): EnumItemConfig;
+
+    /**
+     * Define an enumeration
+     *
+     * @param {string} fqn - package name
+     * @param {string} name - enum name
+     * @param {Enum} enm
+     * @param {InertOpt?} opt
+     * */
+    define(fqn: string, name: string, enm: Enum, opt?: Omit<EnumPoolOpt, 'name'|'target'|'lazyTarget'|'fqn'>): void;
+
 }
 
 // endregion enum-pool
@@ -378,6 +460,17 @@ export interface LiteralPoolLike extends InertLike<InertItem<Literal>, Literal, 
      * @return {LiteralItemConfig} - configuration
      * */
     getConfigItem(lit: Literal): LiteralItemConfig;
+
+
+    /**
+     * Define an literal
+     *
+     * @param {string} fqn - package name
+     * @param {string} name - literal name
+     * @param {Literal} items
+     * @param {InertOpt?} opt
+     * */
+    define(fqn: string, name: string, items: Literal, opt?: Omit<LiteralPoolOpt, 'name'|'target'|'lazyTarget'|'fqn'>): void;
 }
 
 // endregion literal-pool

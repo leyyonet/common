@@ -1,4 +1,4 @@
-import {ListLike, ListPredicate} from "./index.types";
+import {ListLike, ListPredicate} from "./index.types.js";
 
 /**
  * Extended array class, ie: Clearable arrays

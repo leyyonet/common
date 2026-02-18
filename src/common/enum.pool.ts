@@ -1,9 +1,9 @@
-import {Inert} from "./inert";
-import {Enum, EnumItemConfig, EnumPoolItem, EnumPoolLike, EnumPoolOpt} from "./index.types";
-import {getSymbol, isEmpty, isFilledObj, isObj, isText, setSymbol, testCase} from "../function";
-import {LeyyoLike} from "../base";
-import {FQN} from "../internal";
-import {KEY_ENUM_ALT, KEY_ENUM_I18N, KEY_ENUM_NAME} from "../const";
+import {Inert} from "./inert.js";
+import {Enum, EnumItemConfig, EnumPoolItem, EnumPoolLike, EnumPoolOpt} from "./index.types.js";
+import {getSymbol, isEmpty, isFilledObj, isObj, isText, setSymbol, testCase} from "../function/index.js";
+import {LeyyoLike} from "../base/index.js";
+import {FQN} from "../internal.js";
+import {KEY_ENUM_ALT, KEY_ENUM_I18N, KEY_ENUM_NAME} from "../const/index.js";
 
 const where = `${FQN}.EnumPool`;
 
@@ -92,6 +92,11 @@ export class EnumPool extends Inert<EnumPoolItem, Enum, EnumPoolOpt> implements 
             i18n: getSymbol(enm, KEY_ENUM_I18N),
             alt: getSymbol(enm, KEY_ENUM_ALT),
         } as EnumItemConfig;
+    }
+
+    /** @inheritDoc */
+    define(fqn: string, name: string, target: Enum, opt?: Omit<EnumPoolOpt, 'name'|'target'|'lazyTarget'|'fqn'>): void {
+        this.register({...(opt ?? {}), fqn, name, target})
     }
 
     // endregion public

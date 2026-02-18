@@ -1,5 +1,5 @@
-import {KEY_FQN_ON_SET} from "../const";
-import {FqnOnSetLambda, FqnTarget} from "./index.types";
+import {KEY_FQN_ON_SET} from "../const/index.js";
+import {FqnOnSetLambda, FqnTarget} from "./index.types.js";
 
 export function triggerFqn(target: FqnTarget, full: string): boolean {
     if (target[KEY_FQN_ON_SET]) {

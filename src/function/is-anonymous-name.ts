@@ -1,4 +1,4 @@
-import {VAL_NAME_ANONYMOUS} from "../const";
+import {VAL_NAME_ANONYMOUS} from "../const/index.js";
 
 export function isAnonymousName(name: string): boolean {
     if (typeof name === 'string') {

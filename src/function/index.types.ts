@@ -1,5 +1,5 @@
-import {ClassLike, Describable, ExtendedType, Fnc, Obj, OneOrMore, SetOrMore} from "../base";
-import {Enum, Literal} from "../common";
+import {ClassLike, Describable, ExtendedType, Fnc, Obj, OneOrMore, SetOrMore} from "../base/index.js";
+import {Enum, Literal} from "../common/index.js";
 
 // region fqn
 export type FqnTarget = ClassLike | Fnc | Obj | Enum | Literal;
@@ -56,3 +56,7 @@ export interface ExporterDepot {
 }
 
 // endregion exporter
+
+export interface LeyyoConfig {
+    [fqn: string]: Record<string, unknown>;
+}

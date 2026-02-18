@@ -1,13 +1,13 @@
-import {LeyyoErrorLike} from "./index.types";
-import {LeyyoError} from "./leyyo.error";
-import {CausedError} from "./caused.error";
+import {LeyyoErrorLike} from "./index.types.js";
+import {LeyyoError} from "./leyyo.error.js";
+import {CausedError} from "./caused.error.js";
 
 // noinspection Annotator
 /**
  * Multiple error which manages multiple errors
  * */
 export class MultipleError extends LeyyoError {
-    causedBy: Array<LeyyoErrorLike>;
+    declare causedBy: Array<LeyyoErrorLike>;
 
     /**
      * @param {...Error[]} errors

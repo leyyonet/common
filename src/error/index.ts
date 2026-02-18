@@ -1,9 +1,9 @@
-export * from './index.types';
+export * from './index.types.js';
 
-export * from './caused.error';
-export * from './developer.error';
-export * from './http.error';
-export * from './invalid-value.error';
-export * from './leyyo.error';
-export * from './multiple.error';
+export * from './caused.error.js';
+export * from './developer.error.js';
+export * from './http.error.js';
+export * from './invalid-value.error.js';
+export * from './leyyo.error.js';
+export * from './multiple.error.js';
 

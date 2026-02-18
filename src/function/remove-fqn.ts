@@ -1,6 +1,6 @@
-import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME} from "../const";
-import {FqnTarget} from "./index.types";
-import {triggerFqn} from "./trigger-fqn";
+import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME} from "../const/index.js";
+import {FqnTarget} from "./index.types.js";
+import {triggerFqn} from "./trigger-fqn.js";
 
 /**
  * Remove fqn name
@@ -22,12 +22,13 @@ export function removeFqn(target: FqnTarget): boolean {
             if (target[KEY_LITERAL_NAME]) {
                 return _item(target, target[KEY_LITERAL_NAME]);
             }
-            return undefined;
+            return false; // normal array
         }
         if (target[KEY_ENUM_NAME]) {
             return _item(target, target[KEY_ENUM_NAME]);
         }
-        return target.constructor !== Object ? removeFqn(target.constructor) : undefined;
+        // instance
+        return false;
     }
     return false;
 }

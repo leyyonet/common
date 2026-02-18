@@ -1,5 +1,5 @@
 import {strict as assert} from 'assert';
-import {CausedError} from "../src";
+import {CausedError} from "../src/index.js";
 
 
 describe('error', () => {

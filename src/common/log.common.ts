@@ -1,8 +1,8 @@
-import {FQN} from "../internal";
-import {ClassLike, Fnc, LeyyoLike, Obj} from "../base";
-import {LogLevel} from "../enum";
-import {getFqn, hasFqn, isEmpty, isFilledObj, isObj, onFqnSet, Opt, secureJson, testCase} from "../function";
-import {KEY_LOG_ALREADY} from "../const";
+import {FQN} from "../internal.js";
+import {ClassLike, Fnc, LeyyoLike, Obj} from "../base/index.js";
+import {LogLevel} from "../enum/index.js";
+import {getFqn, hasFqn, isEmpty, isFilledObj, isObj, onFqnSet, Opt, secureJson, testCase} from "../function/index.js";
+import {KEY_LOG_ALREADY} from "../const/index.js";
 import {
     ContextFinderLambda,
     LocalColorLike,
@@ -11,7 +11,7 @@ import {
     Logger,
     LogItem,
     LogStylerLambda
-} from "./index.types";
+} from "./index.types.js";
 
 const where = `${FQN}.LogCommon`;
 const emptyWhere = ''.padStart(20);

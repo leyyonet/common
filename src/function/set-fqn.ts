@@ -1,11 +1,14 @@
-import {LeyyoLike} from "../base";
-import {FQN} from "../internal";
-import {$$get_leyyo_fn} from "./leyyo-fn";
-import {isText} from "./is.fn";
-import {testCase} from "./test-case";
-import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS} from "../const";
-import {FqnTarget} from "./index.types";
-import {triggerFqn} from "./trigger-fqn";
+import {Fnc, LeyyoLike} from "../base/index.js";
+import {FQN} from "../internal.js";
+import {$$get_leyyo_fn} from "./leyyo-fn.js";
+import {isClass} from "./is-class.js";
+import {isText} from "./is-text.js";
+import {testCase} from "./test-case.js";
+import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS} from "../const/index.js";
+import {FqnTarget} from "./index.types.js";
+import {triggerFqn} from "./trigger-fqn.js";
+import {setAnonymousName} from "./set-anonymous-name.js";
+import {getFqn} from "./get-fqn.js";
 
 const where = `${FQN}.FqnFn`;
 let _leyyo: LeyyoLike;
@@ -39,6 +42,9 @@ export function setFqn(target: FqnTarget, fqn: string): string {
     }
 
     if (typeof target === 'function') { // function, class
+        if (!target.name) {
+            setAnonymousName(target as Fnc, isClass(target) ? 'Class' : 'function');
+        }
         return _item(target, target.name, fqn);
     }
     else if (typeof target === 'object') {
@@ -51,7 +57,8 @@ export function setFqn(target: FqnTarget, fqn: string): string {
         if (target[KEY_ENUM_NAME]) {
             return _item(target, target[KEY_ENUM_NAME], fqn);
         }
-        return target.constructor !== Object ? setFqn(target.constructor, fqn) : undefined;
+        new _leyyo.developerError(`Instance fqn could not be set`, testCase(FQN, 152), where).log();
+        return getFqn(target.constructor);
     }
     new _leyyo.developerError(`Invalid fqn target [${fqn}]`, testCase(FQN, 152), where).log();
     return undefined;

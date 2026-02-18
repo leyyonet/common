@@ -1,7 +1,7 @@
-import {LifecycleCommonLike, LifecycleSortLambda, LifecycleStage, LifecycleTuple} from "./index.types";
-import {Fnc, LeyyoLike} from "../base";
-import {FQN} from "../internal";
-import {isText, testCase} from "../function";
+import {LifecycleCommonLike, LifecycleSortLambda, LifecycleStage, LifecycleTuple} from "./index.types.js";
+import {Fnc, LeyyoLike} from "../base/index.js";
+import {FQN} from "../internal.js";
+import {isText, testCase} from "../function/index.js";
 
 const where = `${FQN}.LifecycleFn`;
 

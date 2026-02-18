@@ -1,6 +1,6 @@
-import {KEY_SECURE_1} from "../const";
-import {LeyyoLike} from "../base";
-import {DeveloperErrorLike, ErrorStackLine} from "./index.types";
+import {KEY_SECURE_1} from "../const/index.js";
+import {LeyyoLike} from "../base/index.js";
+import {DeveloperErrorLike, ErrorStackLine} from "./index.types.js";
 
 
 // region properties

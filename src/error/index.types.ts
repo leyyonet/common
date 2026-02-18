@@ -1,6 +1,6 @@
-import {ClassLike, Obj, OneOrMore, ShiftMain, ShiftSecure} from "../base";
-import {Opt} from "../function";
-import {Logger} from "../common";
+import {ClassLike, Obj, OneOrMore, ShiftMain, ShiftSecure} from "../base/index.js";
+import {Opt} from "../function/index.js";
+import {Logger} from "../common/index.js";
 
 /**
  * {@link LeyyoError}

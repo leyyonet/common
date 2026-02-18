@@ -1,7 +1,7 @@
-import {FQN} from "../internal";
-import {testCase} from "./test-case";
-import {LeyyoLike} from "../base";
-import {$$get_leyyo_fn} from "./leyyo-fn";
+import {FQN} from "../internal.js";
+import {testCase} from "./test-case.js";
+import {LeyyoLike} from "../base/index.js";
+import {$$get_leyyo_fn} from "./leyyo-fn.js";
 
 const where = `${FQN}.GetProp`;
 let _leyyo: LeyyoLike;

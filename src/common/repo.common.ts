@@ -1,14 +1,16 @@
-import {FQN} from "../internal";
-import {isText, testCase} from "../function";
-import {DeveloperError} from "../error";
-import {List} from "../class";
-import {RepoCommonLike} from "./index.types";
-import {LeyyoLike} from "../base";
+import {FQN} from "../internal.js";
+import {isText, testCase} from "../function/index.js";
+import {DeveloperError} from "../error/index.js";
+import {List} from "../class/index.js";
+import {RepoCommonLike} from "./index.types.js";
+import {LeyyoLike} from "../base/index.js";
+import {getRootStorage} from "../sys/index.js";
 
 /**
  * Identifier of file
  * */
 const where = `${FQN}.Repo`;
+const _NAME = '$$leyyo.repo';
 
 // noinspection JSUnusedGlobalSymbols
 export class RepoCommon implements RepoCommonLike {
@@ -18,42 +20,42 @@ export class RepoCommon implements RepoCommonLike {
     /**
      * Internal items which stores arrays
      * */
-    private _arrayItems = new Map<symbol, Array<unknown>>();
+    private _arrayItems = getRootStorage<Map<symbol, Array<unknown>>>(_NAME, new Map<symbol, Array<unknown>>());
 
     /**
      * Internal array volatile repo which could be cleared after lifecycle run
      * */
-    private _arrayVolatiles = new Set<symbol>();
+    private _arrayVolatiles = getRootStorage<Set<symbol>>(_NAME, new Set<symbol>());
 
     /**
      * Internal items which stores lists
      * */
-    private _listItems = new Map<symbol, List>();
+    private _listItems = getRootStorage<Map<symbol, List>>(_NAME, new Map<symbol, List>());
 
     /**
      * Internal list volatiles repo which could be cleared after lifecycle run
      * */
-    private _listVolatiles = new Set<symbol>();
+    private _listVolatiles = getRootStorage<Set<symbol>>(_NAME, new Set<symbol>());
 
     /**
      * Internal items which stores maps
      * */
-    private _mapItems = new Map<symbol, Map<unknown, unknown>>();
+    private _mapItems = getRootStorage<Map<symbol, Map<unknown, unknown>>>(_NAME, new Map<symbol, Map<unknown, unknown>>());
 
     /**
      * Internal map volatile repo which could be cleared after lifecycle run
      * */
-    private _mapVolatiles = new Set<symbol>();
+    private _mapVolatiles = getRootStorage<Set<symbol>>(_NAME, new Set<symbol>());
 
     /**
      * Internal items which stores sets
      * */
-    private _setItems = new Map<symbol, Set<unknown>>();
+    private _setItems = getRootStorage<Map<symbol, Set<unknown>>>(_NAME, new Map<symbol, Set<unknown>>());
 
     /**
      * Internal set volatiles repo which could be cleared after lifecycle run
      * */
-    private _setVolatiles = new Set<symbol>();
+    private _setVolatiles = getRootStorage<Set<symbol>>(_NAME, new Set<symbol>());
 
     // endregion property
 

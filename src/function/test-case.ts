@@ -1,5 +1,5 @@
-import {randomTestNo} from "./random-test-no";
-import {FQN} from "../internal";
+import {randomTestNo} from "./random-test-no.js";
+import {FQN} from "../internal.js";
 
 /**
  * Build test case

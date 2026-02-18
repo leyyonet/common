@@ -1,9 +1,9 @@
-import {Inert} from "./inert";
-import {Literal, LiteralItemConfig, LiteralPoolItem, LiteralPoolLike, LiteralPoolOpt} from "./index.types";
-import {getSymbol, isEmpty, isFilledObj, isObj, isText, setSymbol, testCase} from "../function";
-import {LeyyoLike} from "../base";
-import {FQN} from "../internal";
-import {KEY_LITERAL_ALT, KEY_LITERAL_I18N, KEY_LITERAL_NAME} from "../const";
+import {Inert} from "./inert.js";
+import {Literal, LiteralItemConfig, LiteralPoolItem, LiteralPoolLike, LiteralPoolOpt} from "./index.types.js";
+import {getSymbol, isEmpty, isFilledArr, isFilledObj, isObj, isText, setSymbol, testCase} from "../function/index.js";
+import {LeyyoLike} from "../base/index.js";
+import {FQN} from "../internal.js";
+import {KEY_LITERAL_ALT, KEY_LITERAL_I18N, KEY_LITERAL_NAME} from "../const/index.js";
 
 const where = `${FQN}.LiteralPool`;
 
@@ -59,7 +59,7 @@ export class LiteralPool extends Inert<LiteralPoolItem, Literal, LiteralPoolOpt>
 
     /** @inheritDoc */
     protected _validate(lit: Literal): boolean {
-        return isFilledObj(lit);
+        return isFilledArr(lit);
     }
 
     // endregion protected
@@ -83,6 +83,7 @@ export class LiteralPool extends Inert<LiteralPoolItem, Literal, LiteralPoolOpt>
 
     }
 
+    /** @inheritDoc */
     getConfigItem(lit: Literal): LiteralItemConfig {
         if ( !this._validate(lit)) {
             return undefined;
@@ -94,5 +95,9 @@ export class LiteralPool extends Inert<LiteralPoolItem, Literal, LiteralPoolOpt>
         } as LiteralItemConfig;
     }
 
+    /** @inheritDoc */
+    define(fqn: string, name: string, target: Literal, opt?: Omit<LiteralPoolOpt, 'name'|'target'|'lazyTarget'|'fqn'>): void {
+        this.register({...(opt ?? {}), fqn, name, target})
+    }
     // endregion public
 }

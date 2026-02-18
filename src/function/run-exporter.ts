@@ -1,6 +1,6 @@
-import {$$get_leyyo_fn} from "./leyyo-fn";
-import {LeyyoLike} from "../base";
-import {ExporterData, ExporterDepot, ExporterValue} from "./index.types";
+import {$$get_leyyo_fn} from "./leyyo-fn.js";
+import {LeyyoLike} from "../base/index.js";
+import {ExporterData, ExporterDepot, ExporterValue} from "./index.types.js";
 
 
 let _leyyo: LeyyoLike;

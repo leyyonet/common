@@ -1,6 +1,7 @@
-import {isFilledArr, isText} from "./is.fn";
-import {KEY_LOADER_NAME} from "../const";
-import {LoaderItem, LoaderLike} from "./index.types";
+import {isFilledArr} from "./is-filled-arr.js";
+import {isText} from "./is-text.js";
+import {KEY_LOADER_NAME} from "../const/index.js";
+import {LoaderItem, LoaderLike} from "./index.types.js";
 
 /**
  * Set name of a loader

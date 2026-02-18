@@ -1,9 +1,9 @@
-import {Logger} from "../common";
-import {ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure, LeyyoErrorTag} from "./index.types";
-import {ClassLike, LeyyoLike, Obj, OneOrMore, StrKey} from "../base";
-import {getFqn, getSymbol, isFilledObj, isObj, Opt, optAdd, optAppend, setSymbol} from "../function";
-import {KEY_ERROR_FLAGS, KEY_ERROR_WHERE, KEY_SECURE_1, VAL_ERROR_UNKNOWN_MESSAGE} from "../const";
-import {LogLevel} from "../enum";
+import {Logger} from "../common/index.js";
+import {ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure, LeyyoErrorTag} from "./index.types.js";
+import {ClassLike, LeyyoLike, Obj, OneOrMore, StrKey} from "../base/index.js";
+import {getFqn, getSymbol, isFilledObj, isObj, Opt, optAdd, optAppend, setSymbol} from "../function/index.js";
+import {KEY_ERROR_FLAGS, KEY_ERROR_WHERE, KEY_SECURE_1, VAL_ERROR_UNKNOWN_MESSAGE} from "../const/index.js";
+import {LogLevel} from "../enum/index.js";
 
 
 type T2 = LeyyoErrorTag;
@@ -76,6 +76,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
         super(message);
 
         const clazz = this.constructor;
+        _leyyo.errorCommon.addStat(this);
         if ( !message) {
             const conf = _leyyo.errorCommon.getConfigItem(clazz as ClassLike);
             this.message = conf?.message;

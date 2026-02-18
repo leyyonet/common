@@ -1,7 +1,7 @@
-import {Inert} from "./inert";
-import {ErrorPoolItem, ErrorPoolLike, ErrorPoolOpt} from "./index.types";
-import {ClassLike, LeyyoLike} from "../base";
-import {isClass} from "../function";
+import {Inert} from "./inert.js";
+import {ErrorPoolItem, ErrorPoolLike, ErrorPoolOpt} from "./index.types.js";
+import {ClassLike, LeyyoLike} from "../base/index.js";
+import {isClass} from "../function/index.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -43,4 +43,10 @@ export class ErrorPool extends Inert<ErrorPoolItem, ClassLike, ErrorPoolOpt> imp
     protected _validate(target: ClassLike): boolean {
         return isClass(target);
     }
+
+    /** @inheritDoc */
+    define(fqn: string, target: ClassLike, opt?: Omit<ErrorPoolOpt, 'name'|'target'|'lazyTarget'|'fqn'>): void {
+        this.register({...(opt ?? {}), fqn, target});
+    }
+
 }

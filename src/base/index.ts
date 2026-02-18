@@ -1,3 +1,3 @@
-export * from './index.types';
-export * from './leyyo.types';
-export * from './leyyo';
+export * from './index.types.js';
+export * from './leyyo.types.js';
+export * from './leyyo.js';

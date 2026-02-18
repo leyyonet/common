@@ -1,8 +1,8 @@
-import {LeyyoLike} from "../base";
-import {LogLevel} from "../enum";
-import {isText, Opt} from "../function";
-import {KEY_SECURE_1} from "../const";
-import {Logger, LoggerSecure} from "../common";
+import {LeyyoLike} from "../base/index.js";
+import {LogLevel} from "../enum/index.js";
+import {isText, Opt} from "../function/index.js";
+import {KEY_SECURE_1} from "../const/index.js";
+import {Logger, LoggerSecure} from "../common/index.js";
 
 // region property
 let _leyyo: LeyyoLike;

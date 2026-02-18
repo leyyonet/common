@@ -1,4 +1,4 @@
-import {LeyyoLike} from "../base";
+import {LeyyoLike} from "../base/index.js";
 
 let _leyyo: LeyyoLike;
 

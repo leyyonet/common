@@ -1,3 +1,2 @@
-export * from './index.types';
-
-export * from './list';
+export * from './index.types.js';
+export * from './list.js';

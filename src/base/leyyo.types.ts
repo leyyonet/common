@@ -1,5 +1,5 @@
-import {DeveloperErrorCtor, LeyyoErrorCtor} from "../error";
-import {LoggerInstanceCtor} from "../class";
+import {DeveloperErrorCtor, LeyyoErrorCtor} from "../error/index.js";
+import {LoggerInstanceCtor} from "../class/index.js";
 import {
     DeployCommonLike,
     EnumPoolLike,
@@ -12,7 +12,7 @@ import {
     LogCommonLike,
     Logger,
     RepoCommonLike
-} from "../common";
+} from "../common/index.js";
 
 export interface LeyyoLike {
     get developerError(): DeveloperErrorCtor;

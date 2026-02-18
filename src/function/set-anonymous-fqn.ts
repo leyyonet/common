@@ -1,6 +1,9 @@
-import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS} from "../const";
-import {FqnTarget} from "./index.types";
-import {triggerFqn} from "./trigger-fqn";
+import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS} from "../const/index.js";
+import {FqnTarget} from "./index.types.js";
+import {triggerFqn} from "./trigger-fqn.js";
+import {setAnonymousName} from "./set-anonymous-name.js";
+import {isClass} from "./is-class.js";
+import {Fnc} from "../base/index.js";
 
 let _count = 0;
 
@@ -9,6 +12,9 @@ export function setAnonymousFqn(target: FqnTarget): string {
         return undefined;
     }
     if (typeof target === 'function') { // function, class
+        if (!target.name) {
+            setAnonymousName(target as Fnc, isClass(target) ? 'Class' : 'function');
+        }
         return _item(target, target.name);
     }
     else if (typeof target === 'object') {
@@ -21,7 +27,8 @@ export function setAnonymousFqn(target: FqnTarget): string {
         if (target[KEY_ENUM_NAME]) {
             return _item(target, target[KEY_ENUM_NAME]);
         }
-        return target.constructor !== Object ? setAnonymousFqn(target.constructor) : undefined;
+        // instance
+        return undefined;
     }
     return undefined;
 }

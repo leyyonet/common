@@ -1,6 +1,7 @@
-import {ErrorCommonLike, ErrorItemConfig, ErrorObject} from "./index.types";
-import {ClassLike, LeyyoLike} from "../base";
+import {ErrorCommonLike, ErrorCtor, ErrorItemConfig, ErrorObject} from "./index.types.js";
+import {ClassLike, LeyyoLike} from "../base/index.js";
 import {
+    getFqn,
     getSymbol,
     isClass,
     isEmpty,
@@ -12,24 +13,27 @@ import {
     secureJson,
     setSymbol,
     testCase
-} from "../function";
+} from "../function/index.js";
 import * as stackTraceParser from "stacktrace-parser";
-import {FQN} from "../internal";
+import {FQN} from "../internal.js";
 import {
     KEY_ERROR_DEFAULT_MESSAGE,
     KEY_ERROR_EMIT,
     KEY_ERROR_EMITTED,
     KEY_ERROR_I18N,
+    KEY_ERROR_RAISED,
     VAL_ERROR_UNKNOWN_MESSAGE,
     VAL_ERROR_UNKNOWN_NAME
-} from "../const";
-import {ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure} from "../error";
+} from "../const/index.js";
+import {ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure} from "../error/index.js";
 
 const where = `${FQN}.ErrorCommon`;
 
 // noinspection JSUnusedGlobalSymbols
 export class ErrorCommon implements ErrorCommonLike {
     private _knownPackages: Map<string, string>;
+    private _stats: Map<ErrorCtor, number>;
+    readonly started: Date;
 
     constructor(private leyyo: LeyyoLike) {
 
@@ -323,6 +327,85 @@ export class ErrorCommon implements ErrorCommonLike {
             return `${info}[err:${err?.name ?? VAL_ERROR_UNKNOWN_NAME}] => ^/${err?.message ?? VAL_ERROR_UNKNOWN_MESSAGE}/$`;
         }
         return `${info}[err:${VAL_ERROR_UNKNOWN_NAME}] => ^/${VAL_ERROR_UNKNOWN_MESSAGE}/$`;
+    }
+
+    /** @inheritDoc */
+    addStat(p1: Error|ErrorCtor): number {
+        let num = -1;
+        try {
+            let clazz: ErrorCtor;
+            if (isObj(p1)) {
+                const err = p1 as Error;
+                if (err[KEY_ERROR_RAISED]) {
+                    return;
+                }
+                err[KEY_ERROR_RAISED] = true;
+                clazz = err.constructor as ErrorCtor;
+            }
+            else if (typeof p1 === 'function') {
+                clazz = p1 as ErrorCtor;
+            }
+            else {
+                return;
+            }
+            if (!this._stats) {
+                this._stats = this.leyyo.repoCommon.newMap<ErrorCtor, number>(`${FQN}.error`);
+            }
+            num = this._stats.get(clazz);
+            if (num === undefined) {
+                num = 1;
+            }
+            else {
+                num++;
+            }
+            this._stats.set(clazz, num);
+        } catch (e) {
+            // nothing
+        }
+        return num;
+    }
+
+    /** @inheritDoc */
+    getStat(p1: Error|ErrorCtor): number {
+        try {
+            let clazz: ErrorCtor;
+            if (isObj(p1)) {
+                clazz = (p1 as Error).constructor as ErrorCtor;
+            }
+            else if (typeof p1 === 'function') {
+                clazz = p1 as ErrorCtor;
+            }
+            else {
+                return 0;
+            }
+            if (!this._stats) {
+                return 0;
+            }
+            return this._stats.get(clazz) ?? 0;
+        } catch (e) {
+            // nothing
+        }
+        return 0;
+    }
+
+    /** @inheritDoc */
+    clearStats(): void {
+        if (!this._stats) {
+            return;
+        }
+        this._stats.clear();
+    }
+
+    /** @inheritDoc */
+    listStats(): Record<string, number> {
+        if (!this._stats) {
+            return {};
+        }
+        const map = {} as Record<string, number>;
+        for (const [error, num] of this._stats.entries()) {
+            map[getFqn(error)] = num;
+        }
+        return map;
     }
 
     // endregion public

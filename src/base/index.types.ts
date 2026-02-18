@@ -19,24 +19,30 @@ export type Arr<T = unknown> = Array<T>;
 // endregion basic
 
 // region alias
-export type Id = string | number;
-export type Integer = number;
-export type Float = number;
-export type Alpha = string; // alphaType
-export type Text = string; // trimmed string
-export type Digit = string; // digitType, 0-9
-export type Title = string; //Single-line clear-text (no html)
-export type Description = string; //Multi-line clear-text (no html)
-export type RichText = string; // multi-line rich text with html tags
-export type Uuid = string;
-export type Host = string;
-export type Url = string;
-export type Email = string;
-export type Folder = string;
-export type Timestamp = number;
-export type IsoDatetime = string; // yyyy-mm-ddThh:mm:ii.eeeZ
-export type IsoDate = string; // yyyy-mm-dd
-export type IsoTime = string; // hh:mm:ii.eeeZ
+export type LangLike = string;
+export type NameLike = string;
+export type KeywordLike = string;
+export type FieldNameLike = string;
+export type KeyLike = string | number;
+export type IdLike = string | number;
+export type IntegerLike = number;
+export type FloatLike = number;
+export type AlphaLike = string; // alphaType
+export type SlugLike = string;
+export type TextLike = string; // trimmed string
+export type DigitLike = string; // digitType, 0-9
+export type TitleLike = string; //Single-line clear-text (no html)
+export type DescriptionLike = string; //Multi-line clear-text (no html)
+export type RichTextLike = string; // multi-line rich text with html tags
+export type UuidLike = string;
+export type HostLike = string;
+export type UrlLike = string;
+export type EmailLike = string;
+export type FolderLike = string;
+export type PhoneLike = string;
+export type UrnLike = string;
+export type HashText = string;
+export type EncryptedText = string;
 // endregion alias
 
 // region function-class
@@ -216,7 +222,24 @@ type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
 
 // endregion
 
+// region time-alias
+export type Timestamp = number;
+export type TimeLong = Timestamp;
+export type TtlMsec = number;
+export type TtlLong = TtlMsec;
+
+export type EpochTime = number;
+export type TimeShort = EpochTime;
+export type TtlSecond = number;
+export type TtlShort = TtlSecond;
+
+export type IsoDatetime = string; // yyyy-mm-ddThh:mm:ii.eeeZ
+export type IsoDate = string; // yyyy-mm-dd
+export type IsoTime = string; // hh:mm:ii.eeeZ
+// endregion time-alias
+
 // region json
+export type JsonText<T = unknown> = string;
 /**
  * JSON Object, record of `JsonValue`
  *

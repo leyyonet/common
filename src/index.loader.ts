@@ -1,19 +1,19 @@
-import {defineLoader} from "./function";
-import {FQN} from "./internal";
+import {defineLoader} from "./function/index.js";
+import {FQN} from "./internal.js";
 
 
 // noinspection JSUnusedGlobalSymbols
 export const loader_leyyoCommon = defineLoader(FQN,
     // errors
-    () => import('./error').then(m => m.CausedError),
-    () => import('./error').then(m => m.DeveloperError),
-    () => import('./error').then(m => m.HttpError),
-    () => import('./error').then(m => m.InvalidValueError),
-    () => import('./error').then(m => m.LeyyoError),
-    () => import('./error').then(m => m.MultipleError),
+    () => import('./error/caused.error.js').then(m => m.CausedError),
+    () => import('./error/developer.error.js').then(m => m.DeveloperError),
+    () => import('./error/http.error.js').then(m => m.HttpError),
+    () => import('./error/invalid-value.error.js').then(m => m.InvalidValueError),
+    () => import('./error/leyyo.error.js').then(m => m.LeyyoError),
+    () => import('./error/multiple.error.js').then(m => m.MultipleError),
     // enums
-    () => import('./enum').then(m => m.LogLevelItems),
+    () => import('./enum/log-level.js').then(m => m.LogLevelItems),
     // classes
-    () => import('./class').then(m => m.List),
-    () => import('./class/logger.instance').then(m => m.LoggerInstance),
+    () => import('./class/list.js').then(m => m.List),
+    () => import('./class/logger.instance.js').then(m => m.LoggerInstance),
 );

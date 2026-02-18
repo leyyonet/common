@@ -1,7 +1,7 @@
-import {Fnc, LeyyoLike} from "../base";
-import {FQN} from "../internal";
-import {isText, testCase} from "../function";
-import {DeployCommonLike} from "./index.types";
+import {Fnc, LeyyoLike} from "../base/index.js";
+import {FQN} from "../internal.js";
+import {isText, testCase} from "../function/index.js";
+import {DeployCommonLike} from "./index.types.js";
 
 const where = `${FQN}.DeployCommon`;
 

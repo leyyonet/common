@@ -23,7 +23,8 @@ export const VAL_ERROR_UNKNOWN_MESSAGE: string = 'Unknown error';
 export const KEY_ERROR_DEFAULT_MESSAGE: unique symbol = Symbol.for('leyyo:error:message');
 export const KEY_ERROR_I18N: unique symbol = Symbol.for('leyyo:error:i18n');
 export const KEY_ERROR_EMIT: unique symbol = Symbol.for('leyyo:error:emit');
-export const KEY_ERROR_EMITTED: unique symbol = Symbol.for('leyyo:error:emit');
+export const KEY_ERROR_RAISED: unique symbol = Symbol.for('leyyo:error:raised');
+export const KEY_ERROR_EMITTED: unique symbol = Symbol.for('leyyo:error:emitted');
 export const KEY_ERROR_FLAGS = Symbol.for('leyyo:error:flags');
 export const KEY_ERROR_WHERE = Symbol.for('leyyo:error:where');
 

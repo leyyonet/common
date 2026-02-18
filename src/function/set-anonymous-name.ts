@@ -1,9 +1,10 @@
-import {FQN} from "../internal";
-import {ClassLike, Fnc, LeyyoLike} from "../base";
-import {VAL_NAME_ANONYMOUS} from "../const";
-import {$$get_leyyo_fn} from "./leyyo-fn";
-import {testCase} from "./test-case";
-import {isClass, isText} from "./is.fn";
+import {FQN} from "../internal.js";
+import {ClassLike, Fnc, LeyyoLike} from "../base/index.js";
+import {VAL_NAME_ANONYMOUS} from "../const/index.js";
+import {$$get_leyyo_fn} from "./leyyo-fn.js";
+import {testCase} from "./test-case.js";
+import {isClass} from "./is-class.js";
+import {isText} from "./is-text.js";
 
 const _pattern = /((?:[a-zA-Z_$][a-zA-Z\d_$]*)*)([a-zA-Z_$][a-zA-Z\d_$]*)/g;
 let _counter = 0;

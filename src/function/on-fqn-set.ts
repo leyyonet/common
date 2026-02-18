@@ -1,5 +1,5 @@
-import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_FQN_ON_SET, KEY_LITERAL_NAME} from "../const";
-import {FqnOnSetLambda, FqnTarget} from "./index.types";
+import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_FQN_ON_SET, KEY_LITERAL_NAME} from "../const/index.js";
+import {FqnOnSetLambda, FqnTarget} from "./index.types.js";
 
 export function onFqnSet(target: FqnTarget, callback: FqnOnSetLambda): boolean {
     if ( !target) {

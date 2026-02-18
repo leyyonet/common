@@ -1,4 +1,4 @@
-import {Logger} from "../common";
+import {Logger} from "../common/index.js";
 
 export interface LoggerInstanceCtor {
     new(name: string): Logger;

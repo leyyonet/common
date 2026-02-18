@@ -1,7 +1,7 @@
-import {ExtendedType} from "../base";
-import {List} from "../class";
-import {KEY_ENUM_NAME, KEY_LITERAL_NAME} from "../const";
-import {isClass} from "./is.fn";
+import {ExtendedType} from "../base/index.js";
+import {List} from "../class/list.js";
+import {KEY_ENUM_NAME, KEY_LITERAL_NAME} from "../const/index.js";
+import {isClass} from "./is-class.js";
 
 
 // noinspection JSUnusedGlobalSymbols

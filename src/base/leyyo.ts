@@ -1,4 +1,3 @@
-import {LeyyoLike} from "./index";
 import {
     DeployCommon,
     DeployCommonLike,
@@ -20,12 +19,13 @@ import {
     Logger,
     RepoCommon,
     RepoCommonLike
-} from "../common";
-import {DeveloperError, DeveloperErrorCtor, LeyyoError, LeyyoErrorCtor} from "../error";
-import {LoggerInstanceCtor} from "../class";
-import {LoggerInstance} from "../class/logger.instance";
-import {KEY_SECURE_1} from "../const";
-import {$$set_leyyo_fn} from "../function/leyyo-fn";
+} from "../common/index.js";
+import {DeveloperError, DeveloperErrorCtor, LeyyoError, LeyyoErrorCtor} from "../error/index.js";
+import {LoggerInstanceCtor} from "../class/index.js";
+import {LoggerInstance} from "../class/logger.instance.js";
+import {KEY_SECURE_1} from "../const/index.js";
+import {$$set_leyyo_fn} from "../function/leyyo-fn.js";
+import {LeyyoLike} from "./leyyo.types.js";
 
 class Leyyo implements LeyyoLike {
     private readonly _developerError: DeveloperErrorCtor;

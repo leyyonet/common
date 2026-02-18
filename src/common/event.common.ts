@@ -1,7 +1,7 @@
-import {EventCommonLike, EventType} from "./index.types";
-import {FQN} from "../internal";
-import {Fnc, LeyyoLike} from "../base";
-import {isText, testCase} from "../function";
+import {EventCommonLike, EventType} from "./index.types.js";
+import {FQN} from "../internal.js";
+import {Fnc, LeyyoLike} from "../base/index.js";
+import {isText, testCase} from "../function/index.js";
 import EventEmitter from "node:events";
 
 const where = `${FQN}.EventCommon`;

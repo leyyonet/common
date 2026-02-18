@@ -1,5 +1,5 @@
-import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME} from "../const";
-import {FqnTarget} from "./index.types";
+import {KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME} from "../const/index.js";
+import {FqnTarget} from "./index.types.js";
 
 /**
  * Get fqn name
