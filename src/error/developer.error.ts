@@ -1,6 +1,5 @@
 import {
   KEY_DEVELOPER_CASE,
-  KEY_DEVELOPER_MESSAGE,
   KEY_DEVELOPER_WHERE,
   KEY_LEYYO_SECURE,
 } from "../const/index.js";
@@ -14,7 +13,6 @@ let _leyyo: LeyyoLike;
 
 /** Developer error */
 export class DeveloperError extends Error implements DeveloperErrorLike {
-  protected [KEY_DEVELOPER_MESSAGE]: string;
   protected [KEY_DEVELOPER_CASE]: string;
   protected [KEY_DEVELOPER_WHERE]: string;
 
@@ -28,15 +26,7 @@ export class DeveloperError extends Error implements DeveloperErrorLike {
    * */
   constructor(message: string, issue?: string, where?: string) {
     message = message ?? "Developer error";
-    const pureMessage = message;
-    if (typeof issue === "string") {
-      message += ` [case:${issue}]`;
-    }
-    if (typeof where === "string") {
-      message += ` [w:${where}]`;
-    }
     super(message);
-    this[KEY_DEVELOPER_MESSAGE] = pureMessage;
     if (typeof issue === "string") {
       this[KEY_DEVELOPER_CASE] = issue;
     }

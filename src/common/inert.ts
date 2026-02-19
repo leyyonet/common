@@ -1,6 +1,7 @@
 import { FQN } from "../internal.js";
 import { Fnc, LeyyoLike } from "../base/index.js";
 import {
+  FqnTarget,
   getFqn,
   isFilledArr,
   isFilledObj,
@@ -76,15 +77,15 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
 
   // region private
   protected _inFqnStage(item: L): boolean {
-    item.full = getFqn(item.target);
+    item.full = getFqn(item.target as FqnTarget);
     if (!item.full || !item.full.includes(".")) {
       if (isText(item.fqn)) {
-        item.full = setFqn(item.target, item.fqn);
+        item.full = setFqn(item.target as FqnTarget, item.fqn);
       } else {
         const { pendingFqn } = this._repo;
         pendingFqn.set(item.name, item);
         item.stage = "fqn-waiting";
-        onFqnSet(item.target, (f) => this._afterFqnSet(f));
+        onFqnSet(item.target as FqnTarget, (f) => this._afterFqnSet(f));
         this._afterTargetFound(item);
         return true;
       }

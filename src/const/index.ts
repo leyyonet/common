@@ -35,6 +35,5 @@ export const KEY_ENUM_I18N: unique symbol = Symbol.for("leyyo:enum:i18n");
 export const KEY_LITERAL_NAME: unique symbol = Symbol.for("leyyo:literal:name");
 export const KEY_LITERAL_ALT: unique symbol = Symbol.for("leyyo:literal:alt");
 export const KEY_LITERAL_I18N: unique symbol = Symbol.for("leyyo:literal:i18n");
-export const KEY_DEVELOPER_MESSAGE: unique symbol = Symbol.for("leyyo:developer:message");
 export const KEY_DEVELOPER_CASE: unique symbol = Symbol.for("leyyo:developer:case");
 export const KEY_DEVELOPER_WHERE: unique symbol = Symbol.for("leyyo:developer:where");
