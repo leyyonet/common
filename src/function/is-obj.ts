@@ -7,5 +7,5 @@
  * @return {boolean} - is bare object?
  * */
 export function isObj(obj: unknown): boolean {
-    return obj && typeof obj === 'object' && !Array.isArray(obj);
+  return obj && typeof obj === "object" && !Array.isArray(obj);
 }

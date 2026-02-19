@@ -1,10 +1,10 @@
 // noinspection JSUnusedGlobalSymbols
-import {init} from "./init/index.js";
-import {leyyo} from "./base/index.js";
-import {setFqn} from "./function/index.js";
-import {FQN} from "./internal.js";
-import {List} from "./class/index.js";
-import {LoggerInstance} from "./class/logger.instance.js";
+import { init } from "./init/index.js";
+import { leyyo } from "./base/index.js";
+import { setFqn } from "./function/index.js";
+import { FQN } from "./internal.js";
+import { List } from "./class/index.js";
+import { LoggerInstance } from "./class/logger.instance.js";
 
 init();
 
@@ -30,14 +30,14 @@ setFqn(repoCommon.constructor, FQN);
 setFqn(LoggerInstance, FQN);
 setFqn(List, FQN);
 
-export * from './base/index.js';
-export * from './class/index.js';
-export * from './common/index.js';
-export * from './const/index.js';
-export * from './enum/index.js';
-export * from './error/index.js';
-export * from './function/index.js';
-export * from './sys/index.js';
+export * from "./base/index.js";
+export * from "./class/index.js";
+export * from "./common/index.js";
+export * from "./const/index.js";
+export * from "./enum/index.js";
+export * from "./error/index.js";
+export * from "./function/index.js";
+export * from "./sys/index.js";
 
-export * from './index.loader.js';
-export * from './index.foretell.js';
+export * from "./index.loader.js";
+export * from "./index.foretell.js";

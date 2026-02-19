@@ -1,11 +1,10 @@
-import {strict as assert} from 'assert';
-import {CausedError} from "../src/index.js";
+import { assert, describe, it } from "vitest";
+import { CausedError } from "../src/index.js";
 
-
-describe('error', () => {
-    it('not symbol', () => {
-        assert.throws(() => {
-            throw new CausedError('invalid')
-        });
+describe("error", () => {
+  it("not symbol", () => {
+    assert.throws(() => {
+      throw new CausedError("invalid");
     });
+  });
 });

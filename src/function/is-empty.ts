@@ -1,4 +1,4 @@
-import {EMPTY_VALUES} from "../const/index.js";
+import { EMPTY_VALUES } from "../const/index.js";
 
 /**
  * Is empty?
@@ -12,8 +12,8 @@ import {EMPTY_VALUES} from "../const/index.js";
  * @return {boolean} - is empty?
  * */
 export function isEmpty(value: unknown, notSpace?: boolean): boolean {
-    if (notSpace) {
-        return EMPTY_VALUES.includes(value);
-    }
-    return EMPTY_VALUES.includes(value) || (typeof value === 'string' && !value.trim());
+  if (notSpace) {
+    return EMPTY_VALUES.includes(value);
+  }
+  return EMPTY_VALUES.includes(value) || (typeof value === "string" && !value.trim());
 }

@@ -1,4 +1,4 @@
-import {isObj} from "./is-obj.js";
+import { isObj } from "./is-obj.js";
 
 /**
  * Is filled object?
@@ -10,5 +10,5 @@ import {isObj} from "./is-obj.js";
  * @return {boolean} - is filled object?
  * */
 export function isFilledObj(obj: unknown): boolean {
-    return isObj(obj) && Object.keys(obj).length > 0;
+  return isObj(obj) && Object.keys(obj).length > 0;
 }

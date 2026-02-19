@@ -9,9 +9,9 @@
  * @return {boolean} - is text?
  * */
 export function isText(str: unknown): boolean {
-    if (typeof str !== 'string') {
-        return false;
-    }
-    const val = str.trim();
-    return val && val === str;
+  if (typeof str !== "string") {
+    return false;
+  }
+  const val = str.trim();
+  return val && val === str;
 }

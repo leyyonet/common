@@ -1,7 +1,7 @@
-import {FQN} from "../internal.js";
-import {testCase} from "./test-case.js";
-import {LeyyoLike} from "../base/index.js";
-import {$$get_leyyo_fn} from "./leyyo-fn.js";
+import { FQN } from "../internal.js";
+import { testCase } from "./test-case.js";
+import { LeyyoLike } from "../base/index.js";
+import { $$get_leyyo_fn } from "./leyyo-fn.js";
 
 const where = `${FQN}.DeleteProp`;
 let _leyyo: LeyyoLike;
@@ -14,10 +14,10 @@ let _leyyo: LeyyoLike;
  * @return {boolean} - is deleted?
  * */
 export function deleteKey(target: unknown, key: string): boolean {
-    if (typeof key !== 'string') {
-        return false;
-    }
-    return deleteProp(target, key);
+  if (typeof key !== "string") {
+    return false;
+  }
+  return deleteProp(target, key);
 }
 
 /**
@@ -28,10 +28,10 @@ export function deleteKey(target: unknown, key: string): boolean {
  * @return {boolean} - is deleted?
  * */
 export function deleteSymbol(target: unknown, key: symbol): boolean {
-    if (typeof key !== 'symbol') {
-        return false;
-    }
-    return deleteProp(target, key);
+  if (typeof key !== "symbol") {
+    return false;
+  }
+  return deleteProp(target, key);
 }
 
 /**
@@ -42,32 +42,36 @@ export function deleteSymbol(target: unknown, key: symbol): boolean {
  * @return {boolean} - is deleted?
  * */
 export function deleteProp(target: unknown, key: symbol | string): boolean {
-    if ( !['symbol', 'string'].includes(typeof key)) {
-        return false;
+  if (!["symbol", "string"].includes(typeof key)) {
+    return false;
+  }
+  if (!target || !["object", "function"].includes(typeof target)) {
+    return false;
+  }
+  try {
+    delete target[key];
+    return true;
+  } catch (e) {
+    // nothing
+  }
+  try {
+    Object.defineProperty(target, key, {
+      value: undefined,
+      configurable: true,
+      writable: false,
+      enumerable: typeof key === "string",
+    });
+    delete target[key];
+    return true;
+  } catch (e) {
+    if (!_leyyo) {
+      _leyyo = $$get_leyyo_fn();
     }
-    if ( !target || !['object', 'function'].includes(typeof target)) {
-        return false;
-    }
-    try {
-        delete target[key];
-        return true;
-    } catch (e) {
-        // nothing
-    }
-    try {
-        Object.defineProperty(target, key, {
-            value: undefined,
-            configurable: true,
-            writable: false,
-            enumerable: typeof key === 'string',
-        });
-        delete target[key];
-        return true;
-    } catch (e) {
-        if ( !_leyyo) {
-            _leyyo = $$get_leyyo_fn();
-        }
-        new _leyyo.developerError(`Unexpected error during set name [${key.toString()}]`, testCase(FQN, 'ZZZ'), where).log(e);
-        return false;
-    }
+    new _leyyo.developerError(
+      `Unexpected error during set name [${key.toString()}]`,
+      testCase(FQN, "ZZZ"),
+      where,
+    ).log(e);
+    return false;
+  }
 }

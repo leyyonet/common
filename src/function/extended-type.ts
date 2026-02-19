@@ -1,8 +1,7 @@
-import {ExtendedType} from "../base/index.js";
-import {List} from "../class/list.js";
-import {KEY_ENUM_NAME, KEY_LITERAL_NAME} from "../const/index.js";
-import {isClass} from "./is-class.js";
-
+import { ExtendedType } from "../base/index.js";
+import { List } from "../class/list.js";
+import { KEY_ENUM_NAME, KEY_LITERAL_NAME } from "../const/index.js";
+import { isClass } from "./is-class.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -12,47 +11,47 @@ import {isClass} from "./is-class.js";
  * @return {ExtendedType}
  * */
 export function extendedType(value: unknown): ExtendedType {
-    switch (typeof value) {
-        case "string":
-            const trimmed = value.trim();
-            if ( !trimmed) {
-                return 'empty';
-            }
-            else if (trimmed === value) {
-                return 'text';
-            }
-            return 'string';
-        case 'number':
-            if (isNaN(value)) {
-                return 'nan';
-            }
-            return Number.isInteger(value) ? 'integer' : 'number';
-        case 'object':
-            if ( !value) {
-                return 'null';
-            }
-            if (Array.isArray(value)) {
-                if (value[KEY_LITERAL_NAME]) {
-                    return 'literal-items';
-                }
-                return (value instanceof List) ? 'list' : 'array';
-            }
-            if (value instanceof Date) {
-                return 'date';
-            }
-            if (value instanceof Map) {
-                return 'map';
-            }
-            if (value instanceof Set) {
-                return 'set';
-            }
-            if (value[KEY_ENUM_NAME]) {
-                return 'enum-map';
-            }
-            return 'object';
-        case "function":
-            return isClass(value) ? 'class' : 'function';
-        default:
-            return typeof value;
-    }
+  let trimmed: string;
+  switch (typeof value) {
+    case "string":
+      trimmed = value.trim();
+      if (!trimmed) {
+        return "empty";
+      } else if (trimmed === value) {
+        return "text";
+      }
+      return "string";
+    case "number":
+      if (isNaN(value)) {
+        return "nan";
+      }
+      return Number.isInteger(value) ? "integer" : "number";
+    case "object":
+      if (!value) {
+        return "null";
+      }
+      if (Array.isArray(value)) {
+        if (value[KEY_LITERAL_NAME]) {
+          return "literal-items";
+        }
+        return value instanceof List ? "list" : "array";
+      }
+      if (value instanceof Date) {
+        return "date";
+      }
+      if (value instanceof Map) {
+        return "map";
+      }
+      if (value instanceof Set) {
+        return "set";
+      }
+      if (value[KEY_ENUM_NAME]) {
+        return "enum-map";
+      }
+      return "object";
+    case "function":
+      return isClass(value) ? "class" : "function";
+    default:
+      return typeof value;
+  }
 }

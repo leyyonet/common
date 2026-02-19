@@ -8,5 +8,5 @@
  * @return {boolean} - is filled array?
  * */
 export function isFilledArr(arr: unknown): boolean {
-    return Array.isArray(arr) && arr.length > 0;
+  return Array.isArray(arr) && arr.length > 0;
 }

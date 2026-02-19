@@ -4,16 +4,33 @@ export type HttpStatus = number;
 // endregion alias
 
 // region basic
-export type BasicType = 'undefined' | 'string' | 'object' | 'number' | 'boolean' | 'function' | 'symbol' | 'bigint';
-export type ExtendedType = BasicType
-    | 'array' | 'null' | 'enum-map' | 'literal-items'
-    | 'class'
-    | 'empty' | 'text'
-    | 'nan' | 'integer'
-    | 'date' | 'map' | 'set' | 'list';
+export type BasicType =
+  | "undefined"
+  | "string"
+  | "object"
+  | "number"
+  | "boolean"
+  | "function"
+  | "symbol"
+  | "bigint";
+export type ExtendedType =
+  | BasicType
+  | "array"
+  | "null"
+  | "enum-map"
+  | "literal-items"
+  | "class"
+  | "empty"
+  | "text"
+  | "nan"
+  | "integer"
+  | "date"
+  | "map"
+  | "set"
+  | "list";
 export type KeyValue = string | number;
 export type AnyKey = string | number | symbol;
-export type Obj = Object & {};
+export type Obj = object & {};
 export type Dict<T = unknown> = Record<KeyValue, T>;
 export type Arr<T = unknown> = Array<T>;
 // endregion basic
@@ -50,19 +67,19 @@ export type Fnc<R = unknown> = ((...args: Arr) => R) & Function;
 export type Async<R = unknown> = ((...args: Arr) => Promise<R>) & AsyncGeneratorFunction;
 
 export interface Abstract<T = {}> extends Function {
-    prototype: T;
-    readonly name: string;
-    readonly length: number;
+  prototype: T;
+  readonly name: string;
+  readonly length: number;
 
-    bind(thisArg: unknown, ...args: Arr): unknown;
+  bind(thisArg: unknown, ...args: Arr): unknown;
 
-    apply(thisArg: unknown, args: Arr): unknown;
+  apply(thisArg: unknown, args: Arr): unknown;
 
-    call(thisArg: unknown, ...args: Arr): unknown;
+  call(thisArg: unknown, ...args: Arr): unknown;
 }
 
 export interface ClassLike<T = {}> extends Abstract<T> {
-    new(...args: Arr): T;
+  new (...args: Arr): T;
 }
 
 export type TypeOf<C = ClassLike> = C extends ClassLike<infer T> ? T : C;
@@ -71,27 +88,27 @@ export type TypeOf<C = ClassLike> = C extends ClassLike<infer T> ? T : C;
 
 // region express
 export declare namespace Express {
-    export interface Request {
-        custom?: Dict;
-    }
+  export interface Request {
+    custom?: Dict;
+  }
 
-    export interface Response {
-        custom?: Dict;
-    }
+  export interface Response {
+    custom?: Dict;
+  }
 }
 // endregion express
 
 // region utility
 export interface Describable {
-    description: string;
+  description: string;
 }
 
 export interface Nameable {
-    name: string;
+  name: string;
 }
 
 export interface HasId {
-    id?: string | number;
+  id?: string | number;
 }
 
 export type TypeOfMethod<T, M extends keyof T> = T[M] extends Function ? T[M] : never;
@@ -108,14 +125,14 @@ export type StrKey<T> = Extract<keyof T, string>;
 /**
  * Serialized version of another type
  */
-export type Serialized<T> = { [P in keyof T]: T[P]; };
+export type Serialized<T> = { [P in keyof T]: T[P] };
 
 /**
  * Makes mutable an interface
  *
  * @see Readonly
  * */
-export type Mutable<A> = { -readonly [K in keyof A]: A[K]; }
+export type Mutable<A> = { -readonly [K in keyof A]: A[K] };
 
 export type KeyOf<T> = keyof T;
 export type Keys<T> = Array<keyof T>;
@@ -130,11 +147,10 @@ export type SetOrMore<T> = T | Set<T>;
  * An interface which contains secure mode members and provides to shift to main mode
  * */
 export interface ShiftSecure<S extends ShiftMain<any>> {
-
-    /**
-     * Shifts to secure mode
-     * */
-    get $secure(): S;
+  /**
+   * Shifts to secure mode
+   * */
+  get $secure(): S;
 }
 
 /**
@@ -145,58 +161,53 @@ export interface ShiftSecure<S extends ShiftMain<any>> {
  * - to indicated that secure mode members should be used in special cases
  * */
 export interface ShiftMain<M extends ShiftSecure<any>> {
-
-    /**
-     * Shifts to main mode
-     * */
-    get $back(): M;
+  /**
+   * Shifts to main mode
+   * */
+  get $back(): M;
 }
 
 /**
  * An interface which provides to flat generic interfaces/classes to prevent verbose casting commands
  * */
 export interface ShiftFlat<D> {
-
-    /**
-     * Flats current classes, or eliminate generic parameters
-     * */
-    get $flat(): D;
+  /**
+   * Flats current classes, or eliminate generic parameters
+   * */
+  get $flat(): D;
 }
 
 /**
  * Useful interface which provides initialization state for instances
  * */
 export interface InitLike {
-
-    /**
-     * Initializes the instance
-     * */
-    $init(...args: Arr): void;
+  /**
+   * Initializes the instance
+   * */
+  $init(...args: Arr): void;
 }
 
 // endregion shift
 
 // region replace or ignore property type
 
-
 export type IgnoreFieldsByType<T, I> = {
-    [K in keyof T]: T[K] extends I ? K : never
+  [K in keyof T]: T[K] extends I ? K : never;
 }[keyof T];
 export type ReplaceType<T, O, N> = {
-    [P in keyof T]: T[P] extends O ? N : T[P];
+  [P in keyof T]: T[P] extends O ? N : T[P];
 };
 export type SameType<A, T> = {
-    [K in keyof A]: T;
-}
-
+  [K in keyof A]: T;
+};
 
 export type PickByType<T, I> = {
-    [K in keyof T]: T[K] extends I ? K : never
+  [K in keyof T]: T[K] extends I ? K : never;
 };
 export type PickKeyByType<T, I> = PickByType<T, I>[keyof T];
 
 export type OmitByType<T, I> = {
-    [K in keyof T]: T[K] extends I ? never : K;
+  [K in keyof T]: T[K] extends I ? never : K;
 };
 export type OmitKeysByType<T, I> = OmitByType<T, I>[keyof T];
 
@@ -208,14 +219,15 @@ export type ValueOrCallback<T> = T | ValueCallback<T> | ValueCallbackAsync<T>;
 export type ValueCallback<T> = () => T;
 export type ValueCallbackAsync<T> = () => Promise<T>;
 
-
-export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T ? {
-    [P in K]: T[K];
-} & Partial<Record<Exclude<keyof T, K>, never>> : never;
+export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
+  ? {
+      [P in K]: T[K];
+    } & Partial<Record<Exclude<keyof T, K>, never>>
+  : never;
 export type OneOf<Obj> = ValueOf<OneOfByKey<Obj>>;
 export type Xor<A, B> =
-    | XorIn<A & { [K in keyof B]?: undefined }>
-    | XorIn<B & { [K in keyof A]?: undefined }>;
+  | XorIn<A & { [K in keyof B]?: undefined }>
+  | XorIn<B & { [K in keyof A]?: undefined }>;
 type OneOnly<T, K extends keyof T> = Omit<T, Exclude<keyof T, K>> | Pick<T, K>;
 type OneOfByKey<T> = { [key in keyof T]: OneOnly<T, key> };
 type XorIn<T> = { [K in keyof T]: T[K] } & unknown;
@@ -274,7 +286,6 @@ export type JsonPrimitive = string | number | boolean | null;
  */
 export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
 // endregion json
-
 
 /*
 

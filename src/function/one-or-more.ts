@@ -1,4 +1,4 @@
-import {OneOrMore} from "../base/index.js";
+import { OneOrMore } from "../base/index.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -8,11 +8,11 @@ import {OneOrMore} from "../base/index.js";
  * @return {Array}
  * */
 export function oneOrMore<T = unknown>(value: OneOrMore<T>): Array<T> | undefined {
-    if (Array.isArray(value)) {
-        return value as Array<T>;
-    }
-    if (value === undefined || value === null) {
-        return undefined;
-    }
-    return [value] as Array<T>;
+  if (Array.isArray(value)) {
+    return value as Array<T>;
+  }
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  return [value] as Array<T>;
 }

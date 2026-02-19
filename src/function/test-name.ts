@@ -1,5 +1,5 @@
-import {randomTestNo} from "./random-test-no.js";
-import {FQN} from "../internal.js";
+import { randomTestNo } from "./random-test-no.js";
+import { FQN } from "../internal.js";
 
 /**
  * Build test name
@@ -9,7 +9,7 @@ import {FQN} from "../internal.js";
  * @return {string}
  * */
 export function testName(testCase: string, title: string): string {
-    testCase = (typeof testCase === 'string') ? testCase : `${FQN}@${randomTestNo()}`;
-    title = (typeof title === 'string') ? title : '???';
-    return `[test:${testCase}] >> ${title}`;
+  testCase = typeof testCase === "string" ? testCase : `${FQN}@${randomTestNo()}`;
+  title = typeof title === "string" ? title : "???";
+  return `[test:${testCase}] >> ${title}`;
 }
