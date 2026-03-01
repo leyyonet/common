@@ -51,7 +51,7 @@ export class EnumPool extends Predictor<EnumPoolItem, Enum, EnumPoolOpt> impleme
       } catch (e) {
         new this.leyyo.developerError(
           "Callback error during loading enum alternate data",
-          testCase(PCK, 186),
+          testCase(PCK, "enum", "load-alt-error"),
           where,
         ).log(e);
       }

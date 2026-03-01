@@ -50,26 +50,30 @@ export class LifecycleCommon implements LifecycleCommonLike {
   /** @inheritDoc */
   addStage(stage: LifecycleStage, name: string, callback: Fnc): void {
     if (!isText(stage)) {
-      throw new this.leyyo.developerError("Invalid lifecycle stage", testCase(PCK, 100), where);
+      throw new this.leyyo.developerError(
+        "Invalid lifecycle stage",
+        testCase(PCK, "lifecycle", "invalid-stage"),
+        where,
+      );
     }
     if (!this._stages.has(stage)) {
       throw new this.leyyo.developerError(
         `Lifecycle stage could not be found [${stage}]`,
-        testCase(PCK, 101),
+        testCase(PCK, "lifecycle", "not-found-stage"),
         where,
       );
     }
     if (!isText(name)) {
       throw new this.leyyo.developerError(
         `Invalid lifecycle name [${stage}]`,
-        testCase(PCK, 102),
+        testCase(PCK, "lifecycle", "invalid-name"),
         where,
       );
     }
     if (typeof callback !== "function") {
       throw new this.leyyo.developerError(
         `Invalid lifecycle callback [${stage}/${name}]`,
-        testCase(PCK, 103),
+        testCase(PCK, "lifecycle", "invalid-callback"),
         where,
       );
     }
@@ -83,12 +87,16 @@ export class LifecycleCommon implements LifecycleCommonLike {
   /** @inheritDoc */
   async runStage(stage: LifecycleStage, ...params: Array<unknown>): Promise<number> {
     if (!isText(stage)) {
-      throw new this.leyyo.developerError("Invalid lifecycle stage", testCase(PCK, 104), where);
+      throw new this.leyyo.developerError(
+        "Invalid lifecycle stage",
+        testCase(PCK, "lifecycle", "invalid-stage"),
+        where,
+      );
     }
     if (!this._stages.has(stage)) {
       throw new this.leyyo.developerError(
         `Lifecycle stage could not be found [${stage}]`,
-        testCase(PCK, 105),
+        testCase(PCK, "lifecycle", "not-found-stage"),
         where,
       );
     }
@@ -104,7 +112,7 @@ export class LifecycleCommon implements LifecycleCommonLike {
       } catch (e) {
         new this.leyyo.developerError(
           `Callback error during lifecycle order lambda [${stage}]`,
-          testCase(PCK, 106),
+          testCase(PCK, "lifecycle", "sort-error"),
           where,
         ).log(e);
       }
@@ -123,7 +131,7 @@ export class LifecycleCommon implements LifecycleCommonLike {
         } catch (e) {
           new this.leyyo.developerError(
             `Callback error during lifecycle callback [${stage}/${name}]`,
-            testCase(PCK, 107),
+            testCase(PCK, "lifecycle", "callback-error"),
             where,
           ).log(e);
         }
@@ -135,19 +143,23 @@ export class LifecycleCommon implements LifecycleCommonLike {
   /** @inheritDoc */
   setOrderLambda(stage: LifecycleStage, lambda: LifecycleSortLambda): void {
     if (!isText(stage)) {
-      throw new this.leyyo.developerError("Invalid lifecycle stage", testCase(PCK, 108), where);
+      throw new this.leyyo.developerError(
+        "Invalid lifecycle stage",
+        testCase(PCK, "lifecycle", "invalid-stage"),
+        where,
+      );
     }
     if (!this._stages.has(stage)) {
       throw new this.leyyo.developerError(
         `Lifecycle stage could not be found [${stage}]`,
-        testCase(PCK, 109),
+        testCase(PCK, "lifecycle", "not-found-stage"),
         where,
       );
     }
     if (typeof lambda !== "function") {
       throw new this.leyyo.developerError(
         `Invalid lifecycle callback [${stage}]`,
-        testCase(PCK, 110),
+        testCase(PCK, "lifecycle", "invalid-callback"),
         where,
       );
     }

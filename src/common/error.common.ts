@@ -136,10 +136,18 @@ export class ErrorCommon implements ErrorCommonLike {
   /** @inheritDoc */
   setConfigItem(clazz: ClassLike, conf: ErrorItemConfig): void {
     if (!isClass(clazz)) {
-      throw new this.leyyo.developerError("Invalid package name", testCase(PCK, 230), where);
+      throw new this.leyyo.developerError(
+        "Invalid package name",
+        testCase(PCK, "error", "invalid-package-name"),
+        where,
+      );
     }
     if (!isObj(conf)) {
-      throw new this.leyyo.developerError("Invalid package name", testCase(PCK, 230), where);
+      throw new this.leyyo.developerError(
+        "Invalid package name",
+        testCase(PCK, "error", "invalid-config"),
+        where,
+      );
     }
     if (isText(conf.message)) {
       setSymbol(clazz, KEY_ERROR_DEFAULT_MESSAGE, conf.message);
@@ -294,12 +302,16 @@ export class ErrorCommon implements ErrorCommonLike {
   /** @inheritDoc */
   addKnownPackage(packageName: string, shortName: string): void {
     if (!isText(packageName)) {
-      throw new this.leyyo.developerError("Invalid package name", testCase(PCK, 230), where);
+      throw new this.leyyo.developerError(
+        "Invalid package name",
+        testCase(PCK, "error", "invalid-package-name"),
+        where,
+      );
     }
     if (!isText(shortName)) {
       throw new this.leyyo.developerError(
         `Invalid short name [${packageName}]`,
-        testCase(PCK, 231),
+        testCase(PCK, "error", "invalid-short-name"),
         where,
       );
     }
@@ -309,7 +321,7 @@ export class ErrorCommon implements ErrorCommonLike {
     if (this._knownPackages.has(shortName)) {
       throw new this.leyyo.developerError(
         `Duplicated package name [${packageName}]`,
-        testCase(PCK, 232),
+        testCase(PCK, "error", "duplicated-package-name"),
         where,
       );
     }

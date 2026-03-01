@@ -31,7 +31,11 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   emit(name: T, ...values: Array<unknown>): boolean {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 130), where);
+      throw new this.leyyo.developerError(
+        "Invalid event name",
+        testCase(PCK, "event", "invalid-name"),
+        where,
+      );
     }
     if (!this._emitter.emit(name, ...values)) {
       // It is deactivated, no collect it anymore
@@ -84,12 +88,16 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   listen<T extends string = string>(name: EventType | T, callback: Fnc): void {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 130), where);
+      throw new this.leyyo.developerError(
+        "Invalid event name",
+        testCase(PCK, "event", "invalid-name"),
+        where,
+      );
     }
     if (typeof callback !== "function") {
       throw new this.leyyo.developerError(
         `Invalid listener callback [${name}]`,
-        testCase(PCK, 131),
+        testCase(PCK, "event", "invalid-listener"),
         where,
       );
     }
@@ -117,7 +125,11 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   deactivate(name: string): boolean {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 132), where);
+      throw new this.leyyo.developerError(
+        "Invalid event name",
+        testCase(PCK, "event", "invalid-name"),
+        where,
+      );
     }
     if (this._waitingEvents.has(name)) {
       this.leyyo.logger.warn(`Deactivated and cleared all messages. name: ${name}`, {
@@ -139,7 +151,11 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   activate(name: string): boolean {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 133), where);
+      throw new this.leyyo.developerError(
+        "Invalid event name",
+        testCase(PCK, "event", "invalid-name"),
+        where,
+      );
     }
     if (this._deactivatedEvents.has(name)) {
       this._deactivatedEvents.delete(name);

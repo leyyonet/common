@@ -50,7 +50,7 @@ export class LiteralPool
       } catch (e) {
         new this.leyyo.developerError(
           "Callback error during loading literal alternate data",
-          testCase(PCK, 186),
+          testCase(PCK, "literal", "load-alt-error"),
           where,
         ).log(e);
       }

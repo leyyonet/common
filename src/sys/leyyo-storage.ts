@@ -1,14 +1,6 @@
-const _NAME = "$$leyyo.packages";
+const KEY_STORAGE = Symbol.for("leyyo");
 
-type LeyyoStorage = Map<string, unknown>;
-/**
- * Create a standalone storage
- *
- * @return {LeyyoStorage}
- * */
-function _new(): LeyyoStorage {
-  return new Map<string, unknown>();
-}
+type LeyyoStorage = Map<symbol, unknown>;
 
 /**
  * Get a global storage
@@ -20,11 +12,10 @@ function _get(source: unknown): LeyyoStorage {
   if (!source) {
     return undefined;
   }
-  if (source[_NAME] && source[_NAME] instanceof Map) {
-    return source[_NAME];
+  if (source[KEY_STORAGE] && source[KEY_STORAGE] instanceof Map) {
+    return source[KEY_STORAGE];
   }
-  source[_NAME] = _new();
-  return source[_NAME];
+  return undefined;
 }
 
 /**
@@ -34,9 +25,9 @@ function _get(source: unknown): LeyyoStorage {
  * */
 function _build(): LeyyoStorage {
   try {
-    return _get(globalThis) ?? _get(global) ?? _new();
+    return _get(globalThis) ?? _get(global) ?? new Map<symbol, unknown>();
   } catch (e) {
-    return _new();
+    return new Map<symbol, unknown>();
   }
 }
 
@@ -46,20 +37,20 @@ function _build(): LeyyoStorage {
 export const leyyoStorage = _build();
 
 /**
- * @param {string} name - name of storage
+ * @param {symbol} code - code of storage
  * @param {any} def - initial value
  * */
-export function getRootStorage<T>(name: string, def: T): T {
-  if (typeof name !== "string") {
-    throw new Error("Invalid storage name", name);
+export function getRootStorage<T>(code: symbol, def: T): T {
+  if (typeof code !== "symbol") {
+    throw new Error("Invalid storage code", code);
   }
-  if (leyyoStorage.has(name)) {
-    return leyyoStorage.get(name) as T;
+  if (leyyoStorage.has(code)) {
+    return leyyoStorage.get(code) as T;
   }
 
   if (!def || typeof def !== "object") {
     throw new Error("Invalid storage value", def);
   }
-  leyyoStorage.set(name, def);
+  leyyoStorage.set(code, def);
   return def;
 }

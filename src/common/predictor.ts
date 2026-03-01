@@ -48,13 +48,21 @@ export abstract class Predictor<
     protected options: PredictorBuildOpt,
   ) {
     if (!isText(this.cluster)) {
-      throw new this.leyyo.developerError("Invalid cluster name", testCase(PCK, "XXX"), where);
+      throw new this.leyyo.developerError(
+        "Invalid cluster name",
+        testCase(PCK, "predictor", "invalid-cluster"),
+        where,
+      );
     }
     if (isObj(this.options)) {
       this.options = {};
     }
     if (this.options.anonymousName && !isText(this.options.anonymousName)) {
-      throw new this.leyyo.developerError("Invalid anonymous name", testCase(PCK, "XXX"), where);
+      throw new this.leyyo.developerError(
+        "Invalid anonymous name",
+        testCase(PCK, "predictor", "invalid-anonymous-name"),
+        where,
+      );
     }
 
     const repo = this.leyyo.repoCommon;
@@ -68,7 +76,7 @@ export abstract class Predictor<
     if (Predictor._pool.has(this.cluster)) {
       new this.leyyo.developerError(
         `Duplicated cluster [${this.cluster}]`,
-        testCase(PCK, "XXX"),
+        testCase(PCK, "predictor", "duplicated-cluster"),
         where,
       ).log();
       this._repo = Predictor._pool.get(this.cluster)._repo as PredictorRepo<L, T>;
@@ -120,7 +128,7 @@ export abstract class Predictor<
     } else {
       new this.leyyo.developerError(
         `Predictor could not be found after come back, [${full}]`,
-        testCase(PCK, "ZZZ"),
+        testCase(PCK, "predictor", "not-found-item"),
         where,
       ).log();
     }
@@ -137,7 +145,7 @@ export abstract class Predictor<
           ignore = true;
           new this.leyyo.developerError(
             `Duplicated full name [${item.full}]`,
-            testCase(PCK, "ZZZ"),
+            testCase(PCK, "predictor", "duplicated-full-name"),
             where,
           ).log();
         }
@@ -154,7 +162,7 @@ export abstract class Predictor<
         ignore = true;
         new this.leyyo.developerError(
           `Duplicated basic name [${item.name}]`,
-          testCase(PCK, "ZZZ"),
+          testCase(PCK, "predictor", "duplicated-basic-name"),
           where,
         ).log();
       }
@@ -172,7 +180,7 @@ export abstract class Predictor<
             ignore = true;
             new this.leyyo.developerError(
               `Duplicated alias [${item.name}]`,
-              testCase(PCK, "ZZZ"),
+              testCase(PCK, "predictor", "duplicated-alias"),
               where,
             ).log();
           }
@@ -213,8 +221,8 @@ export abstract class Predictor<
     } catch (e) {
       item.mode = "failed";
       new this.leyyo.developerError(
-        `Callback predictor during loading lazy class [${item.name}]`,
-        testCase(PCK, 227),
+        `Callback predictor during loading lazy target [${item.name}]`,
+        testCase(PCK, "predictor", "load-target-error"),
         where,
       ).log(e);
       return;
@@ -224,7 +232,7 @@ export abstract class Predictor<
     if (!item.target) {
       new this.leyyo.developerError(
         `Target not found [${item.name}]`,
-        testCase(PCK, 227),
+        testCase(PCK, "predictor", "not-found-target"),
         where,
       ).log();
       return;
@@ -238,7 +246,7 @@ export abstract class Predictor<
       if (!realName) {
         new this.leyyo.developerError(
           `Conflict in names [${item.name} vs ${realName}]`,
-          testCase(PCK, "ZZZ"),
+          testCase(PCK, "predictor", "conflicted-name"),
           where,
         ).log();
       }
@@ -258,7 +266,11 @@ export abstract class Predictor<
   register(options: PredictorOpt<T>): L {
     const { targets } = this._repo;
     if (!isFilledObj(options)) {
-      throw new this.leyyo.developerError("Invalid predictor options", testCase(PCK, "XXX"), where);
+      throw new this.leyyo.developerError(
+        "Invalid predictor options",
+        testCase(PCK, "predictor", "invalid-options"),
+        where,
+      );
     }
     let item: L;
 
@@ -282,7 +294,11 @@ export abstract class Predictor<
         }
       }
       if (!basicName) {
-        throw new this.leyyo.developerError("Empty name", testCase(PCK, 220), where);
+        throw new this.leyyo.developerError(
+          "Empty name",
+          testCase(PCK, "predictor", "invalid-basic-name"),
+          where,
+        );
       }
       item = { ...options, name: basicName, stage: undefined, mode: "eager" } as L;
       item.load = async () => this._load(item);
@@ -297,7 +313,11 @@ export abstract class Predictor<
     // lazy target
     else if (options.lazyTarget instanceof Promise) {
       if (!isText(options.name)) {
-        throw new this.leyyo.developerError("Invalid predictor name", testCase(PCK, "XXX"), where);
+        throw new this.leyyo.developerError(
+          "Invalid predictor name",
+          testCase(PCK, "predictor", "invalid-basic-name"),
+          where,
+        );
       }
 
       // it's already pending to be loaded
@@ -314,7 +334,7 @@ export abstract class Predictor<
     }
     throw new this.leyyo.developerError(
       `Invalid target or lazy target <${this.cluster}> [${options.name}] ${JSON.stringify(options.target)}`,
-      testCase(PCK, 224),
+      testCase(PCK, "predictor", "invalid-target"),
       where,
     );
   }
@@ -389,14 +409,18 @@ export abstract class Predictor<
   /** @inheritDoc */
   async load(name: string): Promise<L> {
     if (!isText(name)) {
-      throw new this.leyyo.developerError(`Invalid lazy name`, testCase(PCK, "ZZZ"), where);
+      throw new this.leyyo.developerError(
+        `Invalid lazy name`,
+        testCase(PCK, "predictor", "invalid-name"),
+        where,
+      );
     }
 
     const item = this.get(name);
     if (!item) {
       throw new this.leyyo.developerError(
         `Lazy was not defined [${name}]`,
-        testCase(PCK, "ZZZ"),
+        testCase(PCK, "predictor", "not-found-item"),
         where,
       );
     }

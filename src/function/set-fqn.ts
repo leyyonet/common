@@ -25,19 +25,35 @@ export function setFqn(target: FqnTarget, pck: string): string {
     _leyyo = $$_get_leyyo_fn();
   }
   if (!isText(pck)) {
-    new _leyyo.developerError("Invalid package name", testCase(PCK, 150), where).log();
+    new _leyyo.developerError(
+      "Invalid package name",
+      testCase(PCK, "fqn", "invalid-package-name"),
+      where,
+    ).log();
     return undefined;
   }
   if (pck.startsWith(".") || pck.endsWith(".")) {
-    new _leyyo.developerError("Invalid package name with dots", testCase(PCK, "ZZZ"), where).log();
+    new _leyyo.developerError(
+      "Invalid package name with dots",
+      testCase(PCK, "fqn", "enveloped-by-dots"),
+      where,
+    ).log();
     return undefined;
   }
   if (pck.startsWith(VAL_FQN_ANONYMOUS)) {
-    new _leyyo.developerError("Anonymous package is used", testCase(PCK, "ZZZ"), where).log();
+    new _leyyo.developerError(
+      "Anonymous package is used",
+      testCase(PCK, "fqn", "contains-anonymous"),
+      where,
+    ).log();
     return undefined;
   }
   if (!target) {
-    new _leyyo.developerError(`Empty target [${pck}]`, testCase(PCK, 151), where).log();
+    new _leyyo.developerError(
+      `Empty target [${pck}]`,
+      testCase(PCK, "fqn", "invalid-target"),
+      where,
+    ).log();
     return undefined;
   }
 
@@ -57,10 +73,18 @@ export function setFqn(target: FqnTarget, pck: string): string {
     if (target[KEY_ENUM_NAME]) {
       return _item(target, target[KEY_ENUM_NAME], pck);
     }
-    new _leyyo.developerError(`Instance could not be set`, testCase(PCK, 152), where).log();
+    new _leyyo.developerError(
+      `Instance could not be set`,
+      testCase(PCK, "fqn", "unexpected-type"),
+      where,
+    ).log();
     return getFqn(target.constructor);
   }
-  new _leyyo.developerError(`Invalid target [${pck}]`, testCase(PCK, 152), where).log();
+  new _leyyo.developerError(
+    `Invalid target [${pck}]`,
+    testCase(PCK, "fqn", "invalid-target"),
+    where,
+  ).log();
   return undefined;
 }
 

@@ -79,7 +79,11 @@ export class LogCommon implements LogCommonLike {
    * */
   setLogFormatter(fn: LogFormatterLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log formatter", testCase(PCK, 200), where);
+      throw new this.leyyo.developerError(
+        "Invalid log formatter",
+        testCase(PCK, "log", "invalid-formatter"),
+        where,
+      );
     }
     this._logFormatter = fn;
   }
@@ -91,7 +95,11 @@ export class LogCommon implements LogCommonLike {
    * */
   setLogDeploymentStyler(fn: LogStylerLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log styler", testCase(PCK, 201), where);
+      throw new this.leyyo.developerError(
+        "Invalid log styler",
+        testCase(PCK, "log", "invalid-styler"),
+        where,
+      );
     }
     this._logDeploymentStyler = fn;
 
@@ -107,7 +115,11 @@ export class LogCommon implements LogCommonLike {
    * */
   setLogLocalStyler(fn: LogStylerLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log local styler", testCase(PCK, 202), where);
+      throw new this.leyyo.developerError(
+        "Invalid log local styler",
+        testCase(PCK, "log", "invalid-styler"),
+        where,
+      );
     }
     this._logLocalStyler = fn;
 
@@ -123,7 +135,11 @@ export class LogCommon implements LogCommonLike {
    * */
   setContextFinder(fn: ContextFinderLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log local styler", testCase(PCK, 202), where);
+      throw new this.leyyo.developerError(
+        "Invalid context finder",
+        testCase(PCK, "log", "invalid-context-finder"),
+        where,
+      );
     }
     this._contextFinder = fn;
   }

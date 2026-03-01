@@ -57,7 +57,7 @@ export function getProp<T>(target: unknown, key: symbol | string): T {
     }
     new _leyyo.developerError(
       `Unexpected error during set name [${key.toString()}]`,
-      testCase(PCK, "ZZZ"),
+      testCase(PCK, "prop", "get-error"),
       where,
     ).log(e);
     return undefined;

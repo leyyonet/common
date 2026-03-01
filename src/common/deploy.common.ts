@@ -29,12 +29,16 @@ export class DeployCommon implements DeployCommonLike {
    * */
   wait(name: string, callback: Fnc): void {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid component name", testCase(PCK, 120), where);
+      throw new this.leyyo.developerError(
+        "Invalid component name",
+        testCase(PCK, "deploy", "invalid-name"),
+        where,
+      );
     }
     if (typeof callback !== "function") {
       throw new this.leyyo.developerError(
         `Invalid caller callback [${name}]`,
-        testCase(PCK, 121),
+        testCase(PCK, "deploy", "invalid-callback"),
         where,
       );
     }
@@ -44,7 +48,7 @@ export class DeployCommon implements DeployCommonLike {
       } catch (e) {
         new this.leyyo.developerError(
           `Callback error during caller's callback [${name}]`,
-          testCase(PCK, 122),
+          testCase(PCK, "deploy", "callback-error"),
           where,
         ).log(e);
       }
@@ -66,7 +70,11 @@ export class DeployCommon implements DeployCommonLike {
    * */
   complete(name: string, ...values: Array<unknown>): void {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid component name", testCase(PCK, 123), where);
+      throw new this.leyyo.developerError(
+        "Invalid component name",
+        testCase(PCK, "deploy", "invalid-name"),
+        where,
+      );
     }
     const isNew = !this._alreadyDeployed.has(name);
     this._alreadyDeployed.set(name, values);
@@ -81,7 +89,7 @@ export class DeployCommon implements DeployCommonLike {
           } catch (e) {
             new this.leyyo.developerError(
               `Callback error during pending callback [${name}]`,
-              testCase(PCK, 124),
+              testCase(PCK, "deploy", "callback-error"),
               where,
             ).log(e);
           }

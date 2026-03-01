@@ -52,7 +52,7 @@ export class LazyInstance implements LazyDefinerLike, LazyViewerLike {
     if (this._closed) {
       throw new _leyyo.developerError(
         `Lazy instance[${this.pck}] is closed to add member`,
-        testCase(PCK, 100),
+        testCase(PCK, "lazy", "closed-for-member"),
         `${PCK}.LazyInstance`,
       );
     }
@@ -63,7 +63,7 @@ export class LazyInstance implements LazyDefinerLike, LazyViewerLike {
       if (typeof member !== "function") {
         throw new _leyyo.developerError(
           `Invalid member[#${index}] value`,
-          testCase(PCK, 100),
+          testCase(PCK, "lazy", "invalid-member"),
           `${PCK}.LazyInstance`,
         );
       }
@@ -79,7 +79,7 @@ export class LazyInstance implements LazyDefinerLike, LazyViewerLike {
     if (this._closed) {
       throw new _leyyo.developerError(
         `Lazy instance[${this.pck}] is closed to add dependency`,
-        testCase(PCK, 101),
+        testCase(PCK, "lazy", "closed-for-dependency"),
         `${PCK}.LazyInstance`,
       );
     }
@@ -87,7 +87,7 @@ export class LazyInstance implements LazyDefinerLike, LazyViewerLike {
       if (!(typeof dependency === "function" || dependency instanceof LazyInstance)) {
         throw new _leyyo.developerError(
           `Lazy dependency [${this.pck}][#${index}] is invalid`,
-          testCase(PCK, 101),
+          testCase(PCK, "lazy", "invalid-dependency"),
           `${PCK}.LazyInstance`,
         );
       }
@@ -97,8 +97,8 @@ export class LazyInstance implements LazyDefinerLike, LazyViewerLike {
       if (typeof dependency === "function") {
         if (this._dependencies.has(dependency)) {
           throw new _leyyo.developerError(
-            `Lazy dependency [${this.pck}][#${index}] is invalid`,
-            testCase(PCK, 101),
+            `Lazy dependency [${this.pck}][#${index}] is duplicated`,
+            testCase(PCK, "lazy", "duplicated-dependency"),
             `${PCK}.LazyInstance`,
           );
         }
@@ -106,7 +106,7 @@ export class LazyInstance implements LazyDefinerLike, LazyViewerLike {
         if (this._dependencies.has(dependency)) {
           throw new _leyyo.developerError(
             `Lazy dependency [${this.pck}][#${index}] is duplicated`,
-            testCase(PCK, 101),
+            testCase(PCK, "lazy", "duplicated-dependency"),
             `${PCK}.LazyInstance`,
           );
         }

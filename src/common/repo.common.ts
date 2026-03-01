@@ -5,11 +5,16 @@ import { LeyyoLike, ListLike, RepoCommonLike, RepoDataType } from "../type.js";
 import { getRootStorage } from "../sys/index.js";
 import { KEY_REPO_CODE, KEY_REPO_TYPE } from "../const.js";
 
+const KEY_REPO_VOLATILE = Symbol.for("leyyo:repo:volatile");
+const KEY_REPO_ARRAY = Symbol.for("leyyo:repo:array");
+const KEY_REPO_LIST = Symbol.for("leyyo:repo:list");
+const KEY_REPO_MAP = Symbol.for("leyyo:repo:map");
+const KEY_REPO_SET = Symbol.for("leyyo:repo:set");
+
 /**
  * Identifier of file
  * */
 const where = `${PCK}.RepoCommon`;
-const _NAME = "$$leyyo.repo";
 
 // noinspection JSUnusedGlobalSymbols
 export class RepoCommon implements RepoCommonLike {
@@ -19,26 +24,29 @@ export class RepoCommon implements RepoCommonLike {
   /**
    * Internal volatile repo which could be cleared after lifecycle run
    * */
-  private _volatiles = getRootStorage<Set<symbol>>(_NAME + ".volatiles", new Set<symbol>());
+  private _volatiles = getRootStorage<Set<symbol>>(KEY_REPO_VOLATILE, new Set<symbol>());
 
   /**
    * Internal items which stores arrays
    * */
   private _arrayItems = getRootStorage<Map<symbol, Array<unknown>>>(
-    _NAME + ".arrays",
+    KEY_REPO_ARRAY,
     new Map<symbol, Array<unknown>>(),
   );
 
   /**
    * Internal items which stores lists
    * */
-  private _listItems = getRootStorage<Map<symbol, ListLike>>(_NAME, new Map<symbol, ListLike>());
+  private _listItems = getRootStorage<Map<symbol, ListLike>>(
+    KEY_REPO_LIST,
+    new Map<symbol, ListLike>(),
+  );
 
   /**
    * Internal items which stores maps
    * */
   private _mapItems = getRootStorage<Map<symbol, Map<unknown, unknown>>>(
-    _NAME + ".maps",
+    KEY_REPO_MAP,
     new Map<symbol, Map<unknown, unknown>>(),
   );
 
@@ -46,7 +54,7 @@ export class RepoCommon implements RepoCommonLike {
    * Internal items which stores sets
    * */
   private _setItems = getRootStorage<Map<symbol, Set<unknown>>>(
-    _NAME + ".sets",
+    KEY_REPO_SET,
     new Map<symbol, Set<unknown>>(),
   );
 
@@ -245,7 +253,7 @@ export class RepoCommon implements RepoCommonLike {
     if (!isText(name)) {
       throw new this.leyyo.developerError(
         "Invalid repository array name",
-        testCase(PCK, 140),
+        testCase(PCK, "repo", "invalid-array-name"),
         where,
       );
     }
@@ -265,7 +273,7 @@ export class RepoCommon implements RepoCommonLike {
     if (!isText(name)) {
       throw new this.leyyo.developerError(
         "Invalid repository list name",
-        testCase(PCK, 141),
+        testCase(PCK, "repo", "invalid-list-name"),
         where,
       );
     }
@@ -283,7 +291,11 @@ export class RepoCommon implements RepoCommonLike {
   /** @inheritDoc */
   newMap<K, V>(name: string, volatile?: boolean): Map<K, V> {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid repository map name", testCase(PCK, 142), where);
+      throw new this.leyyo.developerError(
+        "Invalid repository map name",
+        testCase(PCK, "repo", "invalid-map-name"),
+        where,
+      );
     }
     const item = new Map<K, V>();
     const code = Symbol.for(name.split("#").join(""));
@@ -299,7 +311,11 @@ export class RepoCommon implements RepoCommonLike {
   /** @inheritDoc */
   newSet<V>(name: string, volatile?: boolean): Set<V> {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid repository set name", testCase(PCK, 143), where);
+      throw new this.leyyo.developerError(
+        "Invalid repository set name",
+        testCase(PCK, "repo", "invalid-set-name"),
+        where,
+      );
     }
     const item = new Set<V>();
     const code = Symbol.for(name.split("#").join(""));

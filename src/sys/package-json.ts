@@ -7,25 +7,27 @@ import { getRootStorage } from "./leyyo-storage.js";
 export interface PackageJson {
   PCK: string;
   NAME: string;
+  PWD: string;
   VER: string;
 }
 export interface PackageRepo {
   PCK: string;
   NAME: string;
+  PWD: string;
   VERS: [string];
 }
 interface _PackageJson {
   name: string;
   version: string;
 }
-const _NAME = "$$leyyo.packages";
+const KEY_SYS_PACKAGES = Symbol.for("leyyo:sys:packages");
 const _empty = { PCK: "leyyo.unknown", NAME: "@leyyo/unknown", VER: "0.0.0" } as PackageJson;
-const _map = getRootStorage<Map<string, PackageRepo>>(_NAME, new Map());
+const _map = getRootStorage<Map<string, PackageRepo>>(KEY_SYS_PACKAGES, new Map());
 
 export function packageJson(url: string): PackageJson {
   try {
-    const __dirname = dirname(dirname(fileURLToPath(url)));
-    const jsonPath = path.normalize(__dirname + "/package.json");
+    const PWD = dirname(dirname(fileURLToPath(url)));
+    const jsonPath = path.normalize(PWD + "/package.json");
     if (fs.existsSync(jsonPath)) {
       const jsonData = JSON.parse(
         fs.readFileSync(jsonPath, { encoding: "utf-8", flag: "r" }),
@@ -40,16 +42,16 @@ export function packageJson(url: string): PackageJson {
         if (_map.has(NAME)) {
           const item = _map.get(NAME);
           if (item.VERS.includes(VER)) {
-            return { PCK, NAME, VER };
+            return { PCK, NAME, VER, PWD };
           }
           console.warn(
             `Same package[${NAME}] duplicated, url: ${url}, current: ${VER}, previous versions: ${item.VERS.join(", ")}`,
           );
           item.VERS.push(VER);
         } else {
-          _map.set(NAME, { PCK, NAME, VERS: [VER] });
+          _map.set(NAME, { PCK, NAME, PWD, VERS: [VER] });
         }
-        return { PCK, NAME, VER };
+        return { PCK, NAME, PWD, VER };
       }
     }
   } catch (e) {

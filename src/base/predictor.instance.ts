@@ -51,7 +51,7 @@ export class PredictorInstance implements PredictorDefinerLike, PredictorViewerL
     if (this._closed) {
       throw new _leyyo.developerError(
         `Predictor [${this.pck}] is closed for adding a member`,
-        testCase(PCK, 100),
+        testCase(PCK, "predictor", "closed-for-member"),
         `${PCK}.PredictorInstance`,
       );
     }
@@ -59,7 +59,7 @@ export class PredictorInstance implements PredictorDefinerLike, PredictorViewerL
       if (typeof member !== "function") {
         throw new _leyyo.developerError(
           `Predictor member [${this.pck}][#${index}] is invalid`,
-          testCase(PCK, 100),
+          testCase(PCK, "predictor", "invalid-member"),
           `${PCK}.PredictorInstance`,
         );
       }
@@ -77,16 +77,16 @@ export class PredictorInstance implements PredictorDefinerLike, PredictorViewerL
   ): PredictorDefinerLike {
     if (this._closed) {
       throw new _leyyo.developerError(
-        `Predictor [${this.pck}] is closed for adding a dependency`,
-        testCase(PCK, 101),
+        `Predictor [${this.pck}] is closed for a dependency`,
+        testCase(PCK, "predictor", "closed-for-dependency"),
         `${PCK}.PredictorInstance`,
       );
     }
     dependencies.forEach((dependency, index) => {
       if (!(typeof dependency === "function" || dependency instanceof PredictorInstance)) {
         throw new _leyyo.developerError(
-          `Predictor dependency [${this.pck}][#${index}] is invalid`,
-          testCase(PCK, 101),
+          `Predictor member [${this.pck}][#${index}] is invalid`,
+          testCase(PCK, "predictor", "invalid-dependency"),
           `${PCK}.PredictorInstance`,
         );
       }
@@ -97,7 +97,7 @@ export class PredictorInstance implements PredictorDefinerLike, PredictorViewerL
         if (this._dependencies.has(dependency)) {
           throw new _leyyo.developerError(
             `Predictor dependency [${this.pck}][#${index}] is duplicated`,
-            testCase(PCK, 101),
+            testCase(PCK, "predictor", "duplicated-dependency"),
             `${PCK}.PredictorInstance`,
           );
         }
@@ -105,7 +105,7 @@ export class PredictorInstance implements PredictorDefinerLike, PredictorViewerL
         if (this._dependencies.has(dependency)) {
           throw new _leyyo.developerError(
             `Predictor dependency [${dependency.pck}] is duplicated`,
-            testCase(PCK, 101),
+            testCase(PCK, "predictor", "duplicated-dependency"),
             `${PCK}.PredictorInstance`,
           );
         }

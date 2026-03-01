@@ -10,8 +10,8 @@ import { isText } from "./is-text.js";
 import { isEmpty } from "./is-empty.js";
 import { secureJson, secureObject } from "./secure-json.js";
 
-const _NAME = "$$leyyo.config";
-export const leyyoConfig = getRootStorage<LeyyoConfig>(_NAME, {});
+const KEY_CONFIG = Symbol.for("leyyo:config");
+export const leyyoConfig = getRootStorage<LeyyoConfig>(KEY_CONFIG, {});
 type ConfigBehaviour = "merge" | "override";
 /**
  * Load config from `.leyyo.yaml` file

@@ -24,7 +24,11 @@ export function setAnonymousName(target: Fnc | ClassLike, prefix?: string): stri
     if (!_leyyo) {
       _leyyo = $$_get_leyyo_fn();
     }
-    throw new _leyyo.developerError(`Invalid target`, testCase(PCK, "ZZZ"), where);
+    throw new _leyyo.developerError(
+      `Invalid target`,
+      testCase(PCK, "anonymous", "invalid-target"),
+      where,
+    );
   }
   if (isText(prefix)) {
     if (!_pattern.test(prefix)) {
@@ -33,7 +37,7 @@ export function setAnonymousName(target: Fnc | ClassLike, prefix?: string): stri
       }
       throw new _leyyo.developerError(
         `Invalid anonymous name part [${prefix}]`,
-        testCase(PCK, "ZZZ"),
+        testCase(PCK, "anonymous", "invalid-part"),
         where,
       );
     }
@@ -51,16 +55,32 @@ function _setName(target: Fnc | ClassLike, name: string, checkAnonymous: boolean
     _leyyo = $$_get_leyyo_fn();
   }
   if (!isText(name)) {
-    throw new _leyyo.developerError(`Invalid name`, testCase(PCK, "ZZZ"), where);
+    throw new _leyyo.developerError(
+      `Invalid name`,
+      testCase(PCK, "anonymous", "invalid-name"),
+      where,
+    );
   }
   if (name.includes(".")) {
-    throw new _leyyo.developerError(`Invalid name with dot`, testCase(PCK, "ZZZ"), where);
+    throw new _leyyo.developerError(
+      `Invalid name with dot`,
+      testCase(PCK, "anonymous", "contains-dot"),
+      where,
+    );
   }
   if (checkAnonymous && name.startsWith(VAL_NAME_ANONYMOUS)) {
-    throw new _leyyo.developerError(`Invalid name with anonymous`, testCase(PCK, "ZZZ"), where);
+    throw new _leyyo.developerError(
+      `Invalid name with anonymous`,
+      testCase(PCK, "anonymous", "starts-with-anonymous"),
+      where,
+    );
   }
   if (typeof target !== "function") {
-    throw new _leyyo.developerError(`Invalid name [${name}]`, testCase(PCK, "ZZZ"), where);
+    throw new _leyyo.developerError(
+      `Invalid name [${name}]`,
+      testCase(PCK, "anonymous", "invalid-target"),
+      where,
+    );
   }
   try {
     Object.defineProperty(target, "name", {
@@ -72,7 +92,7 @@ function _setName(target: Fnc | ClassLike, name: string, checkAnonymous: boolean
   } catch (e) {
     new _leyyo.developerError(
       `Unexpected error during set name [${name}]`,
-      testCase(PCK, "ZZZ"),
+      testCase(PCK, "anonymous", "set-error"),
       where,
     ).log(e);
     return false;

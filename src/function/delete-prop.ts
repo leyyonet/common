@@ -69,7 +69,7 @@ export function deleteProp(target: unknown, key: symbol | string): boolean {
     }
     new _leyyo.developerError(
       `Unexpected error during set name [${key.toString()}]`,
-      testCase(PCK, "ZZZ"),
+      testCase(PCK, "prop", "delete-error"),
       where,
     ).log(e);
     return false;
