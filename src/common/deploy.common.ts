@@ -1,9 +1,8 @@
-import { Fnc, LeyyoLike } from "../base/index.js";
-import { FQN } from "../internal.js";
+import { DeployCommonLike, Fnc, LeyyoLike } from "../type.js";
+import { PCK } from "../internal.js";
 import { isText, testCase } from "../function/index.js";
-import { DeployCommonLike } from "./index.types.js";
 
-const where = `${FQN}.DeployCommon`;
+const where = `${PCK}.DeployCommon`;
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -30,12 +29,12 @@ export class DeployCommon implements DeployCommonLike {
    * */
   wait(name: string, callback: Fnc): void {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid component name", testCase(FQN, 120), where);
+      throw new this.leyyo.developerError("Invalid component name", testCase(PCK, 120), where);
     }
     if (typeof callback !== "function") {
       throw new this.leyyo.developerError(
         `Invalid caller callback [${name}]`,
-        testCase(FQN, 121),
+        testCase(PCK, 121),
         where,
       );
     }
@@ -45,7 +44,7 @@ export class DeployCommon implements DeployCommonLike {
       } catch (e) {
         new this.leyyo.developerError(
           `Callback error during caller's callback [${name}]`,
-          testCase(FQN, 122),
+          testCase(PCK, 122),
           where,
         ).log(e);
       }
@@ -67,7 +66,7 @@ export class DeployCommon implements DeployCommonLike {
    * */
   complete(name: string, ...values: Array<unknown>): void {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid component name", testCase(FQN, 123), where);
+      throw new this.leyyo.developerError("Invalid component name", testCase(PCK, 123), where);
     }
     const isNew = !this._alreadyDeployed.has(name);
     this._alreadyDeployed.set(name, values);
@@ -82,7 +81,7 @@ export class DeployCommon implements DeployCommonLike {
           } catch (e) {
             new this.leyyo.developerError(
               `Callback error during pending callback [${name}]`,
-              testCase(FQN, 124),
+              testCase(PCK, 124),
               where,
             ).log(e);
           }

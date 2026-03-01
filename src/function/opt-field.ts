@@ -1,10 +1,11 @@
 import { isObj } from "./is-obj.js";
-import { Opt } from "./index.types.js";
-import { KeyValue } from "../base/index.js";
+import { Opt } from "../type.js";
+import { KeyValue } from "../type.js";
 
 /**
  * Add field into options
- * Note: field could not be multiple in option
+ * Note:
+ * - field could not be multiple in option
  *
  * @param {Opt} options - source options
  * @param {KeyValue} field - value

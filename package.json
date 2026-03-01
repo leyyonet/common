@@ -1,6 +1,6 @@
 {
   "name": "@leyyo/common",
-  "version": "1.3.19",
+  "version": "4.0.1",
   "description": "Leyyo common library",
   "keywords": [
     "common"
@@ -16,25 +16,35 @@
   "homepage": "https://github.com/leyyonet/common.git/#readme",
   "author": "Mustafa Yelmer <mustafayelmer@gmail.com>",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "type": "module",
   "scripts": {
-    "clear": "rimraf dist",
+    "clear:dist": "rimraf dist & rimraf coverage",
+    "clear:rm": "rimraf package-lock.json && rimraf node_modules",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --check \"{src,test}/**/*.{ts,tsx,js}\"",
+    "format:check": "prettier --check \"{src,test}/**/*.{ts,tsx,js}\"",
     "format:force": "prettier --write \"{src,test}/**/*.{ts,tsx,js}\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "asset": "node -r ts-node/register commands/assets.js",
-    "build": "npm run clear && tsc && npm run asset",
-    "publish:public": "npm run lint && npm run format:force && npm run test && npm run build && npm publish --access=public"
+    "asset:copy": "node -r ts-node/register commands/assets.js",
+    "build": "npm run clear:dist && tsc && npm run asset:copy",
+    "changeset:version": "npm version patch --no-git-tag-version",
+    "publish:before": "npm run lint && npm run format:force && npm run test && npm run build",
+    "changeset:verdaccio": "npm run publish:before && npx changeset publish --registry http://localhost:4873",
+    "changeset:npm": "npm run publish:before && npx changeset publish --registry https://registry.npmjs.org",
+    "publish:public": "npm run publish:before && npm publish --registry https://registry.npmjs.org --access=public"
   },
   "files": [
     "dist/*"
   ],
   "license": "ISC",
   "devDependencies": {
+    "@changesets/cli": "^2.29.8",
     "@eslint/js": "^9.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.2.1",

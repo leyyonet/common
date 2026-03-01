@@ -1,17 +1,18 @@
-import {
-  KEY_ENUM_NAME,
-  KEY_FQN_NAME,
-  KEY_LITERAL_NAME,
-  VAL_FQN_ANONYMOUS,
-} from "../const/index.js";
-import { FqnTarget } from "./index.types.js";
+import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS } from "../const.js";
+import { FqnTarget } from "../type.js";
 import { triggerFqn } from "./trigger-fqn.js";
 import { setAnonymousName } from "./set-anonymous-name.js";
 import { isClass } from "./is-class.js";
-import { Fnc } from "../base/index.js";
+import { Fnc } from "../type.js";
 
 let _count = 0;
 
+/**
+ * Sets anonymous fqn name to a target
+ *
+ * @param {FqnTarget} target
+ * @return {string} - fqn name
+ * */
 export function setAnonymousFqn(target: FqnTarget): string {
   if (!target) {
     return undefined;

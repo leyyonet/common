@@ -1,7 +1,15 @@
-import { FQN } from "../internal.js";
-import { Fnc, LeyyoLike } from "../base/index.js";
+import { PCK } from "../internal.js";
 import {
+  Fnc,
   FqnTarget,
+  LeyyoLike,
+  PredictorBuildOpt,
+  PredictorItem,
+  PredictorLike,
+  PredictorOpt,
+  PredictorRepo,
+} from "../type.js";
+import {
   getFqn,
   isFilledArr,
   isFilledObj,
@@ -12,75 +20,80 @@ import {
   setFqn,
   testCase,
 } from "../function/index.js";
-import { InertBuildOpt, InertItem, InertLike, InertOpt, InertRepo } from "./index.types.js";
 
-const where = `${FQN}.Inert`;
+const where = `${PCK}.Predictor`;
 
 // noinspection JSUnusedGlobalSymbols
-export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> implements InertLike<
-  L,
+export abstract class Predictor<
+  L extends PredictorItem<T>,
   T,
-  O
-> {
-  private readonly _repo: InertRepo<L, T>;
-  private static _pool: Map<string, Inert<InertItem<unknown>, unknown, InertOpt<unknown>>>;
+  O extends PredictorOpt<T>,
+> implements PredictorLike<L, T, O> {
+  private readonly _repo: PredictorRepo<L, T>;
+  private static _pool: Map<
+    string,
+    Predictor<PredictorItem<unknown>, unknown, PredictorOpt<unknown>>
+  >;
 
   /**
    * Constructor
    *
    * @param {LeyyoLike} leyyo
    * @param {string} cluster
-   * @param {InertBuildOpt} options
+   * @param {PredictorBuildOpt} options
    * */
   protected constructor(
     protected leyyo: LeyyoLike,
     protected cluster: string,
-    protected options: InertBuildOpt,
+    protected options: PredictorBuildOpt,
   ) {
     if (!isText(this.cluster)) {
-      throw new this.leyyo.developerError("Invalid cluster name", testCase(FQN, "XXX"), where);
+      throw new this.leyyo.developerError("Invalid cluster name", testCase(PCK, "XXX"), where);
     }
     if (isObj(this.options)) {
       this.options = {};
     }
     if (this.options.anonymousName && !isText(this.options.anonymousName)) {
-      throw new this.leyyo.developerError("Invalid anonymous name", testCase(FQN, "XXX"), where);
+      throw new this.leyyo.developerError("Invalid anonymous name", testCase(PCK, "XXX"), where);
     }
 
     const repo = this.leyyo.repoCommon;
-    if (!Inert._pool) {
-      Inert._pool = repo.newMap<string, Inert<InertItem<unknown>, unknown, InertOpt<unknown>>>(
-        `${where}.pool`,
-      );
+    if (!Predictor._pool) {
+      Predictor._pool = repo.newMap<
+        string,
+        Predictor<PredictorItem<unknown>, unknown, PredictorOpt<unknown>>
+      >(`${where}.pool`);
     }
 
-    if (Inert._pool.has(this.cluster)) {
-      throw new this.leyyo.developerError(
+    if (Predictor._pool.has(this.cluster)) {
+      new this.leyyo.developerError(
         `Duplicated cluster [${this.cluster}]`,
-        testCase(FQN, "XXX"),
+        testCase(PCK, "XXX"),
         where,
+      ).log();
+      this._repo = Predictor._pool.get(this.cluster)._repo as PredictorRepo<L, T>;
+    } else {
+      this._repo = {
+        targets: repo.newMap<T, L>(`${where}.${this.cluster}.targets`),
+        fullNames: repo.newMap<string, L>(`${where}.${this.cluster}.fullNames`),
+        basicNames: repo.newMap<string, L>(`${where}.${this.cluster}.basicNames`),
+        aliases: repo.newMap<string, string>(`${where}.${this.cluster}.aliases`),
+        pendingFqn: repo.newMap<string, L>(`${where}.${this.cluster}.pendingFqn`),
+        pendingLazy: repo.newMap<string, L>(`${where}.${this.cluster}.pendingLazy`),
+      };
+      Predictor._pool.set(
+        this.cluster,
+        this._repo as unknown as Predictor<PredictorItem<unknown>, unknown, PredictorOpt<unknown>>,
       );
     }
-    this._repo = {
-      uniqueLoaded: repo.newSet<T>(`${where}.${this.cluster}.uniqueLoaded`),
-      fullNames: repo.newMap<string, L>(`${where}.${this.cluster}.fullNames`),
-      basicNames: repo.newMap<string, L>(`${where}.${this.cluster}.basicNames`),
-      aliases: repo.newMap<string, string>(`${where}.${this.cluster}.aliases`),
-      pendingFqn: repo.newMap<string, L>(`${where}.${this.cluster}.pendingFqn`),
-      pendingLazy: repo.newMap<string, L>(`${where}.${this.cluster}.pendingLazy`),
-    };
-    Inert._pool.set(
-      this.cluster,
-      this._repo as unknown as Inert<InertItem<unknown>, unknown, InertOpt<unknown>>,
-    );
   }
 
   // region private
   protected _inFqnStage(item: L): boolean {
     item.full = getFqn(item.target as FqnTarget);
     if (!item.full || !item.full.includes(".")) {
-      if (isText(item.fqn)) {
-        item.full = setFqn(item.target as FqnTarget, item.fqn);
+      if (isText(item.pck)) {
+        item.full = setFqn(item.target as FqnTarget, item.pck);
       } else {
         const { pendingFqn } = this._repo;
         pendingFqn.set(item.name, item);
@@ -106,8 +119,8 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
       this._onFqnCompleted(item);
     } else {
       new this.leyyo.developerError(
-        `Inert could not be found after come back, [${full}]`,
-        testCase(FQN, "ZZZ"),
+        `Predictor could not be found after come back, [${full}]`,
+        testCase(PCK, "ZZZ"),
         where,
       ).log();
     }
@@ -124,7 +137,7 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
           ignore = true;
           new this.leyyo.developerError(
             `Duplicated full name [${item.full}]`,
-            testCase(FQN, "ZZZ"),
+            testCase(PCK, "ZZZ"),
             where,
           ).log();
         }
@@ -141,7 +154,7 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
         ignore = true;
         new this.leyyo.developerError(
           `Duplicated basic name [${item.name}]`,
-          testCase(FQN, "ZZZ"),
+          testCase(PCK, "ZZZ"),
           where,
         ).log();
       }
@@ -159,7 +172,7 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
             ignore = true;
             new this.leyyo.developerError(
               `Duplicated alias [${item.name}]`,
-              testCase(FQN, "ZZZ"),
+              testCase(PCK, "ZZZ"),
               where,
             ).log();
           }
@@ -171,14 +184,83 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
     }
   }
 
+  private async _load(item: L): Promise<void> {
+    // It was already loaded
+    if (item.mode === "eager") {
+      return;
+    }
+    const { pendingLazy, targets } = this._repo;
+    try {
+      item.target = await item.lazyTarget;
+      if (this._validate(item.target)) {
+        item.mode = "eager";
+        delete item.lazyTarget;
+        item = { ...this._buildOpt(item.target), ...item };
+
+        // remove from pending
+        if (pendingLazy.has(item.name)) {
+          pendingLazy.delete(item.name);
+        }
+        await this._nextLoad(item);
+        // already loaded
+        if (targets.has(item.target)) {
+          return;
+        }
+        this.leyyo.logger.debug(`# [Predictor] ${this.cluster} loaded, ${item.name}`);
+      } else {
+        item.mode = "conflicted";
+      }
+    } catch (e) {
+      item.mode = "failed";
+      new this.leyyo.developerError(
+        `Callback predictor during loading lazy class [${item.name}]`,
+        testCase(PCK, 227),
+        where,
+      ).log(e);
+      return;
+    }
+
+    // file could not be loaded
+    if (!item.target) {
+      new this.leyyo.developerError(
+        `Target not found [${item.name}]`,
+        testCase(PCK, 227),
+        where,
+      ).log();
+      return;
+    }
+
+    let realName = this._getName(item.target);
+    if (item.name !== realName) {
+      if (!realName) {
+        realName = this._setName(item.target, item.name);
+      }
+      if (!realName) {
+        new this.leyyo.developerError(
+          `Conflict in names [${item.name} vs ${realName}]`,
+          testCase(PCK, "ZZZ"),
+          where,
+        ).log();
+      }
+    }
+
+    if (this._inFqnStage(item)) {
+      return;
+    }
+    item.stage = "persistent";
+    this._onFqnCompleted(item);
+    this._afterTargetFound(item);
+  }
+
   // endregion private
 
   /** @inheritDoc */
-  register(options: InertOpt<T>): void {
-    const { uniqueLoaded } = this._repo;
+  register(options: PredictorOpt<T>): L {
+    const { targets } = this._repo;
     if (!isFilledObj(options)) {
-      throw new this.leyyo.developerError("Invalid inert options", testCase(FQN, "XXX"), where);
+      throw new this.leyyo.developerError("Invalid predictor options", testCase(PCK, "XXX"), where);
     }
+    let item: L;
 
     // target
     if (this._validate(options.target)) {
@@ -186,9 +268,10 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
         delete options.lazyTarget;
       }
       // already defined
-      if (uniqueLoaded.has(options.target)) {
-        return;
+      if (targets.has(options.target)) {
+        return targets.get(options.target);
       }
+      options = { ...this._buildOpt(options.target), ...options };
       let basicName = this._getName(options.target);
       if (!basicName) {
         if (isText(options.name)) {
@@ -199,48 +282,51 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
         }
       }
       if (!basicName) {
-        throw new this.leyyo.developerError("Empty name", testCase(FQN, 220), where);
+        throw new this.leyyo.developerError("Empty name", testCase(PCK, 220), where);
       }
-      const item = { ...options, name: basicName, stage: undefined, mode: "eager" } as L;
-
-      if (this._inFqnStage(item)) {
-        return;
+      item = { ...options, name: basicName, stage: undefined, mode: "eager" } as L;
+      item.load = async () => this._load(item);
+      this.leyyo.logger.debug(`# [Predictor] ${this.cluster} added (eager), ${options.name}`);
+      if (!this._inFqnStage(item)) {
+        item.stage = "persistent";
+        this._onFqnCompleted(item);
+        this._afterTargetFound(item);
       }
-      item.stage = "persistent";
-      this._onFqnCompleted(item);
-      this._afterTargetFound(item);
+      return item;
     }
     // lazy target
     else if (options.lazyTarget instanceof Promise) {
       if (!isText(options.name)) {
-        throw new this.leyyo.developerError("Invalid inert name", testCase(FQN, "XXX"), where);
+        throw new this.leyyo.developerError("Invalid predictor name", testCase(PCK, "XXX"), where);
       }
 
       // it's already pending to be loaded
       const { pendingLazy } = this._repo;
       if (pendingLazy.has(options.name)) {
-        return;
+        return pendingLazy.get(options.name);
       }
 
-      const item = { ...options, stage: "loading-waiting", mode: "lazy" } as L;
+      item = { ...options, stage: "loading-waiting", mode: "lazy" } as L;
+      item.load = async () => this._load(item);
       pendingLazy.set(options.name, item);
-    } else {
-      throw new this.leyyo.developerError(
-        `Invalid target or lazy target [${options.name}]`,
-        testCase(FQN, 224),
-        where,
-      );
+      this.leyyo.logger.debug(`# [Predictor] ${this.cluster} added (lazy), ${options.name}`);
+      return item;
     }
+    throw new this.leyyo.developerError(
+      `Invalid target or lazy target <${this.cluster}> [${options.name}] ${JSON.stringify(options.target)}`,
+      testCase(PCK, 224),
+      where,
+    );
   }
 
   /** @inheritDoc */
   lazy(
-    fqn: string,
+    pck: string,
     name: string,
     lazyTarget: Promise<T>,
-    opt?: Omit<O, "name" | "target" | "lazyTarget" | "fqn">,
-  ): void {
-    this.register({ ...(opt ?? {}), fqn, name, lazyTarget });
+    opt?: Omit<O, "name" | "target" | "lazyTarget" | "pck">,
+  ): L {
+    return this.register({ ...(opt ?? {}), pck, name, lazyTarget });
   }
 
   /** @inheritDoc */
@@ -303,74 +389,18 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
   /** @inheritDoc */
   async load(name: string): Promise<L> {
     if (!isText(name)) {
-      throw new this.leyyo.developerError(`Invalid lazy name`, testCase(FQN, "ZZZ"), where);
+      throw new this.leyyo.developerError(`Invalid lazy name`, testCase(PCK, "ZZZ"), where);
     }
-    const { pendingLazy, uniqueLoaded } = this._repo;
 
     const item = this.get(name);
     if (!item) {
       throw new this.leyyo.developerError(
         `Lazy was not defined [${name}]`,
-        testCase(FQN, "ZZZ"),
+        testCase(PCK, "ZZZ"),
         where,
       );
     }
-    // It was already loaded
-    if (item.mode === "eager") {
-      return item;
-    }
-    try {
-      item.target = await item.lazyTarget;
-      if (this._validate(item.target)) {
-        item.mode = "eager";
-        delete item.lazyTarget;
-
-        // remove from pending
-        if (pendingLazy.has(name)) {
-          pendingLazy.delete(name);
-        }
-        await this._nextLoad(item);
-        // already loaded
-        if (uniqueLoaded.has(item.target)) {
-          return item;
-        }
-      } else {
-        item.mode = "conflicted";
-      }
-    } catch (e) {
-      item.mode = "failed";
-      new this.leyyo.developerError(
-        `Callback inert during loading lazy class [${name}]`,
-        testCase(FQN, 227),
-        where,
-      ).log(e);
-    }
-
-    // file could not be loaded
-    if (!item.target) {
-      return undefined;
-    }
-
-    let realName = this._getName(item.target);
-    if (item.name !== realName) {
-      if (!realName) {
-        realName = this._setName(item.target, item.name);
-      }
-      if (!realName) {
-        new this.leyyo.developerError(
-          `Conflict in names [${item.name} vs ${realName}]`,
-          testCase(FQN, "ZZZ"),
-          where,
-        ).log();
-      }
-    }
-
-    if (this._inFqnStage(item)) {
-      return;
-    }
-    item.stage = "persistent";
-    this._onFqnCompleted(item);
-    this._afterTargetFound(item);
+    await this._load(item);
     return item;
   }
 
@@ -381,6 +411,16 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
    * @return {boolean}
    * */
   protected abstract _validate(target: T): boolean;
+
+  /**
+   * Build options from target
+   *
+   * @param {any} target
+   * @return {PredictorOpt}
+   * */
+  protected _buildOpt(target: T): O {
+    return {} as O;
+  }
 
   /**
    * Get name of target
@@ -402,14 +442,14 @@ export abstract class Inert<L extends InertItem<T>, T, O extends InertOpt<T>> im
   /**
    * Stamp lambda, todo
    *
-   * @param {InertItem} item
+   * @param {PredictorItem} item
    * */
   protected abstract _afterTargetFound(item: L): void;
 
   /**
    * custom operations after load
    *
-   * @param {InertItem} item
+   * @param {PredictorItem} item
    * @return {Promise}
    * @async
    * */

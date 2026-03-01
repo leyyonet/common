@@ -1,4 +1,4 @@
-import { OneOrMore } from "../base/index.js";
+import { OneOrMore } from "../type.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**

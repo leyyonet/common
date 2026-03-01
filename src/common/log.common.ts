@@ -1,19 +1,4 @@
-import { FQN } from "../internal.js";
-import { ClassLike, Fnc, LeyyoLike, Obj } from "../base/index.js";
-import { LogLevel } from "../enum/index.js";
-import {
-  FqnTarget,
-  getFqn,
-  hasFqn,
-  isEmpty,
-  isFilledObj,
-  isObj,
-  onFqnSet,
-  Opt,
-  secureJson,
-  testCase,
-} from "../function/index.js";
-import { KEY_LOG_ALREADY } from "../const/index.js";
+import { PCK } from "../internal.js";
 import {
   ContextFinderLambda,
   LocalColorLike,
@@ -22,9 +7,27 @@ import {
   Logger,
   LogItem,
   LogStylerLambda,
-} from "./index.types.js";
+  LogLevel,
+  FqnTarget,
+  Opt,
+  ClassLike,
+  Fnc,
+  LeyyoLike,
+  Obj,
+} from "../type.js";
+import {
+  getFqn,
+  hasFqn,
+  isEmpty,
+  isFilledObj,
+  isObj,
+  onFqnSet,
+  secureJson,
+  testCase,
+} from "../function/index.js";
+import { KEY_LOG_ALREADY } from "../const.js";
 
-const where = `${FQN}.LogCommon`;
+const where = `${PCK}.LogCommon`;
 const emptyWhere = "".padStart(20);
 
 // noinspection JSUnusedGlobalSymbols
@@ -76,7 +79,7 @@ export class LogCommon implements LogCommonLike {
    * */
   setLogFormatter(fn: LogFormatterLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log formatter", testCase(FQN, 200), where);
+      throw new this.leyyo.developerError("Invalid log formatter", testCase(PCK, 200), where);
     }
     this._logFormatter = fn;
   }
@@ -88,7 +91,7 @@ export class LogCommon implements LogCommonLike {
    * */
   setLogDeploymentStyler(fn: LogStylerLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log styler", testCase(FQN, 201), where);
+      throw new this.leyyo.developerError("Invalid log styler", testCase(PCK, 201), where);
     }
     this._logDeploymentStyler = fn;
 
@@ -104,7 +107,7 @@ export class LogCommon implements LogCommonLike {
    * */
   setLogLocalStyler(fn: LogStylerLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log local styler", testCase(FQN, 202), where);
+      throw new this.leyyo.developerError("Invalid log local styler", testCase(PCK, 202), where);
     }
     this._logLocalStyler = fn;
 
@@ -120,7 +123,7 @@ export class LogCommon implements LogCommonLike {
    * */
   setContextFinder(fn: ContextFinderLambda): void {
     if (typeof fn !== "function") {
-      throw new this.leyyo.developerError("Invalid log local styler", testCase(FQN, 202), where);
+      throw new this.leyyo.developerError("Invalid log local styler", testCase(PCK, 202), where);
     }
     this._contextFinder = fn;
   }
@@ -229,7 +232,7 @@ export class LogCommon implements LogCommonLike {
    * Build short style of logger name
    *
    * @param {string} where - original logger name
-   * @param {string} - short style
+   * @return {string} - short style
    * */
   private _shortenWhere(where: string): string {
     if (!where) {
@@ -293,10 +296,11 @@ export class LogCommon implements LogCommonLike {
    * @return {string}
    * */
   private _checkLoggerName(name: string, index: number): string {
-    if (this._loggers.has(name)) {
+    const fullName = name + (index === 0 ? "" : `#${index}`);
+    if (this._loggers.has(fullName)) {
       return this._checkLoggerName(name, index + 1);
     }
-    return name + (index === 0) ? "" : `(#${index})`;
+    return fullName;
   }
 
   // endregion private
@@ -305,26 +309,26 @@ export class LogCommon implements LogCommonLike {
   /** @inheritDoc */
   of(value: ClassLike | Fnc | Obj | string): Logger {
     let name: string;
-    let fqn: boolean;
+    let fqnExists: boolean;
     switch (typeof value) {
       case "function":
-        fqn = hasFqn(value);
+        fqnExists = hasFqn(value);
         name = this._checkLoggerName(getFqn(value), 0);
         break;
       case "object":
-        fqn = hasFqn(value);
+        fqnExists = hasFqn(value);
         name = this._checkLoggerName(getFqn(value), 0);
         break;
       case "string":
-        fqn = true;
+        fqnExists = true;
         name = this._checkLoggerName(value, 0);
         break;
       default:
-        fqn = true;
+        fqnExists = true;
         name = this._randomLoggerName();
     }
     const ins = new this.leyyo.loggerInstance(name);
-    if (!fqn) {
+    if (!fqnExists) {
       onFqnSet(value as FqnTarget, (f) => ins.$secure.$refreshName(f));
     }
     this._loggers.set(name, ins);

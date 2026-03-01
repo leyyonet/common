@@ -1,4 +1,4 @@
-import { Obj } from "../base/index.js";
+import { Obj } from "../type.js";
 
 /**
  * Inner secure json function, it will be used after creating weak set

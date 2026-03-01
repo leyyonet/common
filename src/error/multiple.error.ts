@@ -1,6 +1,13 @@
-import { LeyyoErrorLike } from "./index.types.js";
+import { LeyyoErrorLike } from "../type.js";
 import { LeyyoError } from "./leyyo.error.js";
 import { CausedError } from "./caused.error.js";
+import {
+  KEY_ERROR_DEFAULT_MESSAGE,
+  KEY_ERROR_EMIT,
+  KEY_ERROR_I18N,
+  KEY_FQN_PACKAGE,
+} from "../const.js";
+import { PCK } from "../internal.js";
 
 // noinspection Annotator
 /**
@@ -30,5 +37,12 @@ export class MultipleError extends LeyyoError {
       }
     });
     return this;
+  }
+
+  static {
+    this[KEY_FQN_PACKAGE] = PCK;
+    this[KEY_ERROR_DEFAULT_MESSAGE] = "Multiple error";
+    this[KEY_ERROR_EMIT] = true;
+    this[KEY_ERROR_I18N] = true;
   }
 }

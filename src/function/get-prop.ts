@@ -1,9 +1,9 @@
-import { FQN } from "../internal.js";
+import { PCK } from "../internal.js";
 import { testCase } from "./test-case.js";
-import { LeyyoLike } from "../base/index.js";
-import { $$get_leyyo_fn } from "./leyyo-fn.js";
+import { LeyyoLike } from "../type.js";
+import { $$_get_leyyo_fn } from "./internal.js";
 
-const where = `${FQN}.GetProp`;
+const where = `${PCK}.GetProp`;
 let _leyyo: LeyyoLike;
 
 /**
@@ -53,11 +53,11 @@ export function getProp<T>(target: unknown, key: symbol | string): T {
     return prop?.value;
   } catch (e) {
     if (!_leyyo) {
-      _leyyo = $$get_leyyo_fn();
+      _leyyo = $$_get_leyyo_fn();
     }
     new _leyyo.developerError(
       `Unexpected error during set name [${key.toString()}]`,
-      testCase(FQN, "ZZZ"),
+      testCase(PCK, "ZZZ"),
       where,
     ).log(e);
     return undefined;

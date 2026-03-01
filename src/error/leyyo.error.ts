@@ -1,23 +1,34 @@
-import { Logger } from "../common/index.js";
-import { ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure, LeyyoErrorTag } from "./index.types.js";
-import { ClassLike, LeyyoLike, Obj, OneOrMore, StrKey } from "../base/index.js";
+import {
+  ErrorStackLine,
+  LeyyoErrorLike,
+  LeyyoErrorSecure,
+  LeyyoErrorTag,
+  Logger,
+  LogLevel,
+  Opt,
+} from "../type.js";
+import { ClassLike, LeyyoLike, Obj, OneOrMore, StrKey } from "../type.js";
 import {
   getFqn,
   getSymbol,
   isFilledObj,
   isObj,
-  Opt,
   optAdd,
   optAppend,
   setSymbol,
 } from "../function/index.js";
 import {
+  KEY_ERROR_DEFAULT_MESSAGE,
+  KEY_ERROR_EMIT,
   KEY_ERROR_FLAGS,
+  KEY_ERROR_I18N,
   KEY_ERROR_WHERE,
+  KEY_FQN_PACKAGE,
   KEY_LEYYO_SECURE,
   VAL_ERROR_UNKNOWN_MESSAGE,
-} from "../const/index.js";
-import { LogLevel } from "../enum/index.js";
+} from "../const.js";
+import { PCK } from "../internal.js";
+import { LogLevelItems } from "../literal/index.js";
 
 type T2 = LeyyoErrorTag;
 let _leyyo: LeyyoLike;
@@ -127,19 +138,19 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     return this;
   }
 
-  where(p1: ClassLike | Obj | string, fqn?: string): this {
+  where(p1: ClassLike | Obj | string, pck?: string): this {
     if (typeof p1 === "function") {
       setSymbol(this, KEY_ERROR_WHERE, getFqn(p1));
     } else if (p1 && typeof p1 === "object") {
       setSymbol(this, KEY_ERROR_WHERE, getFqn(p1));
     } else if (p1 && typeof p1 === "string" && p1.trim()) {
-      if (typeof fqn === "string") {
-        fqn = fqn.trim();
-        fqn = fqn ? `${fqn}.` : "";
+      if (typeof pck === "string") {
+        pck = pck.trim();
+        pck = pck ? `${pck}.` : "";
       } else {
-        fqn = "";
+        pck = "";
       }
-      setSymbol(this, KEY_ERROR_WHERE, fqn + p1.trim());
+      setSymbol(this, KEY_ERROR_WHERE, pck + p1.trim());
     }
     return this;
   }
@@ -155,6 +166,17 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
     }
   }
 
+  /** @inheritDoc */
+  raiseOrLog(isLog: boolean, logger?: Logger, level?: LogLevel): void {
+    if (!isLog) {
+      throw this;
+    }
+    level = level ?? "warn";
+    if (!LogLevelItems.includes(level)) {
+      level = "fatal";
+    }
+    this._log(level, logger);
+  }
   /** @inheritDoc */
   log(logger?: Logger): void {
     this._log("error", logger);
@@ -274,7 +296,7 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
   // endregion methods
 
   // region modes
-  get $back(): LeyyoErrorLike {
+  get back(): LeyyoErrorLike {
     return this;
   }
 
@@ -283,4 +305,11 @@ export class LeyyoError extends Error implements LeyyoErrorLike, LeyyoErrorSecur
   }
 
   // endregion modes
+
+  static {
+    this[KEY_FQN_PACKAGE] = PCK;
+    this[KEY_ERROR_DEFAULT_MESSAGE] = "Unknown error";
+    this[KEY_ERROR_EMIT] = true;
+    this[KEY_ERROR_I18N] = true;
+  }
 }

@@ -1,4 +1,4 @@
-import { EMPTY_VALUES } from "../const/index.js";
+import { EMPTY_VALUES } from "../const.js";
 
 /**
  * Is empty?

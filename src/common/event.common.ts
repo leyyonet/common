@@ -1,10 +1,9 @@
-import { EventCommonLike, EventType } from "./index.types.js";
-import { FQN } from "../internal.js";
-import { Fnc, LeyyoLike } from "../base/index.js";
+import { PCK } from "../internal.js";
+import { Fnc, LeyyoLike, EventCommonLike, EventType } from "../type.js";
 import { isText, testCase } from "../function/index.js";
 import EventEmitter from "node:events";
 
-const where = `${FQN}.EventCommon`;
+const where = `${PCK}.EventCommon`;
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -32,7 +31,7 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   emit(name: T, ...values: Array<unknown>): boolean {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(FQN, 130), where);
+      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 130), where);
     }
     if (!this._emitter.emit(name, ...values)) {
       // It is deactivated, no collect it anymore
@@ -85,12 +84,12 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   listen<T extends string = string>(name: EventType | T, callback: Fnc): void {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(FQN, 130), where);
+      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 130), where);
     }
     if (typeof callback !== "function") {
       throw new this.leyyo.developerError(
         `Invalid listener callback [${name}]`,
-        testCase(FQN, 131),
+        testCase(PCK, 131),
         where,
       );
     }
@@ -118,7 +117,7 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   deactivate(name: string): boolean {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(FQN, 132), where);
+      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 132), where);
     }
     if (this._waitingEvents.has(name)) {
       this.leyyo.logger.warn(`Deactivated and cleared all messages. name: ${name}`, {
@@ -140,7 +139,7 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
   /** @inheritDoc */
   activate(name: string): boolean {
     if (!isText(name)) {
-      throw new this.leyyo.developerError("Invalid event name", testCase(FQN, 133), where);
+      throw new this.leyyo.developerError("Invalid event name", testCase(PCK, 133), where);
     }
     if (this._deactivatedEvents.has(name)) {
       this._deactivatedEvents.delete(name);

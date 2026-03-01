@@ -3,7 +3,7 @@ import path from "node:path";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import * as yaml from "js-yaml";
-import { LeyyoConfig } from "./index.types.js";
+import { LeyyoConfig } from "../type.js";
 import { isObj } from "./is-obj.js";
 import { getRootStorage } from "../sys/index.js";
 import { isText } from "./is-text.js";

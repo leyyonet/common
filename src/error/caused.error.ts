@@ -1,5 +1,12 @@
 import { LeyyoError } from "./leyyo.error.js";
-import { Opt } from "../function/index.js";
+import { Opt } from "../type.js";
+import {
+  KEY_ERROR_DEFAULT_MESSAGE,
+  KEY_ERROR_EMIT,
+  KEY_ERROR_I18N,
+  KEY_FQN_PACKAGE,
+} from "../const.js";
+import { PCK } from "../internal.js";
 
 /**
  * Caused error
@@ -17,5 +24,12 @@ export class CausedError extends LeyyoError {
     err.causedBy = e;
     err.$secure.$copyProperties(e);
     return err;
+  }
+
+  static {
+    this[KEY_FQN_PACKAGE] = PCK;
+    this[KEY_ERROR_DEFAULT_MESSAGE] = "Caused error";
+    this[KEY_ERROR_EMIT] = true;
+    this[KEY_ERROR_I18N] = true;
   }
 }

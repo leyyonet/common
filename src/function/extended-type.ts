@@ -1,6 +1,6 @@
-import { ExtendedType } from "../base/index.js";
-import { List } from "../class/list.js";
-import { KEY_ENUM_NAME, KEY_LITERAL_NAME } from "../const/index.js";
+import { ExtendedType } from "../type.js";
+import { List } from "../base/list.js";
+import { KEY_ENUM_NAME, KEY_LITERAL_NAME } from "../const.js";
 import { isClass } from "./is-class.js";
 
 // noinspection JSUnusedGlobalSymbols

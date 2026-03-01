@@ -1,5 +1,3 @@
-export * from "./index.types.js";
-
 export * from "./caused.error.js";
 export * from "./developer.error.js";
 export * from "./http.error.js";

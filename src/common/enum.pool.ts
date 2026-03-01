@@ -1,4 +1,4 @@
-import { Inert } from "./inert.js";
+import { Predictor } from "./predictor.js";
 import {
   Enum,
   EnumItemConfig,
@@ -6,27 +6,28 @@ import {
   EnumPoolItem,
   EnumPoolLike,
   EnumPoolOpt,
-} from "./index.types.js";
+} from "../type.js";
 import {
   getSymbol,
   isEmpty,
+  isFilledArr,
   isFilledObj,
   isObj,
   isText,
   setSymbol,
   testCase,
 } from "../function/index.js";
-import { KeyValue, LeyyoLike } from "../base/index.js";
-import { FQN } from "../internal.js";
-import { KEY_ENUM_ALT, KEY_ENUM_I18N, KEY_ENUM_NAME } from "../const/index.js";
+import { KeyValue, LeyyoLike } from "../type.js";
+import { PCK } from "../internal.js";
+import { KEY_ENUM_ALIAS, KEY_ENUM_ALT, KEY_ENUM_I18N, KEY_ENUM_NAME } from "../const.js";
 
-const where = `${FQN}.EnumPool`;
+const where = `${PCK}.EnumPool`;
 
 // noinspection JSUnusedGlobalSymbols
 /**
  * Enum pool for call with name and lazy loading
  * */
-export class EnumPool extends Inert<EnumPoolItem, Enum, EnumPoolOpt> implements EnumPoolLike {
+export class EnumPool extends Predictor<EnumPoolItem, Enum, EnumPoolOpt> implements EnumPoolLike {
   constructor(protected leyyo: LeyyoLike) {
     super(leyyo, "enum", {});
   }
@@ -39,7 +40,10 @@ export class EnumPool extends Inert<EnumPoolItem, Enum, EnumPoolOpt> implements 
 
   /** @inheritDoc */
   protected async _nextLoad(item: EnumPoolItem): Promise<void> {
-    if (item.target && item.lazyAlt) {
+    if (!item.target) {
+      return;
+    }
+    if (item.lazyAlt) {
       try {
         item.alt = await item.lazyAlt;
         delete item.lazyAlt;
@@ -47,7 +51,7 @@ export class EnumPool extends Inert<EnumPoolItem, Enum, EnumPoolOpt> implements 
       } catch (e) {
         new this.leyyo.developerError(
           "Callback error during loading enum alternate data",
-          testCase(FQN, 186),
+          testCase(PCK, 186),
           where,
         ).log(e);
       }
@@ -98,6 +102,9 @@ export class EnumPool extends Inert<EnumPoolItem, Enum, EnumPoolOpt> implements 
     if (isFilledObj(conf.alt)) {
       setSymbol(enm, KEY_ENUM_ALT, conf.alt);
     }
+    if (isFilledArr(conf.aliases)) {
+      setSymbol(enm, KEY_ENUM_ALIAS, conf.aliases);
+    }
   }
 
   getConfigItem(enm: Enum): EnumItemConfig {
@@ -108,17 +115,18 @@ export class EnumPool extends Inert<EnumPoolItem, Enum, EnumPoolOpt> implements 
       name: getSymbol(enm, KEY_ENUM_NAME),
       i18n: getSymbol(enm, KEY_ENUM_I18N),
       alt: getSymbol(enm, KEY_ENUM_ALT),
+      aliases: getSymbol(enm, KEY_ENUM_ALIAS),
     } as EnumItemConfig;
   }
 
   /** @inheritDoc */
   define(
-    fqn: string,
+    pck: string,
     name: string,
     target: Enum,
-    opt?: Omit<EnumPoolOpt, "name" | "target" | "lazyTarget" | "fqn">,
+    opt?: Omit<EnumPoolOpt, "name" | "target" | "lazyTarget" | "pck">,
   ): void {
-    this.register({ ...(opt ?? {}), fqn, name, target });
+    this.register({ ...(opt ?? {}), pck, name, target });
   }
 
   toLiteral<E extends KeyValue = KeyValue>(enm: Enum<E>): ReadonlyArray<EnumNonFunctional<E>> {

@@ -1,6 +1,6 @@
-import { $$get_leyyo_fn } from "./leyyo-fn.js";
-import { LeyyoLike } from "../base/index.js";
-import { ExporterData, ExporterDepot, ExporterValue } from "./index.types.js";
+import { $$_get_leyyo_fn } from "./internal.js";
+import { LeyyoLike } from "../type.js";
+import { ExporterData, ExporterDepot, ExporterValue } from "../type.js";
 
 let _leyyo: LeyyoLike;
 
@@ -18,7 +18,7 @@ export async function runExporter(): Promise<ExporterData> {
     },
   };
   if (!_leyyo) {
-    _leyyo = $$get_leyyo_fn();
+    _leyyo = $$_get_leyyo_fn();
   }
   await _leyyo.lifecycleCommon.runStage("print", depot);
   return data;

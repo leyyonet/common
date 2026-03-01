@@ -1,7 +1,7 @@
-// noinspection JSUnusedGlobalSymbols
-import { LeyyoStampEmpty, LeyyoStampLambda } from "./index.types.js";
-import { KEY_LOADER_EMPTY, KEY_LOADER_STAMP } from "../const/index.js";
+import { LeyyoStampEmpty, LeyyoStampLambda } from "../type.js";
+import { KEY_LOADER_EMPTY, KEY_LOADER_STAMP } from "../const.js";
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Stamp an instance for loader
  *

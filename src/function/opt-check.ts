@@ -1,14 +1,13 @@
-// noinspection JSUnusedGlobalSymbols
-
-import { LeyyoLike } from "../base/index.js";
-import { Opt, OptFn } from "./index.types.js";
-import { $$get_leyyo_fn } from "./leyyo-fn.js";
+import { LeyyoLike } from "../type.js";
+import { Opt, OptFn } from "../type.js";
+import { $$_get_leyyo_fn } from "./internal.js";
 import { isObj } from "./is-obj.js";
-import { FQN } from "../internal.js";
+import { PCK } from "../internal.js";
 
 let _leyyo: LeyyoLike;
-const where = `${FQN}.optCheck`;
+const where = `${PCK}.optCheck`;
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Check option, if it's invalid, create empty options
  *
@@ -23,7 +22,7 @@ export function optCheck<O extends Opt = Opt>(options: O | OptFn<O> | Opt): O {
     } catch (e) {
       o = {} as O;
       if (!_leyyo) {
-        _leyyo = $$get_leyyo_fn();
+        _leyyo = $$_get_leyyo_fn();
       }
       new _leyyo.developerError("Raised callback run", "optCheck#01", where).log(e);
     }

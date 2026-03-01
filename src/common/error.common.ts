@@ -1,5 +1,5 @@
-import { ErrorCommonLike, ErrorCtor, ErrorItemConfig, ErrorObject } from "./index.types.js";
-import { ClassLike, LeyyoLike } from "../base/index.js";
+import { ErrorCommonLike, Opt, ErrorCtor, ErrorItemConfig, ErrorObject } from "../type.js";
+import { ClassLike, LeyyoLike, ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure } from "../type.js";
 import {
   getFqn,
   getSymbol,
@@ -9,13 +9,12 @@ import {
   isFilledObj,
   isObj,
   isText,
-  Opt,
   secureJson,
   setSymbol,
   testCase,
 } from "../function/index.js";
 import * as stackTraceParser from "stacktrace-parser";
-import { FQN } from "../internal.js";
+import { PCK } from "../internal.js";
 import {
   KEY_ERROR_DEFAULT_MESSAGE,
   KEY_ERROR_EMIT,
@@ -24,10 +23,9 @@ import {
   KEY_ERROR_RAISED,
   VAL_ERROR_UNKNOWN_MESSAGE,
   VAL_ERROR_UNKNOWN_NAME,
-} from "../const/index.js";
-import { ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure } from "../error/index.js";
+} from "../const.js";
 
-const where = `${FQN}.ErrorCommon`;
+const where = `${PCK}.ErrorCommon`;
 
 // noinspection JSUnusedGlobalSymbols
 export class ErrorCommon implements ErrorCommonLike {
@@ -138,10 +136,10 @@ export class ErrorCommon implements ErrorCommonLike {
   /** @inheritDoc */
   setConfigItem(clazz: ClassLike, conf: ErrorItemConfig): void {
     if (!isClass(clazz)) {
-      throw new this.leyyo.developerError("Invalid package name", testCase(FQN, 230), where);
+      throw new this.leyyo.developerError("Invalid package name", testCase(PCK, 230), where);
     }
     if (!isObj(conf)) {
-      throw new this.leyyo.developerError("Invalid package name", testCase(FQN, 230), where);
+      throw new this.leyyo.developerError("Invalid package name", testCase(PCK, 230), where);
     }
     if (isText(conf.message)) {
       setSymbol(clazz, KEY_ERROR_DEFAULT_MESSAGE, conf.message);
@@ -296,22 +294,22 @@ export class ErrorCommon implements ErrorCommonLike {
   /** @inheritDoc */
   addKnownPackage(packageName: string, shortName: string): void {
     if (!isText(packageName)) {
-      throw new this.leyyo.developerError("Invalid package name", testCase(FQN, 230), where);
+      throw new this.leyyo.developerError("Invalid package name", testCase(PCK, 230), where);
     }
     if (!isText(shortName)) {
       throw new this.leyyo.developerError(
         `Invalid short name [${packageName}]`,
-        testCase(FQN, 231),
+        testCase(PCK, 231),
         where,
       );
     }
     if (!this._knownPackages) {
-      this._knownPackages = this.leyyo.repoCommon.newMap<string, string>(`${FQN}.knownPackages`);
+      this._knownPackages = this.leyyo.repoCommon.newMap<string, string>(`${PCK}.knownPackages`);
     }
     if (this._knownPackages.has(shortName)) {
       throw new this.leyyo.developerError(
         `Duplicated package name [${packageName}]`,
-        testCase(FQN, 232),
+        testCase(PCK, 232),
         where,
       );
     }
@@ -359,7 +357,7 @@ export class ErrorCommon implements ErrorCommonLike {
         return;
       }
       if (!this._stats) {
-        this._stats = this.leyyo.repoCommon.newMap<ErrorCtor, number>(`${FQN}.error`);
+        this._stats = this.leyyo.repoCommon.newMap<ErrorCtor, number>(`${PCK}.error`);
       }
       num = this._stats.get(clazz);
       if (num === undefined) {

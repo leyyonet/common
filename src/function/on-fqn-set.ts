@@ -1,6 +1,13 @@
-import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_FQN_ON_SET, KEY_LITERAL_NAME } from "../const/index.js";
-import { FqnOnSetLambda, FqnTarget } from "./index.types.js";
+import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_FQN_ON_SET, KEY_LITERAL_NAME } from "../const.js";
+import { FqnOnSetLambda, FqnTarget } from "../type.js";
 
+/**
+ * Stores a callback which will be triggered when target has fqn name
+ *
+ * @param {FqnTarget} target
+ * @param {FqnOnSetLambda} callback
+ * @return {boolean} - is success?
+ * */
 export function onFqnSet(target: FqnTarget, callback: FqnOnSetLambda): boolean {
   if (!target) {
     return false;

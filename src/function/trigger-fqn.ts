@@ -1,7 +1,18 @@
-import { KEY_FQN_ON_SET } from "../const/index.js";
-import { FqnOnSetLambda, FqnTarget } from "./index.types.js";
+import { KEY_FQN_ON_SET } from "../const.js";
+import { FqnOnSetLambda, FqnTarget } from "../type.js";
 
-export function triggerFqn(target: FqnTarget, full: string): boolean {
+/**
+ * Trigger a callback when target has fqn name
+ *
+ * - {@link onFqnSet} - callback should be set
+ * - {@link setFqn} - callback will be triggered with `full` name
+ * - {@link removeFqn} - callback will be triggered with `empty` name
+ *
+ * @param {FqnTarget} target
+ * @param {string?} full - fqn name, it will be undefined when fqn is deleted
+ * @return {boolean} - is success?
+ * */
+export function triggerFqn(target: FqnTarget, full?: string): boolean {
   if (target[KEY_FQN_ON_SET]) {
     const arr = target[KEY_FQN_ON_SET] as Array<FqnOnSetLambda>;
     delete target[KEY_FQN_ON_SET];

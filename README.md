@@ -4,6 +4,16 @@ Common library for Leyyo framework
 ## Import
 - `npm i @leyyo/common`
 
+### Items
+| Stereotype        | Name                                                          | Props                              | Description |
+|-------------------|---------------------------------------------------------------|------------------------------------|-------------|
+| `function`        | [parseAuth](./src/items/parse-auth.ts)                        |                                    |             |
+| `config`          | [hdrAuthEnv](src/items/hdr-auth.env.ts)                       |                                    |             |
+| `error`           | [AuthorizationError](./src/error/authorization.error.ts)      | `fqn`, `predictor`, `i18n`, `emit` |             |
+| `request handler` | [authMiddleware](src/middleware/auth.middleware.ts)           | `fqn`                              |             |
+| `foretell`        | [leyyoHdrAuthForetell](src/loader/leyyo-hdr-auth-foretell.ts) |                                    |             |
+| `lazy`            | [leyyoHdrAuthLazy](src/loader/leyyo-hdr-auth-lazy.ts)         |                                    |             |
+
 ## Usage (Runtime)
 
 ## Test Cases

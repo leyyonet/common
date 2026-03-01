@@ -1,5 +1,5 @@
-import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME } from "../const/index.js";
-import { FqnTarget } from "./index.types.js";
+import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME } from "../const.js";
+import { FqnTarget } from "../type.js";
 import { triggerFqn } from "./trigger-fqn.js";
 
 /**
@@ -18,6 +18,9 @@ export function removeFqn(target: FqnTarget): boolean {
     // function, class
     return _item(target, target.name);
   } else if (typeof target === "object") {
+    if (target[KEY_FQN_NAME]) {
+      return _item(target, undefined);
+    }
     if (Array.isArray(target)) {
       if (target[KEY_LITERAL_NAME]) {
         return _item(target, target[KEY_LITERAL_NAME]);
@@ -33,10 +36,10 @@ export function removeFqn(target: FqnTarget): boolean {
   return false;
 }
 
-function _item(target: FqnTarget, name: string): boolean {
+function _item(target: FqnTarget, basicName: string): boolean {
   if (target[KEY_FQN_NAME]) {
     delete target[KEY_FQN_NAME];
-    triggerFqn(target, name);
+    triggerFqn(target, basicName);
     return true;
   }
   return false;

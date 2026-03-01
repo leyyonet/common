@@ -1,8 +1,7 @@
-import { LeyyoLike } from "../base/index.js";
-import { LogLevel } from "../enum/index.js";
-import { isText, Opt } from "../function/index.js";
-import { KEY_LEYYO_SECURE } from "../const/index.js";
-import { Logger, LoggerSecure } from "../common/index.js";
+import { LeyyoLike } from "../type.js";
+import { isText } from "../function/index.js";
+import { KEY_LEYYO_SECURE } from "../const.js";
+import { LogLevel, Opt, Logger, LoggerSecure } from "../type.js";
 
 // region property
 let _leyyo: LeyyoLike;
@@ -58,7 +57,7 @@ export class LoggerInstance implements Logger, LoggerSecure {
 
   // region secure
   /** @inheritDoc */
-  get $back(): Logger {
+  get back(): Logger {
     return this;
   }
 

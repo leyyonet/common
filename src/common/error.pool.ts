@@ -1,14 +1,20 @@
-import { Inert } from "./inert.js";
-import { ErrorPoolItem, ErrorPoolLike, ErrorPoolOpt } from "./index.types.js";
-import { ClassLike, LeyyoLike } from "../base/index.js";
+import { Predictor } from "./predictor.js";
+import { ErrorPoolItem, ErrorPoolLike, ErrorPoolOpt, ClassLike, LeyyoLike } from "../type.js";
 import { isClass } from "../function/index.js";
+import {
+  KEY_ERROR_DEFAULT_MESSAGE,
+  KEY_ERROR_EMIT,
+  KEY_ERROR_I18N,
+  KEY_FQN_PACKAGE,
+} from "../const.js";
+import { leyyo } from "../base/index.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**
  * Error pool for call with name and lazy loading
  * */
 export class ErrorPool
-  extends Inert<ErrorPoolItem, ClassLike, ErrorPoolOpt>
+  extends Predictor<ErrorPoolItem, ClassLike, ErrorPoolOpt>
   implements ErrorPoolLike
 {
   constructor(protected leyyo: LeyyoLike) {
@@ -45,12 +51,25 @@ export class ErrorPool
     return isClass(target);
   }
 
+  protected _buildOpt(target: ClassLike): ErrorPoolOpt {
+    const opt = {} as ErrorPoolOpt;
+    if (target[KEY_ERROR_DEFAULT_MESSAGE] !== undefined) {
+      opt.message = target[KEY_ERROR_DEFAULT_MESSAGE];
+    }
+    if (target[KEY_ERROR_EMIT] !== undefined) {
+      opt.emit = target[KEY_ERROR_EMIT];
+    }
+    if (target[KEY_ERROR_I18N] !== undefined) {
+      opt.i18n = target[KEY_ERROR_I18N];
+    }
+    if (target[KEY_FQN_PACKAGE] !== undefined) {
+      opt.pck = target[KEY_FQN_PACKAGE];
+    }
+    return opt;
+  }
+
   /** @inheritDoc */
-  define(
-    fqn: string,
-    target: ClassLike,
-    opt?: Omit<ErrorPoolOpt, "name" | "target" | "lazyTarget" | "fqn">,
-  ): void {
-    this.register({ ...(opt ?? {}), fqn, target });
+  define(target: ClassLike, opt?: Omit<ErrorPoolOpt, "name" | "target" | "lazyTarget">): void {
+    this.register({ ...(opt ?? {}), target });
   }
 }

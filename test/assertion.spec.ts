@@ -1,5 +1,7 @@
-import { assert, describe, it } from "vitest";
-import { CausedError } from "../src/index.js";
+import { assert, beforeAll, describe, it } from "vitest";
+import { CausedError, initTest } from "../src/index.js";
+
+beforeAll(() => initTest());
 
 describe("error", () => {
   it("not symbol", () => {

@@ -1,6 +1,6 @@
 import { optField } from "./opt-field.js";
 import { isObj } from "./is-obj.js";
-import { Opt } from "./index.types.js";
+import { Opt } from "../type.js";
 
 /**
  * Add key=value into options

@@ -1,8 +1,8 @@
-// noinspection JSUnusedGlobalSymbols
 import { isObj } from "./is-obj.js";
 import { secureClone } from "./secure-clone.js";
-import { Opt } from "./index.types.js";
+import { Opt } from "../type.js";
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Clone existing option
  *

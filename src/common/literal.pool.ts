@@ -1,11 +1,4 @@
-import { Inert } from "./inert.js";
-import {
-  Literal,
-  LiteralItemConfig,
-  LiteralPoolItem,
-  LiteralPoolLike,
-  LiteralPoolOpt,
-} from "./index.types.js";
+import { Predictor } from "./predictor.js";
 import {
   getSymbol,
   isEmpty,
@@ -16,18 +9,25 @@ import {
   setSymbol,
   testCase,
 } from "../function/index.js";
-import { LeyyoLike } from "../base/index.js";
-import { FQN } from "../internal.js";
-import { KEY_LITERAL_ALT, KEY_LITERAL_I18N, KEY_LITERAL_NAME } from "../const/index.js";
+import {
+  Literal,
+  LiteralItemConfig,
+  LiteralPoolItem,
+  LiteralPoolLike,
+  LiteralPoolOpt,
+  LeyyoLike,
+} from "../type.js";
+import { PCK } from "../internal.js";
+import { KEY_LITERAL_ALT, KEY_LITERAL_I18N, KEY_LITERAL_NAME } from "../const.js";
 
-const where = `${FQN}.LiteralPool`;
+const where = `${PCK}.LiteralPool`;
 
 // noinspection JSUnusedGlobalSymbols
 /**
  * Literal pool for call with name and lazy loading
  * */
 export class LiteralPool
-  extends Inert<LiteralPoolItem, Literal, LiteralPoolOpt>
+  extends Predictor<LiteralPoolItem, Literal, LiteralPoolOpt>
   implements LiteralPoolLike
 {
   constructor(protected leyyo: LeyyoLike) {
@@ -50,7 +50,7 @@ export class LiteralPool
       } catch (e) {
         new this.leyyo.developerError(
           "Callback error during loading literal alternate data",
-          testCase(FQN, 186),
+          testCase(PCK, 186),
           where,
         ).log(e);
       }
@@ -117,12 +117,12 @@ export class LiteralPool
 
   /** @inheritDoc */
   define(
-    fqn: string,
+    pck: string,
     name: string,
     target: Literal,
-    opt?: Omit<LiteralPoolOpt, "name" | "target" | "lazyTarget" | "fqn">,
+    opt?: Omit<LiteralPoolOpt, "name" | "target" | "lazyTarget" | "pck">,
   ): void {
-    this.register({ ...(opt ?? {}), fqn, name, target });
+    this.register({ ...(opt ?? {}), pck, name, target });
   }
   // endregion public
 }

@@ -1,5 +1,12 @@
-import { assert, describe, it } from "vitest";
+import { assert, beforeAll, describe, it } from "vitest";
 import { enumPool, getFqn, hasFqn, literalPool, removeFqn, setFqn } from "../src/index.js";
+beforeAll(() => {
+  if (global) {
+    global.leyyo_is_testing = true;
+  } else if (globalThis) {
+    globalThis.leyyo_is_testing = true;
+  }
+});
 
 function xyz() {}
 class Abc {}
