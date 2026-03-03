@@ -6,7 +6,7 @@ import { FqnOnSetLambda, FqnTarget } from "../type.js";
  *
  * - {@link onFqnSet} - callback should be set
  * - {@link setFqn} - callback will be triggered with `full` name
- * - {@link removeFqn} - callback will be triggered with `empty` name
+ * - {@link deleteFqn} - callback will be triggered with `empty` name
  *
  * @param {FqnTarget} target
  * @param {string?} full - fqn name, it will be undefined when fqn is deleted

@@ -10,30 +10,35 @@ const where = `${PCK}.setFqnObject`;
 let _leyyo: LeyyoLike;
 
 /**
- * Set fqn name to an object
+ * Set fqn name to an instance
  *
  * @param {(Obj|Arr)} target - target (object or array)
  * @param {string} pck - package name
  * @param {string} name - name
  * @return {string} - full name
  * */
-export function setFqnObject<T = Obj | Arr>(target: T, pck: string, name: string): string {
+export function setFqnInstance<T = Obj | Arr>(target: T, pck: string, name: string): string {
   if (!_leyyo) {
     _leyyo = $$_get_leyyo_fn();
   }
+  if (!isText(pck)) {
+    new _leyyo.developerError(
+      `Invalid package name`,
+      testCase(PCK, "fqn", "invalid-package-name"),
+      where,
+    ).log();
+    return undefined;
+  }
+  if (!isText(name)) {
+    new _leyyo.developerError(`Invalid name`, testCase(PCK, "fqn", "invalid-name"), where).log();
+    return undefined;
+  }
+
   [
     ["package", pck],
     ["name", name],
   ].forEach((tuple) => {
     const [field, value] = tuple;
-    if (!isText(value)) {
-      new _leyyo.developerError(
-        `Invalid ${field}`,
-        testCase(PCK, "fqn", "invalid-" + field),
-        where,
-      ).log();
-      return undefined;
-    }
     if (value.startsWith(".") || value.endsWith(".")) {
       new _leyyo.developerError(
         `Invalid ${field} with dots`,

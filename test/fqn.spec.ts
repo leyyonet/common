@@ -1,5 +1,5 @@
 import { assert, beforeAll, describe, it } from "vitest";
-import { enumPool, getFqn, hasFqn, literalPool, removeFqn, setFqn } from "../src/index.js";
+import { enumPool, getFqn, hasFqn, literalPool, deleteFqn, setFqn } from "../src/index.js";
 beforeAll(() => {
   if (global) {
     global.leyyo_is_testing = true;
@@ -35,7 +35,7 @@ describe("fqn", () => {
       assert.equal(hasFqn(xyz), true);
     });
     it("get after remove", () => {
-      removeFqn(xyz);
+      deleteFqn(xyz);
       assert.equal(getFqn(xyz), "xyz");
     });
     it("has after remove", () => {
@@ -56,7 +56,7 @@ describe("fqn", () => {
       assert.equal(hasFqn(Abc), true);
     });
     it("get after remove", () => {
-      removeFqn(Abc);
+      deleteFqn(Abc);
       assert.equal(getFqn(Abc), "Abc");
     });
     it("has after remove", () => {
@@ -77,7 +77,7 @@ describe("fqn", () => {
       assert.equal(hasFqn(Def), true);
     });
     it("get after remove", () => {
-      removeFqn(Def);
+      deleteFqn(Def);
       assert.equal(getFqn(Def), "Def");
     });
     it("has after remove", () => {
@@ -99,7 +99,7 @@ describe("fqn", () => {
       assert.equal(hasFqn(Color), true);
     });
     it("get after remove", () => {
-      removeFqn(Color);
+      deleteFqn(Color);
       assert.equal(getFqn(Color), "Color");
     });
     it("has after remove", () => {
@@ -121,7 +121,7 @@ describe("fqn", () => {
       assert.equal(hasFqn(Status), true);
     });
     it("get after remove", () => {
-      removeFqn(Status);
+      deleteFqn(Status);
       assert.equal(getFqn(Status), "Status");
     });
     it("has after remove", () => {
@@ -142,7 +142,7 @@ describe("fqn", () => {
       assert.equal(setFqn(instance, "bar"), "foo2.Abc");
     });
     it("remove - SHOULD NOT WORK", () => {
-      removeFqn(instance);
+      deleteFqn(instance);
       assert.equal(getFqn(instance), "foo2.Abc");
     });
   });

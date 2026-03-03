@@ -7,7 +7,7 @@ const where = `${PCK}.DeleteProp`;
 let _leyyo: LeyyoLike;
 
 /**
- * Delete target property
+ * Delete target's property
  *
  * @param {any} target - target
  * @param {string} key - key
@@ -21,7 +21,7 @@ export function deleteKey(target: unknown, key: string): boolean {
 }
 
 /**
- * Delete target hidden property
+ * Delete target's hidden property
  *
  * @param {any} target - target
  * @param {symbol} key - hidden key

@@ -1,7 +1,7 @@
 import { isText } from "./is-text.js";
 import { LeyyoLike, PredictorDefinerLike } from "../type.js";
 import { packageJson } from "../sys/index.js";
-import { setFqnObject } from "./set-fqn-object.js";
+import { setFqnInstance } from "./set-fqn-instance.js";
 import { $$_get_leyyo_fn } from "./internal.js";
 
 let _leyyo: LeyyoLike;
@@ -27,6 +27,6 @@ export function definePredictor(pck: string, postfix?: string): PredictorDefiner
   } else {
     postfix = "predictor";
   }
-  setFqnObject(ins, pck, postfix);
+  setFqnInstance(ins, pck, postfix);
   return ins;
 }

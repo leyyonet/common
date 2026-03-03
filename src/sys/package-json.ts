@@ -20,7 +20,7 @@ interface _PackageJson {
   name: string;
   version: string;
 }
-const KEY_SYS_PACKAGES = Symbol.for("leyyo:sys:packages");
+const KEY_SYS_PACKAGES = Symbol.for("leyyo:storage:packages");
 const _empty = { PCK: "leyyo.unknown", NAME: "@leyyo/unknown", VER: "0.0.0" } as PackageJson;
 const _map = getRootStorage<Map<string, PackageRepo>>(KEY_SYS_PACKAGES, new Map());
 

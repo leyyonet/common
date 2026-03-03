@@ -1,4 +1,5 @@
 /**
+ * Builds easy number array for foreach usage
  *
  * @param {number} num
  * @return {Array<number>}

@@ -28,7 +28,7 @@ export class LifecycleCommon implements LifecycleCommonLike {
     );
     // initialize stages
     this._init("initialize");
-    this._init("print");
+    this._init("export");
     this._init("validate");
     this._init("process");
     this._init("clear");

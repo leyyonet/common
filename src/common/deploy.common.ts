@@ -48,7 +48,7 @@ export class DeployCommon implements DeployCommonLike {
       } catch (e) {
         new this.leyyo.developerError(
           `Callback error during caller's callback [${name}]`,
-          testCase(PCK, "deploy", "callback-error"),
+          testCase(PCK, "deploy", "wait-callback-error"),
           where,
         ).log(e);
       }
@@ -89,7 +89,7 @@ export class DeployCommon implements DeployCommonLike {
           } catch (e) {
             new this.leyyo.developerError(
               `Callback error during pending callback [${name}]`,
-              testCase(PCK, "deploy", "callback-error"),
+              testCase(PCK, "deploy", "pending-callback-error"),
               where,
             ).log(e);
           }

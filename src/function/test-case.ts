@@ -27,7 +27,7 @@ export function testCase(pck: string, caseNo: string | number, ...ext: Array<str
       .filter(Boolean)
       .join("|");
     if (extStr) {
-      extStr = "|" + extStr;
+      extStr = ":" + extStr;
     }
   }
   return `${pck}#${caseStr}${extStr}`;

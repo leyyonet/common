@@ -1,4 +1,4 @@
-const KEY_STORAGE = Symbol.for("leyyo");
+const KEY_STORAGE = Symbol.for("leyyo:storage:global");
 
 type LeyyoStorage = Map<symbol, unknown>;
 

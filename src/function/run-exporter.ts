@@ -20,7 +20,7 @@ export async function runExporter(): Promise<ExporterData> {
   if (!_leyyo) {
     _leyyo = $$_get_leyyo_fn();
   }
-  await _leyyo.lifecycleCommon.runStage("print", depot);
+  await _leyyo.lifecycleCommon.runStage("export", depot);
   return data;
 }
 

@@ -10,7 +10,7 @@ import { triggerFqn } from "./trigger-fqn.js";
  *
  * Note: if it returns `undefined`, means that it could not find valid target
  * */
-export function removeFqn(target: FqnTarget): boolean {
+export function deleteFqn(target: FqnTarget): boolean {
   if (!target) {
     return false;
   }

@@ -10,7 +10,7 @@ import { isText } from "./is-text.js";
 import { isEmpty } from "./is-empty.js";
 import { secureJson, secureObject } from "./secure-json.js";
 
-const KEY_CONFIG = Symbol.for("leyyo:config");
+const KEY_CONFIG = Symbol.for("leyyo:storage:config");
 export const leyyoConfig = getRootStorage<LeyyoConfig>(KEY_CONFIG, {});
 type ConfigBehaviour = "merge" | "override";
 /**

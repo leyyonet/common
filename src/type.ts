@@ -1,6 +1,8 @@
 // region basic
-import { List } from "./base/index.js";
-
+/**
+ * JS types
+ * @enum
+ * */
 export type BasicType =
   | "undefined"
   | "string"
@@ -10,6 +12,11 @@ export type BasicType =
   | "function"
   | "symbol"
   | "bigint";
+
+/**
+ * Extended types
+ * @enum
+ * */
 export type ExtendedType =
   | BasicType
   | "array"
@@ -25,67 +32,288 @@ export type ExtendedType =
   | "map"
   | "set"
   | "list";
+/**
+ * Possible key values
+ * */
 export type KeyValue = string | number;
+
+/**
+ * Possible visible and hidden key values
+ * */
 export type AnyKey = string | number | symbol;
+
+/**
+ * Http status
+ * */
 export type HttpStatus = number;
+
+/**
+ * Language code
+ * - it will be extended with literal, as en, it, de, tr, ...
+ * */
 export type LangLike = string;
+
+/**
+ * Possible name value
+ * */
 export type NameLike = string;
+
+/**
+ * Possible keyword value
+ * */
 export type KeywordLike = string;
+
+/**
+ * Possible field name value
+ * */
 export type FieldNameLike = string;
-export type KeyLike = string | number;
+
+/**
+ * Possible id value
+ * */
 export type IdLike = string | number;
+
+/**
+ * Shortcut for integer
+ * */
 export type IntegerLike = number;
+
+/**
+ * Shortcut for float, double
+ * */
 export type FloatLike = number;
-export type AlphaLike = string; // alphaType
+
+/**
+ * Shortcut for alphanumeric
+ * Format: [azAZ09_]
+ * */
+export type AlphaLike = string;
+
+/**
+ * Shortcut for slug
+ * Format: aaa-bbb-ccc
+ * */
 export type SlugLike = string;
-export type TextLike = string; // trimmed string
-export type DigitLike = string; // digitType, 0-9
-export type TitleLike = string; //Single-line clear-text (no html)
-export type DescriptionLike = string; //Multi-line clear-text (no html)
-export type RichTextLike = string; // multi-line rich text with html tags
+
+/**
+ * Shortcut for text, trimmed string
+ * */
+export type TextLike = string;
+
+/**
+ * Shortcut for digit
+ * - digitType, 0-9
+ * */
+export type DigitLike = string;
+
+/**
+ * Shortcut for title
+ * - Single-line clear-text (no html)
+ * */
+export type TitleLike = string;
+
+/**
+ * Shortcut for description
+ * - Multi-line clear-text (no html)
+ * */
+export type DescriptionLike = string;
+
+/**
+ * Shortcut for rich text
+ * - multi-line rich text with html tags
+ * */
+export type RichTextLike = string;
+
+/**
+ * Shortcut for uuid
+ * */
 export type UuidLike = string;
+
+/**
+ * Shortcut for host
+ * - Format: [subdomain.]domain.extension
+ * */
 export type HostLike = string;
+
+/**
+ * Shortcut for URI
+ * - Format: http[s]://[subdomain.]domain.extension[/path]
+ * */
 export type UriLike = string;
+
+/**
+ * Shortcut for url
+ * - Format: http[s]://[subdomain.]domain.extension[/path]
+ * */
 export type UrlLike = string;
+
+/**
+ * Shortcut for email
+ * - Format: aaa@bbb.ccc
+ * */
 export type EmailLike = string;
+
+/**
+ * Shortcut for folder
+ * - Format: aaa/bbb/ccc
+ * */
 export type FolderLike = string;
+
+/**
+ * Shortcut for phone
+ * */
 export type PhoneLike = string;
+
+/**
+ * Shortcut for urn
+ * - Format: aaa:bbb:ccc
+ * */
 export type UrnLike = string;
+
+/**
+ * Shortcut for hash
+ * */
 export type HashText = string;
+
+/**
+ * Shortcut for encrypted
+ * */
 export type EncryptedText = string;
+
+/**
+ * Shortcut for timestamp
+ * - Unit: milliseconds
+ * */
 export type Timestamp = number;
+/**
+ * Shortcut for timestamp
+ * - Unit: milliseconds
+ * */
 export type TimeLong = Timestamp;
+
+/**
+ * Shortcut for ttl
+ * - Unit: milliseconds
+ * */
 export type TtlMsec = number;
+/**
+ * Shortcut for ttl
+ * - Unit: milliseconds
+ * */
 export type TtlLong = TtlMsec;
+
+/**
+ * Shortcut for epoch time
+ * - Unit: second
+ * */
 export type EpochTime = number;
+
+/**
+ * Shortcut for epoch time
+ * - Unit: second
+ * */
 export type TimeShort = EpochTime;
+
+/**
+ * Shortcut for ttl
+ * - Unit: second
+ * */
 export type TtlSecond = number;
+
+/**
+ * Shortcut for ttl as seconds
+ * */
 export type TtlShort = TtlSecond;
-export type IsoDatetime = string; // yyyy-mm-ddThh:mm:ii.eeeZ
-export type IsoDate = string; // yyyy-mm-dd
-export type IsoTime = string; // hh:mm:ii.eeeZ
+
+/**
+ * Shortcut for iso date time
+ * - Format: yyyy-mm-ddThh:mm:ii.eeeZ
+ * */
+export type IsoDatetime = string;
+
+/**
+ * Shortcut for iso date
+ * - Format: yyyy-mm-dd
+ * */
+export type IsoDate = string;
+
+/**
+ * Shortcut for iso time
+ * - Format: hh:mm:ii.eeeZ
+ * */
+export type IsoTime = string;
 // endregion alias
 
 // region function
+/**
+ * Any function
+ * */
 export type Fnc<R = unknown> = ((...args: Arr) => R) & Function;
+
+/**
+ * Any async function
+ * */
 export type Async<R = unknown> = ((...args: Arr) => Promise<R>) & AsyncGeneratorFunction;
 
-export interface Abstract<T = {}> extends Function {
-  prototype: T;
+/**
+ * Abstract class without new method
+ *
+ * Generics:
+ * - C: class
+ * */
+export interface Abstract<C = {}> extends Function {
+  /**
+   * Prototype
+   * */
+  prototype: C;
+
+  /**
+   * Name of class
+   * */
   readonly name: string;
+
+  /**
+   * Parameter size of constructor
+   * */
   readonly length: number;
 
+  /**
+   * Bind a class function
+   * */
   bind(thisArg: unknown, ...args: Arr): unknown;
 
+  /**
+   * Apply a class function
+   * */
   apply(thisArg: unknown, args: Arr): unknown;
 
+  /**
+   * Call a class function
+   * */
   call(thisArg: unknown, ...args: Arr): unknown;
 }
 
-export interface ClassLike<T = {}> extends Abstract<T> {
-  new (...args: Arr): T;
+/**
+ * Class interface with new method
+ *
+ * Generics:
+ * - C: class
+ * */
+export interface ClassLike<C = {}> extends Abstract<C> {
+  /**
+   * Constructor
+   * @param {Array<any>} args
+   * @return {Obj}
+   * */
+  new (...args: Arr): C;
 }
 
+/**
+ * Get type of class
+ *
+ * Generics:
+ * - C: class
+ * */
 export type TypeOf<C = ClassLike> = C extends ClassLike<infer T> ? T : C;
 
 // endregion function
@@ -103,24 +331,101 @@ export declare namespace Express {
 // endregion express
 
 // region utility
-export interface Describable {
+/**
+ * Has Description interface
+ * */
+export interface HasDescription {
+  /**
+   * Description
+   * */
   description: string;
 }
 
-export interface Nameable {
-  name: string;
+/**
+ * Has Name interface
+ * */
+export interface HasName {
+  /**
+   * Name
+   * */
+  name?: string | unknown;
 }
 
+/**
+ * Has Id interface
+ * */
 export interface HasId {
+  /**
+   * Id
+   * */
   id?: IdLike;
 }
+
+/**
+ * Has Urn interface
+ * */
+export interface HasUrn {
+  /**
+   * Urn
+   * */
+  urn?: UrnLike;
+}
+
+/**
+ * Easy object type
+ * */
 export type Obj = object & {};
+
+/**
+ * Easy array type
+ *
+ * Generics:
+ * - T: type of item
+ * */
 export type Arr<T = unknown> = Array<T>;
+
+/**
+ * Easy record type
+ *
+ * Generics:
+ * - T: type of item
+ * */
 export type Rec<T = unknown> = Record<KeyValue, T>;
 
+/**
+ * Returns type of method
+ *
+ * Generics:
+ * - T: type of object
+ * - M: method name
+ * */
 export type TypeOfMethod<T, M extends keyof T> = T[M] extends Function ? T[M] : never;
+
+/**
+ * Returns type of function
+ *
+ * Generics:
+ * - F: type of function
+ * - R: return of function
+ * */
 export type TypeOfFnc<F extends Fnc> = F extends (...args: Arr) => infer R ? R : never;
+
+/**
+ * Returns type of async function
+ *
+ * Generics:
+ * - F: type of function
+ * - R: return of function
+ * */
 export type TypeOfAsync<F extends Async> = TypeOfPromise<TypeOfFnc<F>>;
+
+/**
+ * Returns type of promise
+ *
+ * Generics:
+ * - P: type of promise
+ * - R: return of promise
+ * */
 export type TypeOfPromise<P> = P extends Promise<infer R> ? R : P;
 
 /**
@@ -141,35 +446,136 @@ export type Serialized<T> = { [P in keyof T]: T[P] };
  * */
 export type Mutable<A> = { -readonly [K in keyof A]: A[K] };
 
+/**
+ * Build keyof
+ * */
 export type KeyOf<T> = keyof T;
+
+/**
+ * Build array of keyof
+ * */
 export type Keys<T> = Array<keyof T>;
+
+/**
+ * Build value of
+ * */
 export type ValueOf<T> = T[KeyOf<T>];
+
+/**
+ * Build array of value of
+ * */
 export type Values<T> = Array<T[KeyOf<T>]>;
+
+/**
+ * One or more
+ * */
 export type OneOrMore<T> = T | Array<T>;
+
+/**
+ * Set or more
+ * */
 export type SetOrMore<T> = T | Set<T>;
 
+/**
+ * List members by given type as `literal`
+ *
+ * Generics:
+ * - T: object
+ * - I: expected type
+ * */
 export type IgnoreFieldsByType<T, I> = {
   [K in keyof T]: T[K] extends I ? K : never;
 }[keyof T];
+
+/**
+ * List replaced types of interface
+ *
+ * Generics:
+ * - T: object
+ * - O: old/replaced type
+ * - N: new/replacing type
+ * */
 export type ReplaceType<T, O, N> = {
   [P in keyof T]: T[P] extends O ? N : T[P];
 };
-export type SameType<A, T> = {
-  [K in keyof A]: T;
+
+/**
+ * Build same member types
+ *
+ * Generics:
+ * - T: interface
+ * - M: member type
+ * */
+export type SameType<T, M> = {
+  [K in keyof T]: M;
 };
 
-export type PickByType<T, I> = {
-  [K in keyof T]: T[K] extends I ? K : never;
+/**
+ * Pick members for only given types
+ *
+ * Generics:
+ * - T: interface
+ * - M: picked member type
+ * */
+export type PickByType<T, M> = {
+  [K in keyof T]: T[K] extends M ? K : never;
 };
-export type PickKeyByType<T, I> = PickByType<T, I>[keyof T];
 
-export type OmitByType<T, I> = {
-  [K in keyof T]: T[K] extends I ? never : K;
+/**
+ * Pick members for only given types as `literal`
+ *
+ * Generics:
+ * - T: interface
+ * - M: picked member type
+ * */
+export type PickKeyByType<T, M> = PickByType<T, M>[keyof T];
+
+/**
+ * Omit members for only given types
+ *
+ * Generics:
+ * - T: interface
+ * - M: omitted member type
+ * */
+export type OmitByType<T, M> = {
+  [K in keyof T]: T[K] extends M ? never : K;
 };
-export type OmitKeysByType<T, I> = OmitByType<T, I>[keyof T];
+
+/**
+ * Omit members for only given types as `literal`
+ *
+ * Generics:
+ * - T: interface
+ * - M: omit member type
+ * */
+export type OmitKeysByType<T, M> = OmitByType<T, M>[keyof T];
+
+/**
+ * Value or callback
+ * - it can be expected type
+ * - it can be a function returns expected type
+ * - it can be a async function returns expected type
+ *
+ * Generics:
+ * - T: expected type
+ * */
 export type ValueOrCallback<T> = T | ValueCallback<T> | ValueCallbackAsync<T>;
-export type ValueCallback<T> = () => T;
-export type ValueCallbackAsync<T> = () => Promise<T>;
+
+/**
+ * A callback return expected type
+ *
+ * Generics:
+ * - T: expected type
+ * */
+export type ValueCallback<T> = (...args: Array<unknown>) => T;
+
+/**
+ * An async callback return expected type
+ *
+ * Generics:
+ * - T: expected type
+ * */
+export type ValueCallbackAsync<T> = (...args: Array<unknown>) => Promise<T>;
 
 export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
   ? {
@@ -221,19 +627,13 @@ export interface ShiftFlat<D> {
   get $flat(): D;
 }
 
-/**
- * Useful interface which provides initialization state for instances
- * */
-export interface InitLike {
-  /**
-   * Initializes the instance
-   * */
-  $init(...args: Arr): void;
-}
-
 // endregion shift
 
 // region json
+/**
+ * Stringified json
+ * - T generics is use for only information
+ * */
 export type JsonText<T = unknown> = string;
 /**
  * JSON Object, record of `JsonValue`
@@ -303,45 +703,163 @@ export type ListPredicate<T = unknown> = (value: T, index?: number, arr?: Array<
 // endregion list
 
 // region logger
+/**
+ * Log levels
+ * */
 export type LogLevel = "debug" | "trace" | "info" | "warn" | "error" | "fatal";
+
+/**
+ * Logger interface
+ * */
 export interface Logger extends ShiftSecure<LoggerSecure> {
+  /**
+   * Debug log
+   *
+   * @param {string} message
+   * @param {Opt} params
+   * */
   debug(message: string, params?: any | Opt): void;
 
+  /**
+   * Debug log
+   *
+   * @param {Error} error
+   * @param {Opt} params
+   * */
   debug(error: Error, params?: any | Opt): void;
 
+  /**
+   * Debug log
+   *
+   * @param {any} whatever
+   * @param {Opt} params
+   * */
   debug(whatever: any, params?: any | Opt): void;
 
+  /**
+   * Trace log
+   *
+   * @param {string} message
+   * @param {Opt} params
+   * */
   trace(message: string, params?: any | Opt): void;
 
+  /**
+   * Trace log
+   *
+   * @param {Error} error
+   * @param {Opt} params
+   * */
   trace(error: Error, params?: any | Opt): void;
 
+  /**
+   * Trace log
+   *
+   * @param {any} whatever
+   * @param {Opt} params
+   * */
   trace(whatever: any, params?: any | Opt): void;
 
+  /**
+   * Info log
+   *
+   * @param {string} message
+   * @param {Opt} params
+   * */
   info(message: string, params?: any | Opt): void;
 
+  /**
+   * Info log
+   *
+   * @param {Error} error
+   * @param {Opt} params
+   * */
   info(error: Error, params?: any | Opt): void;
 
+  /**
+   * Info log
+   *
+   * @param {any} whatever
+   * @param {Opt} params
+   * */
   info(whatever: any, params?: any | Opt): void;
 
+  /**
+   * Warning log
+   *
+   * @param {string} message
+   * @param {Opt} params
+   * */
   warn(message: string, params?: any | Opt): void;
 
+  /**
+   * Warning log
+   *
+   * @param {Error} error
+   * @param {Opt} params
+   * */
   warn(error: Error, params?: any | Opt): void;
 
+  /**
+   * Warning log
+   *
+   * @param {any} whatever
+   * @param {Opt} params
+   * */
   warn(whatever: any, params?: any | Opt): void;
 
+  /**
+   * Error log
+   *
+   * @param {string} message
+   * @param {Opt} params
+   * */
   error(message: string, params?: any | Opt): void;
 
+  /**
+   * Error log
+   *
+   * @param {Error} error
+   * @param {Opt} params
+   * */
   error(error: Error, params?: any | Opt): void;
 
+  /**
+   * Error log
+   *
+   * @param {any} whatever
+   * @param {Opt} params
+   * */
   error(whatever: any, params?: any | Opt): void;
 
+  /**
+   * Fatal log
+   *
+   * @param {string} message
+   * @param {Opt} params
+   * */
   fatal(message: string, params?: any | Opt): void;
 
+  /**
+   * Fatal log
+   *
+   * @param {Error} error
+   * @param {Opt} params
+   * */
   fatal(error: Error, params?: any | Opt): void;
 
+  /**
+   * Fatal log
+   *
+   * @param {any} whatever
+   * @param {Opt} params
+   * */
   fatal(whatever: any, params?: any | Opt): void;
 }
 
+/**
+ * Logger secure interface
+ * */
 export interface LoggerSecure extends ShiftMain<Logger> {
   /**
    * Return name of logger
@@ -365,32 +883,114 @@ export interface LoggerSecure extends ShiftMain<Logger> {
   $refreshLevels(level: LogLevel): void;
 }
 
+/**
+ * Log item
+ * */
 export interface LogItem {
+  /**
+   * Log level
+   * */
   level: LogLevel;
+
+  /**
+   * Where, holder
+   * */
   where?: string;
+
+  /**
+   * Context
+   * */
   ctx?: unknown;
+
+  /**
+   * Log time
+   * */
   now: string;
+
+  /**
+   * Message or error
+   * */
   message: string | Error;
+
+  /**
+   * Params, raw
+   * */
   params?: Opt;
+
+  /**
+   * Params, flatten
+   * */
   paramStr?: string;
 }
 
-export type LocalColorLevel = [boolean, string, string]; // bold, regular, light
+/**
+ * Color Level tuple
+ * - 0: bold
+ * - 1: regular
+ * - 2: light
+ * */
+export type LocalColorLevel = [boolean, string, string];
+
+/**
+ * Color interface
+ * */
 export interface LocalColorLike {
+  /**
+   * Bold color
+   * */
   bold: string;
+
+  /**
+   * Normal color
+   * */
   normal: string;
+
+  /**
+   * End color
+   * */
   end: string;
+
+  /**
+   * Param color
+   * */
   param: string;
+
+  /**
+   * Log levels
+   * */
   levels: Record<LogLevel, LocalColorLevel>;
 }
 
+/**
+ * Log formatter lambda
+ *
+ * @param {LogItem} item
+ * */
 export type LogFormatterLambda = (item: LogItem) => void;
+
+/**
+ * Log styler lambda
+ *
+ * @param {LogItem} item
+ * */
 export type LogStylerLambda = (item: LogItem) => string;
 
+/**
+ * Logger instance creator
+ * */
 export interface LoggerInstanceCtor {
+  /**
+   * Constructor
+   *
+   * @param {string} name
+   * @return {Logger}
+   * */
   new (name: string): Logger;
 }
 
+/**
+ * Log common interface
+ * */
 export interface LogCommonLike {
   /**
    * Create new logger with class name
@@ -444,30 +1044,91 @@ export interface LogCommonLike {
    * */
   setContextFinder(fn: ContextFinderLambda): void;
 
+  /**
+   * Start to consume log items
+   * */
   initConsume(): void;
 
+  /**
+   * Emit/trigger to log
+   *
+   * @param {LogLevel} level
+   * @param {string} where
+   * @param {any} message
+   * @param {Opt} params
+   * */
   emitLog(level: LogLevel, where: string, message: any, params?: any | Opt): void;
 }
 
 // endregion logger
 
 // region predictor
+/**
+ * Predictor modes
+ * @enum
+ * */
 export type PredictorMode = "eager" | "lazy" | "failed" | "conflicted";
+
+/**
+ * Predictor stages
+ * @enum
+ * */
 export type PredictorStage = "persistent" | "fqn-waiting" | "loading-waiting";
 
+/**
+ * Predictor build options
+ * */
 export interface PredictorBuildOpt {
+  /**
+   * Anonymous name
+   * */
   anonymousName?: string;
 }
 
+/**
+ * Predictor repository interface
+ * */
 export interface PredictorRepo<L extends PredictorItem<T>, T> {
-  targets: Map<T, L>; // target, item
-  fullNames: Map<string, L>; // fullName, item
-  basicNames: Map<string, L>; // basicName, item
-  aliases: Map<string, string>; // alias, fullName
-  pendingFqn: Map<string, L>; // basicName, item
-  pendingLazy: Map<string, L>; // basicName, item
+  /**
+   * Target map
+   * - as: <target, item>
+   * */
+  targets: Map<T, L>;
+
+  /**
+   * Full name map
+   * - as: <fullName, item>
+   * */
+  fullNames: Map<string, L>;
+
+  /**
+   * Basic name map
+   * - as: <basicName, item>
+   * */
+  basicNames: Map<string, L>;
+
+  /**
+   * Alias map
+   * - as: <alias, fullName>
+   * */
+  aliases: Map<string, string>;
+
+  /**
+   * Pending fqn map
+   * - as: <basicName, item>
+   * */
+  pendingFqn: Map<string, L>;
+
+  /**
+   * Pending lazy map
+   * - as: <basicName, item>
+   * */
+  pendingLazy: Map<string, L>;
 }
 
+/**
+ * Predictor item
+ * */
 export interface PredictorItem<T> extends PredictorOpt<T> {
   /**
    * Full name of target (PCK)
@@ -484,9 +1145,15 @@ export interface PredictorItem<T> extends PredictorOpt<T> {
    * */
   stage: PredictorStage;
 
+  /**
+   * Load target
+   * */
   load(): Promise<void>;
 }
 
+/**
+ * Predictor option interface
+ * */
 export interface PredictorOpt<T> {
   /**
    * Name of target
@@ -514,6 +1181,9 @@ export interface PredictorOpt<T> {
   pck?: string;
 }
 
+/**
+ * Predictor interface
+ * */
 export interface PredictorLike<L extends PredictorItem<T>, T, O extends PredictorOpt<T>> {
   /**
    * Define an predictor as eager
@@ -611,7 +1281,7 @@ export interface PredictorLike<L extends PredictorItem<T>, T, O extends Predicto
 
 // region error
 /**
- * {@link LeyyoError}
+ * Leyyo error creator
  * */
 export interface LeyyoErrorCtor {
   /**
@@ -643,6 +1313,7 @@ export interface LeyyoErrorCtor {
 }
 
 /**
+ * Developer error creator
  * {@link DeveloperError}
  * */
 export interface DeveloperErrorCtor {
@@ -656,6 +1327,9 @@ export interface DeveloperErrorCtor {
   new (message: string, issue?: string, where?: string): DeveloperErrorLike;
 }
 
+/**
+ * Error flags
+ * */
 export type LeyyoErrorTag = "printed" | "sent";
 
 /**
@@ -678,6 +1352,9 @@ export interface ErrorStackLine {
   pos?: string;
 }
 
+/**
+ * Developer error interface
+ * */
 export interface DeveloperErrorLike extends Error {
   /**
    * Formatted stack trace
@@ -692,6 +1369,9 @@ export interface DeveloperErrorLike extends Error {
   log(err?: Error): void;
 }
 
+/**
+ * Error interface
+ * */
 export interface LeyyoErrorLike extends Error, ShiftSecure<LeyyoErrorSecure> {
   /**
    * Parameters for error
@@ -801,7 +1481,14 @@ export interface LeyyoErrorLike extends Error, ShiftSecure<LeyyoErrorSecure> {
   logTrace(logger?: Logger): void;
 }
 
+/**
+ * Error secure interface
+ * */
 export interface LeyyoErrorSecure extends ShiftMain<LeyyoErrorLike> {
+  /**
+   * Get where
+   * @return {string}
+   * */
   get $where(): string;
 
   /**
@@ -843,6 +1530,9 @@ export interface LeyyoErrorSecure extends ShiftMain<LeyyoErrorLike> {
   $copyProperties(source: Error): void;
 }
 
+/**
+ * Error predictor config
+ * */
 export interface ErrorItemConfig {
   /**
    * Default error message
@@ -860,10 +1550,19 @@ export interface ErrorItemConfig {
   i18n?: unknown; // todo
 }
 
+/**
+ * Error predictor pool option
+ * */
 export type ErrorPoolOpt = PredictorOpt<ClassLike> & ErrorItemConfig;
 
+/**
+ * Error predictor item
+ * */
 export type ErrorPoolItem = PredictorItem<ClassLike> & ErrorPoolOpt;
 
+/**
+ * Error predictor pool interface
+ * */
 export interface ErrorPoolLike extends PredictorLike<
   PredictorItem<ClassLike>,
   ClassLike,
@@ -881,15 +1580,28 @@ export interface ErrorPoolLike extends PredictorLike<
  * Bare omit error without any property
  * */
 export type OmitError = Omit<Error, "name" | "message" | "stack">;
+
+/**
+ * Error creator
+ * */
 export interface ErrorCtor extends Fnc {
+  /**
+   * Constructor
+   * */
   new (...args: Array<unknown>): OmitError;
 }
 
+/**
+ * Error interface
+ * */
 export interface ErrorObject {
   name: string;
   message: string;
 }
 
+/**
+ * Error common interface
+ * */
 export interface ErrorCommonLike {
   /**
    * Config error class
@@ -957,7 +1669,12 @@ export interface ErrorCommonLike {
    * */
   forcedCast<E extends LeyyoErrorLike>(clazz: ClassLike, e: Error, params?: Opt): E;
 
-  /** @inheritDoc */
+  /**
+   * Add known package to shorten stacktrace paths
+   *
+   * @param {string} packageName
+   * @param {string} shortName
+   * */
   addKnownPackage(packageName: string, shortName: string): void;
 
   /**
@@ -1027,9 +1744,19 @@ export interface ErrorCommonLike {
 // endregion error
 
 // region enum
+/**
+ * Enum map
+ * */
 export type Enum<E extends KeyValue = KeyValue> = { [K in E]: KeyValue };
+
+/**
+ * Enum alteration map
+ * */
 export type EnumAlt<E extends KeyValue = KeyValue> = Rec<E>;
 
+/**
+ * Enum predictor config
+ * */
 export interface EnumItemConfig {
   /**
    * Enum name
@@ -1051,6 +1778,10 @@ export interface EnumItemConfig {
    * */
   aliases?: Array<string>;
 }
+
+/**
+ * Enum predictor pool options
+ * */
 export interface EnumPoolOpt extends PredictorOpt<Enum>, EnumItemConfig {
   /**
    * Alternative map path
@@ -1058,9 +1789,19 @@ export interface EnumPoolOpt extends PredictorOpt<Enum>, EnumItemConfig {
   lazyAlt?: Promise<EnumAlt>;
 }
 
+/**
+ * Enum predictor item
+ * */
 export type EnumPoolItem = PredictorItem<Enum> & EnumPoolOpt;
+
+/**
+ * Enum non-functional members
+ * */
 export type EnumNonFunctional<T> = T extends Fnc ? never : T;
 
+/**
+ * Enum predictor pool interface
+ * */
 export interface EnumPoolLike extends PredictorLike<PredictorItem<Enum>, Enum, EnumPoolOpt> {
   /**
    * Config enum
@@ -1101,13 +1842,30 @@ export interface EnumPoolLike extends PredictorLike<PredictorItem<Enum>, Enum, E
    * */
   toLiteral<E>(enm: E): ReadonlyArray<EnumNonFunctional<E[keyof E]>>;
 
+  /**
+   * Merge enums
+   *
+   * @param {Array<Enum>} maps
+   * @return {Enum}
+   * */
   merge<N>(...maps: Enum[]): N;
 }
 // endregion enum
 
 // region literal
+/**
+ * Literal array
+ * */
 export type Literal<E extends KeyValue = KeyValue> = Array<E> | ReadonlyArray<E>;
+
+/**
+ * Literal alteration map
+ * */
 export type LiteralAlt<E extends KeyValue = KeyValue> = Rec<E>;
+
+/**
+ * Literal predictor config
+ * */
 export interface LiteralItemConfig {
   /**
    * Literal name
@@ -1130,6 +1888,9 @@ export interface LiteralItemConfig {
   aliases?: Array<string>;
 }
 
+/**
+ * Literal predictor pool options
+ * */
 export interface LiteralPoolOpt extends PredictorOpt<Literal>, LiteralItemConfig {
   /**
    * Alternative map path
@@ -1137,8 +1898,14 @@ export interface LiteralPoolOpt extends PredictorOpt<Literal>, LiteralItemConfig
   lazyAlt?: Promise<LiteralAlt>;
 }
 
+/**
+ * Literal predictor pool item
+ * */
 export type LiteralPoolItem = PredictorItem<Literal> & LiteralPoolOpt;
 
+/**
+ * Literal predictor pool interface
+ * */
 export interface LiteralPoolLike extends PredictorLike<
   PredictorItem<Literal>,
   Literal,
@@ -1277,13 +2044,172 @@ export interface EventCommonLike<T extends string> {
  * */
 export type LifecycleStage =
   | "initialize"
-  | "print"
+  | "export"
   | "validate"
   | "process"
   | "clear"
   | "ota-before"
   | "ota-after"
   | "kill";
+
+/**
+ * Lifecycle initialize interface
+ * */
+export interface OnInit {
+  /**
+   * It will be called when `initialize` stage of lifecycle
+   * */
+  onInit(...args: Arr): void;
+}
+/**
+ * Lifecycle initialize interface
+ * */
+export interface OnInitAsync {
+  /**
+   * It will be called when `initialize` stage of lifecycle
+   * */
+  onInitAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle export interface
+ * */
+export interface OnExport {
+  /**
+   * It will be called when `export` stage of lifecycle
+   * */
+  onExport(...args: Arr): void;
+}
+
+/**
+ * Lifecycle export interface
+ * */
+export interface OnExportAsync {
+  /**
+   * It will be called when `export` stage of lifecycle
+   * */
+  onExportAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle validate interface
+ * */
+export interface OnValidate {
+  /**
+   * It will be called when `validate` stage of lifecycle
+   * */
+  onValidate(...args: Arr): void;
+}
+
+/**
+ * Lifecycle validate interface
+ * */
+export interface OnValidateAsync {
+  /**
+   * It will be called when `validate` stage of lifecycle
+   * */
+  onValidateAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle process interface
+ * */
+export interface OnProcess {
+  /**
+   * It will be called when `process` stage of lifecycle
+   * */
+  onProcess(...args: Arr): void;
+}
+
+/**
+ * Lifecycle process interface
+ * */
+export interface OnProcessAsync {
+  /**
+   * It will be called when `process` stage of lifecycle
+   * */
+  onProcessAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle clear interface
+ * */
+export interface OnClear {
+  /**
+   * It will be called when `clear` stage of lifecycle
+   * */
+  onClear(...args: Arr): void;
+}
+
+/**
+ * Lifecycle clear interface
+ * */
+export interface OnClearAsync {
+  /**
+   * It will be called when `clear` stage of lifecycle
+   * */
+  onClearAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle ota-before interface
+ * */
+export interface OnOtaBefore {
+  /**
+   * It will be called when `ota-before` stage of lifecycle
+   * */
+  onOtaBefore(...args: Arr): void;
+}
+
+/**
+ * Lifecycle ota-before interface
+ * */
+export interface OnOtaBeforeAsync {
+  /**
+   * It will be called when `ota-before` stage of lifecycle
+   * */
+  onOtaBeforeAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle ota-after interface
+ * */
+export interface OnOtaAfter {
+  /**
+   * It will be called when `ota-after` stage of lifecycle
+   * */
+  onOtaAfter(...args: Arr): void;
+}
+
+/**
+ * Lifecycle ota-after interface
+ * */
+export interface OnOtaAfterAsync {
+  /**
+   * It will be called when `ota-after` stage of lifecycle
+   * */
+  onOtaAfterAsync(...args: Arr): Promise<void>;
+}
+
+/**
+ * Lifecycle kill interface
+ * */
+export interface OnKill {
+  /**
+   * It will be called when `kill` stage of lifecycle
+   * */
+  onKill(...args: Arr): void;
+}
+
+/**
+ * Lifecycle kill interface
+ * */
+export interface OnKillAsync {
+  /**
+   * It will be called when `kill` stage of lifecycle
+   * */
+  onKillAsync(...args: Arr): Promise<void>;
+}
 
 /**
  * Lifecycle tuple as [name, callbacks]
@@ -1332,8 +2258,15 @@ export interface LifecycleCommonLike {
 // endregion lifecycle
 
 // region repo
+/**
+ * Repository types
+ * @enum
+ * */
 export type RepoDataType = "array" | "list" | "map" | "set";
 
+/**
+ * Repository common interface
+ * */
 export interface RepoCommonLike {
   // region general
 
@@ -1527,24 +2460,61 @@ export interface RepoCommonLike {
   newSet<V>(name: string, volatile?: boolean): Set<V>;
   // endregion new-collection
 
+  /**
+   * Initialize
+   * */
   init(): void;
 }
 
 // endregion repo
 
 // region context
+/**
+ * Context finder lambda
+ * @param {Array<any>} p
+ * */
 export type ContextFinderLambda = <T = unknown>(...p: Array<unknown>) => T;
 // endregion context
 
 // region fqn
+/**
+ * FQN target
+ * */
 export type FqnTarget = ClassLike | Fnc | Obj | Enum | Literal;
+
+/**
+ * FQN set lambda
+ *
+ * @param {string} full
+ * */
 export type FqnOnSetLambda = (full: string) => void;
 // endregion fqn
 
 // region predictor
+/**
+ * Predictor item lambda
+ *
+ * @return {PredictorItem}
+ * */
 export type PredictorItemLambda<T> = () => PredictorItem<T>;
+
+/**
+ * Predictor dependency lambda
+ *
+ * @return {Promise<PredictorViewerLike>}
+ * */
 export type PredictorDependencyLambda = () => Promise<PredictorViewerLike>;
+
+/**
+ * Predictor creator
+ * */
 export interface PredictorDefinerCtor {
+  /**
+   * Constructor
+   *
+   * @param {string} pck
+   * @return {PredictorDefinerLike}
+   * */
   new (pck: string): PredictorDefinerLike;
 }
 
@@ -1634,11 +2604,39 @@ export interface PredictorViewerLike {
 // endregion predictor
 
 // region lazy
+/**
+ * Lazy load tuple
+ * as: [loaded, total]
+ * */
 export type LazyLoadTuple = [number, number];
+
+/**
+ * Lazy possible types
+ * */
 export type LazyItem = ClassLike | Fnc | Enum | Literal | Obj;
+
+/**
+ * Lazy item lambda
+ * @return {Promise<LazyItem>}
+ * */
 export type LazyItemLambda = () => Promise<LazyItem>;
+
+/**
+ * Lazy dependency lambda
+ * @return {Promise<LazyViewerLike>}
+ * */
 export type LazyDependencyLambda = () => Promise<LazyViewerLike>;
+
+/**
+ * Lazy definer creator
+ * */
 export interface LazyDefinerCtor {
+  /**
+   * Constructor
+   *
+   * @param {string} pck
+   * @return {LazyDefinerLike}
+   * */
   new (pck: string): LazyDefinerLike;
 }
 
@@ -1728,22 +2726,12 @@ export interface LazyViewerLike {
 
 // endregion lazy
 
-// region loader
-export type LoaderLike = Array<LoaderItem>;
-export type LeyyoStampLambda = () => LoaderItem;
-export type LeyyoStampEmpty = () => symbol;
-export type LoaderItem =
-  | ClassLike
-  | Fnc
-  | Enum
-  | Literal
-  | Obj
-  | LeyyoStampLambda
-  | LeyyoStampEmpty
-  | LoaderLike;
-// endregion loader
-
 // region option
+/**
+ * Option reasons
+ *
+ * @enum
+ * */
 export type OptReason =
   | "invalid"
   | "unexpected"
@@ -1753,39 +2741,122 @@ export type OptReason =
   | "empty"
   | "conflicted";
 
+/**
+ * Option interface
+ * */
 export interface Opt<R extends string = string> extends Obj {
+  /**
+   * Issue
+   * */
   issue?: SetOrMore<OptReason | R | string>;
+
+  /**
+   * Message
+   * */
   message?: SetOrMore<string>;
+
+  /**
+   * Field
+   * */
   field?: string;
+
+  /**
+   * Params
+   * */
   param?: SetOrMore<unknown>;
+
+  /**
+   * Where
+   * */
   where?: SetOrMore<string>;
+
+  /**
+   * Value
+   * */
   value?: SetOrMore<unknown>;
+
+  /**
+   * Expected types
+   * */
   expected?: SetOrMore<ExtendedType | string> | OneOrMore<ExtendedType | string>;
+
+  /**
+   * Type
+   * */
   type?: SetOrMore<ExtendedType | string>;
+
+  /**
+   * Method
+   * */
   method?: SetOrMore<string>;
+
+  /**
+   * Case
+   * */
   case?: SetOrMore<unknown>;
-  desc?: SetOrMore<Describable | string>;
-  error?: SetOrMore<{ name: string; message: string }>;
+
+  /**
+   * Description
+   * */
+  desc?: SetOrMore<HasDescription | string>;
+
+  /**
+   * Error
+   * */
+  error?: SetOrMore<OmitError>;
+
+  /**
+   * Assert
+   * */
   assert?: SetOrMore<string>;
 
   [k: string]: unknown;
 }
 
+/**
+ * Options lambda
+ * @return {Opt}
+ * */
 export type OptFn<O extends Opt = Opt> = () => O;
+
+/**
+ * Options any
+ * */
 export type OptAny<O extends Opt = Opt> = O | OptFn<O>;
 // endregion option
 
 // region exporter
+/**
+ * Exporter data
+ * as <component, value>
+ * */
 export type ExporterData = Record<string, ExporterValue>;
+
+/**
+ * Exporter value
+ * as <field, value>
+ * */
 export type ExporterValue = Record<string, unknown>;
 
+/**
+ * Exporter depot interface
+ * */
 export interface ExporterDepot {
+  /**
+   * Add info into exporter
+   *
+   * @param {string} name - component
+   * @param {ExporterValue} value
+   * */
   add(name: string, value: ExporterValue): void;
 }
 
 // endregion exporter
 
 // region config
+/**
+ * Config interface
+ * */
 export interface LeyyoConfig {
   [pck: string]: Record<string, unknown>;
 }
@@ -2067,22 +3138,38 @@ export type I18nBase<L extends LangLike = LangLike, V = string> = {
  * */
 export type CanBeI18N<L extends LangLike = LangLike, V = string> = string | I18nBase<L, V>;
 
+/**
+ * Search doc interface
+ * */
 export type SearchDoc<L extends LangLike = LangLike> = {
   [lang in L]: SearchItem;
 };
 
+/**
+ * Search item interface
+ * */
 export type SearchItem<L extends string = DefSearchLevel> = {
   [level in L]?: KeywordLike[];
 };
+
+/**
+ * Search levels
+ * */
 export type DefSearchLevel = "high" | "mid" | "low";
 // endregion entity
 
 // region enum-lit
+/**
+ * Enum raw interface
+ * */
 export interface EnumLitRaw {
+  /**
+   * Name
+   * */
   n?: string;
 }
 /**
- * Language handler interface
+ * Enum  handler interface
  *
  * Generics:
  * - 0-E: enum

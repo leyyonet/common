@@ -13,7 +13,7 @@ const where = `${PCK}.nameFn`;
 let _leyyo: LeyyoLike;
 
 /**
- * Set anonymous name to a function
+ * Set anonymous name to a function or class
  *
  * @param {(Fnc|ClassLike)} target - function or class
  * @param {string?} prefix - option prefix
@@ -36,8 +36,8 @@ export function setAnonymousName(target: Fnc | ClassLike, prefix?: string): stri
         _leyyo = $$_get_leyyo_fn();
       }
       throw new _leyyo.developerError(
-        `Invalid anonymous name part [${prefix}]`,
-        testCase(PCK, "anonymous", "invalid-part"),
+        `Invalid prefix [${prefix}]`,
+        testCase(PCK, "anonymous", "invalid-prefix"),
         where,
       );
     }
@@ -77,7 +77,7 @@ function _setName(target: Fnc | ClassLike, name: string, checkAnonymous: boolean
   }
   if (typeof target !== "function") {
     throw new _leyyo.developerError(
-      `Invalid name [${name}]`,
+      `Invalid target [${name}]`,
       testCase(PCK, "anonymous", "invalid-target"),
       where,
     );

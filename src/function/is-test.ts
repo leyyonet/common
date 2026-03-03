@@ -2,7 +2,7 @@ import { $$_isTest } from "./internal.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**
- * Is test?
+ * Is current process test?
  *
  * @return {boolean}
  * */
