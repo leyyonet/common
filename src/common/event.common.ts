@@ -1,5 +1,5 @@
 import { PCK } from "../internal.js";
-import { Fnc, LeyyoLike, EventCommonLike, EventType } from "../type.js";
+import { EventCommonLike, EventType, Fnc, LeyyoLike } from "../type.js";
 import { isText, testCase } from "../function/index.js";
 import EventEmitter from "node:events";
 
@@ -21,6 +21,50 @@ export class EventCommon<T extends string> implements EventCommonLike<T> {
     this._waitingEvents = this.leyyo.repoCommon.newMap(`${where}.waitingEvents`);
     this._removedEvents = this.leyyo.repoCommon.newMap(`${where}.removedEvents`);
     this._deactivatedEvents = this.leyyo.repoCommon.newSet(`${where}.deactivatedEvents`);
+  }
+  /** @inheritDoc */
+  get emitter(): EventEmitter {
+    return this._emitter;
+  }
+
+  /** @inheritDoc */
+  wait<R = unknown>(event: T, timeoutMs?: number): Promise<R> {
+    if (!isText(event)) {
+      throw new this.leyyo.developerError(
+        "Invalid event name",
+        testCase(PCK, "event", "invalid-name"),
+        where,
+      );
+    }
+    return new Promise((resolve, reject) => {
+      const handler = (value: R) => {
+        cleanup();
+        resolve(value);
+      };
+      let timer: NodeJS.Timeout | undefined;
+
+      const cleanup = () => {
+        this._emitter.removeListener(event, handler);
+        if (timer) {
+          clearTimeout(timer);
+        }
+      };
+
+      this._emitter.once(event, handler);
+
+      if (timeoutMs && Number.isInteger(timeoutMs)) {
+        timer = setTimeout(() => {
+          cleanup();
+          const err = new this.leyyo.developerError(
+            `Event "${event}" timeout after ${timeoutMs}ms`,
+            testCase(PCK, "xxx"),
+            where,
+          );
+
+          reject(err);
+        }, timeoutMs);
+      }
+    });
   }
 
   /** @inheritDoc */

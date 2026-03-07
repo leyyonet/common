@@ -1,13 +1,17 @@
 import {
+  ClassLike,
   ErrorStackLine,
   LeyyoErrorLike,
   LeyyoErrorSecure,
   LeyyoErrorTag,
+  LeyyoLike,
   Logger,
   LogLevel,
+  Obj,
+  OneOrMore,
   Opt,
+  StrKey,
 } from "../type.js";
-import { ClassLike, LeyyoLike, Obj, OneOrMore, StrKey } from "../type.js";
 import {
   getFqn,
   getSymbol,

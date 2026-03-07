@@ -1,6 +1,5 @@
 import { isObj } from "./is-obj.js";
-import { Opt } from "../type.js";
-import { KeyValue } from "../type.js";
+import { KeyValue, Opt } from "../type.js";
 
 /**
  * Add field into options

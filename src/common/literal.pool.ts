@@ -10,12 +10,12 @@ import {
   testCase,
 } from "../function/index.js";
 import {
+  LeyyoLike,
   Literal,
   LiteralItemConfig,
   LiteralPoolItem,
   LiteralPoolLike,
   LiteralPoolOpt,
-  LeyyoLike,
 } from "../type.js";
 import { PCK } from "../internal.js";
 import { KEY_LITERAL_ALT, KEY_LITERAL_I18N, KEY_LITERAL_NAME } from "../const.js";

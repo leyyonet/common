@@ -1,11 +1,11 @@
 import {
+  LazyLoadTuple,
+  LeyyoLike,
   PredictorDefinerLike,
   PredictorDependencyLambda,
+  PredictorItem,
   PredictorItemLambda,
   PredictorViewerLike,
-  LeyyoLike,
-  PredictorItem,
-  LazyLoadTuple,
 } from "../type.js";
 import { testCase } from "../function/index.js";
 import { PCK } from "../internal.js";

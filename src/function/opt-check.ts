@@ -1,5 +1,4 @@
-import { LeyyoLike } from "../type.js";
-import { Opt, OptFn } from "../type.js";
+import { LeyyoLike, Opt, OptFn } from "../type.js";
 import { $$_get_leyyo_fn } from "./internal.js";
 import { isObj } from "./is-obj.js";
 import { PCK } from "../internal.js";

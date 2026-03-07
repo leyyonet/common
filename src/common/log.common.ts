@@ -1,19 +1,19 @@
 import { PCK } from "../internal.js";
 import {
+  ClassLike,
   ContextFinderLambda,
+  Fnc,
+  FqnTarget,
+  LeyyoLike,
   LocalColorLike,
   LogCommonLike,
   LogFormatterLambda,
   Logger,
   LogItem,
-  LogStylerLambda,
   LogLevel,
-  FqnTarget,
-  Opt,
-  ClassLike,
-  Fnc,
-  LeyyoLike,
+  LogStylerLambda,
   Obj,
+  Opt,
 } from "../type.js";
 import {
   getFqn,

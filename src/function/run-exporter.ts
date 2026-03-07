@@ -1,6 +1,5 @@
 import { $$_get_leyyo_fn } from "./internal.js";
-import { LeyyoLike } from "../type.js";
-import { ExporterData, ExporterDepot, ExporterValue } from "../type.js";
+import { ExporterData, ExporterDepot, ExporterValue, LeyyoLike } from "../type.js";
 
 let _leyyo: LeyyoLike;
 

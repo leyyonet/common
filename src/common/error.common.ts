@@ -1,5 +1,15 @@
-import { ErrorCommonLike, Opt, ErrorCtor, ErrorItemConfig, ErrorObject } from "../type.js";
-import { ClassLike, LeyyoLike, ErrorStackLine, LeyyoErrorLike, LeyyoErrorSecure } from "../type.js";
+import {
+  ClassLike,
+  ErrorCommonLike,
+  ErrorCtor,
+  ErrorItemConfig,
+  ErrorObject,
+  ErrorStackLine,
+  LeyyoErrorLike,
+  LeyyoErrorSecure,
+  LeyyoLike,
+  Opt,
+} from "../type.js";
 import {
   getFqn,
   getSymbol,

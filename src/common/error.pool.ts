@@ -1,5 +1,5 @@
 import { Predictor } from "./predictor.js";
-import { ErrorPoolItem, ErrorPoolLike, ErrorPoolOpt, ClassLike, LeyyoLike } from "../type.js";
+import { ClassLike, ErrorPoolItem, ErrorPoolLike, ErrorPoolOpt, LeyyoLike } from "../type.js";
 import { isClass } from "../function/index.js";
 import {
   KEY_ERROR_DEFAULT_MESSAGE,
@@ -7,7 +7,6 @@ import {
   KEY_ERROR_I18N,
   KEY_FQN_PACKAGE,
 } from "../const.js";
-import { leyyo } from "../base/index.js";
 
 // noinspection JSUnusedGlobalSymbols
 /**

@@ -1,10 +1,10 @@
 import {
+  Fnc,
+  LeyyoLike,
   LifecycleCommonLike,
   LifecycleSortLambda,
   LifecycleStage,
   LifecycleTuple,
-  Fnc,
-  LeyyoLike,
 } from "../type.js";
 import { PCK } from "../internal.js";
 import { isText, testCase } from "../function/index.js";

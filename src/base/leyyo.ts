@@ -8,6 +8,7 @@ import {
   LiteralPool,
   LogCommon,
   RepoCommon,
+  SignalCommon,
 } from "../common/index.js";
 import { DeveloperError, LeyyoError } from "../error/index.js";
 import { LoggerInstance } from "./logger.instance.js";
@@ -20,6 +21,8 @@ import {
   ErrorCommonLike,
   ErrorPoolLike,
   EventCommonLike,
+  EventType,
+  LazyDefinerCtor,
   LeyyoErrorCtor,
   LeyyoLike,
   LifecycleCommonLike,
@@ -27,11 +30,9 @@ import {
   LogCommonLike,
   Logger,
   LoggerInstanceCtor,
-  RepoCommonLike,
-  EventType,
   PredictorDefinerCtor,
-  LazyDefinerLike,
-  LazyDefinerCtor,
+  RepoCommonLike,
+  SignalCommonLike,
 } from "../type.js";
 import { PredictorInstance } from "./predictor.instance.js";
 import { LazyInstance } from "./lazy.instance.js";
@@ -48,6 +49,7 @@ class Leyyo implements LeyyoLike {
   private readonly _deployCommon: DeployCommonLike;
   private readonly _enumPool: EnumPoolLike;
   private readonly _errorCommon: ErrorCommonLike;
+  private readonly _signalCommon: SignalCommonLike;
   private readonly _errorPool: ErrorPoolLike;
   private readonly _eventCommon: EventCommonLike<EventType>;
   private readonly _lifecycleCommon: LifecycleCommonLike;
@@ -80,6 +82,7 @@ class Leyyo implements LeyyoLike {
     // region instances
     this._repoCommon = new RepoCommon(this); // none
     this._errorCommon = new ErrorCommon(this); // none
+    this._signalCommon = new SignalCommon(this); // repo
     this._logCommon = new LogCommon(this); // repo
     this._eventCommon = new EventCommon(this); // repo
     this._deployCommon = new DeployCommon(this); // repo
@@ -182,6 +185,10 @@ class Leyyo implements LeyyoLike {
   /** @inheritDoc */
   get repoCommon(): RepoCommonLike {
     return this._repoCommon;
+  }
+
+  get signalCommon(): SignalCommonLike {
+    return this._signalCommon;
   }
   // endregion instances
 }

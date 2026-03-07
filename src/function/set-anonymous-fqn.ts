@@ -1,9 +1,8 @@
 import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS } from "../const.js";
-import { FqnTarget } from "../type.js";
+import { Fnc, FqnTarget } from "../type.js";
 import { triggerFqn } from "./trigger-fqn.js";
 import { setAnonymousName } from "./set-anonymous-name.js";
 import { isClass } from "./is-class.js";
-import { Fnc } from "../type.js";
 
 let _count = 0;
 

@@ -9,3 +9,4 @@ export * from "./literal.pool.js";
 export * from "./log.common.js";
 export * from "./predictor.js";
 export * from "./repo.common.js";
+export * from "./signal.common.js";

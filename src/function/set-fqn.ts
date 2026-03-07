@@ -1,11 +1,10 @@
-import { Fnc, LeyyoLike } from "../type.js";
+import { Fnc, FqnTarget, LeyyoLike } from "../type.js";
 import { PCK } from "../internal.js";
 import { $$_get_leyyo_fn } from "./internal.js";
 import { isClass } from "./is-class.js";
 import { isText } from "./is-text.js";
 import { testCase } from "./test-case.js";
 import { KEY_ENUM_NAME, KEY_FQN_NAME, KEY_LITERAL_NAME, VAL_FQN_ANONYMOUS } from "../const.js";
-import { FqnTarget } from "../type.js";
 import { triggerFqn } from "./trigger-fqn.js";
 import { setAnonymousName } from "./set-anonymous-name.js";
 import { getFqn } from "./get-fqn.js";

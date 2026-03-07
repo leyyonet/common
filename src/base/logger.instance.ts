@@ -1,7 +1,6 @@
-import { LeyyoLike } from "../type.js";
+import { LeyyoLike, Logger, LoggerSecure, LogLevel, Opt } from "../type.js";
 import { isText } from "../function/index.js";
 import { KEY_LEYYO_SECURE } from "../const.js";
-import { LogLevel, Opt, Logger, LoggerSecure } from "../type.js";
 
 // region property
 let _leyyo: LeyyoLike;

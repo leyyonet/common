@@ -1,4 +1,6 @@
 // region basic
+import EventEmitter from "node:events";
+
 /**
  * JS types
  * @enum
@@ -576,6 +578,38 @@ export type ValueCallback<T> = (...args: Array<unknown>) => T;
  * - T: expected type
  * */
 export type ValueCallbackAsync<T> = (...args: Array<unknown>) => Promise<T>;
+
+export type CamelToConstItem<S extends string> = S extends `${infer T}${infer U}`
+  ? U extends Uncapitalize<U>
+    ? `${Uppercase<T>}${CamelToConstItem<U>}`
+    : `${Uppercase<T>}_${CamelToConstItem<U>}`
+  : Uppercase<S>;
+export type CamelToConst<T> = {
+  [K in keyof T as CamelToConstItem<string & K>]: T[K];
+};
+
+type ConstToCamelItem<S extends string> = S extends `${infer T}_${infer U}`
+  ? `${Lowercase<T>}${Capitalize<ConstToCamelItem<U>>}`
+  : Lowercase<S>;
+export type ConstToCamel<T> = {
+  [K in keyof T as ConstToCamelItem<string & K>]: T[K];
+};
+
+type SnakeToCamelItem<S extends string> = S extends `${infer T}_${infer U}`
+  ? `${Lowercase<T>}${Capitalize<SnakeToCamelItem<U>>}`
+  : Lowercase<S>;
+export type SnakeToCamel<T> = {
+  [K in keyof T as SnakeToCamelItem<string & K>]: T[K];
+};
+
+type CamelToSnakeItem<S extends string> = S extends `${infer T}${infer U}`
+  ? U extends Uncapitalize<U>
+    ? `${Lowercase<T>}${CamelToSnakeItem<U>}`
+    : `${Lowercase<T>}_${CamelToSnakeItem<U>}`
+  : Lowercase<S>;
+export type CamelToSnake<T> = {
+  [K in keyof T as CamelToSnakeItem<string & K>]: T[K];
+};
 
 export type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
   ? {
@@ -1981,6 +2015,20 @@ export type EventType = "log" | "error:emit" | "context:set-finder";
  * */
 export interface EventCommonLike<T extends string> {
   /**
+   * Event emitter
+   * */
+  get emitter(): EventEmitter;
+
+  /**
+   * Wait for an event
+   *
+   * @param {string} event - event name
+   * @param {number?} timeoutMs - optional timeout
+   * @return {Promise}
+   * */
+  wait<R = unknown>(event: T, timeoutMs?: number): Promise<R>;
+
+  /**
    * Fork event common with different event types
    *
    * @return {EventCommonLike}
@@ -2037,6 +2085,44 @@ export interface EventCommonLike<T extends string> {
 }
 
 // endregion event
+
+// region signal
+export type SignalCallback<R = unknown> = (v: R) => void;
+/**
+ * Signal common interface
+ *
+ * Generics:
+ * - K: key type
+ * */
+export interface SignalCommonLike<K extends string = string> {
+  /**
+   * Fork signal common with different keys
+   *
+   * @return {SignalCommonLike}
+   * */
+  fork<K2 extends string>(): SignalCommonLike<K2>;
+
+  /**
+   * Wait async
+   *
+   * @param {string} key
+   * @return {Promise}
+   */
+  wait<R = unknown>(key: K): Promise<R>;
+
+  /**
+   * Call waiting callbacks by key
+   */
+  done<R = unknown>(key: K, value: R): void;
+
+  /**
+   * Check is done?
+   *
+   * @param {string} key
+   * @return {boolean}
+   */
+  isDone(key: K): boolean;
+}
 
 // region lifecycle
 /**
@@ -2944,6 +3030,11 @@ export interface LeyyoLike {
    * Repo common instance
    * */
   get repoCommon(): RepoCommonLike;
+
+  /**
+   * Signal common instance
+   * */
+  get signalCommon(): SignalCommonLike;
   // endregion instances
 }
 // endregion leyyo

@@ -1,6 +1,5 @@
 import { KEY_DEVELOPER_CASE, KEY_DEVELOPER_WHERE, KEY_LEYYO_SECURE } from "../const.js";
-import { LeyyoLike } from "../type.js";
-import { DeveloperErrorLike, ErrorStackLine } from "../type.js";
+import { DeveloperErrorLike, ErrorStackLine, LeyyoLike } from "../type.js";
 
 // region properties
 let _leyyo: LeyyoLike;

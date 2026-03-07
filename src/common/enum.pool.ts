@@ -6,6 +6,8 @@ import {
   EnumPoolItem,
   EnumPoolLike,
   EnumPoolOpt,
+  KeyValue,
+  LeyyoLike,
 } from "../type.js";
 import {
   getSymbol,
@@ -17,7 +19,6 @@ import {
   setSymbol,
   testCase,
 } from "../function/index.js";
-import { KeyValue, LeyyoLike } from "../type.js";
 import { PCK } from "../internal.js";
 import { KEY_ENUM_ALIAS, KEY_ENUM_ALT, KEY_ENUM_I18N, KEY_ENUM_NAME } from "../const.js";
 

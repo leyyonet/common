@@ -2,7 +2,6 @@
 import { setFqn } from "./function/index.js";
 import { $initLeyyo, PCK } from "./internal.js";
 import { leyyo, List } from "./base/index.js";
-import { LoggerInstance } from "./base/logger.instance.js";
 import { LazyInstance } from "./base/lazy.instance.js";
 import { PredictorInstance } from "./base/predictor.instance.js";
 
@@ -17,6 +16,7 @@ export const literalPool = leyyo.literalPool;
 export const lifecycleCommon = leyyo.lifecycleCommon;
 export const logCommon = leyyo.logCommon;
 export const repoCommon = leyyo.repoCommon;
+export const signalCommon = leyyo.signalCommon;
 
 setFqn(deployCommon.constructor, PCK);
 setFqn(enumPool.constructor, PCK);
@@ -27,6 +27,7 @@ setFqn(literalPool.constructor, PCK);
 setFqn(lifecycleCommon.constructor, PCK);
 setFqn(logCommon.constructor, PCK);
 setFqn(repoCommon.constructor, PCK);
+setFqn(signalCommon.constructor, PCK);
 setFqn(leyyo.loggerInstance, PCK);
 setFqn(LazyInstance, PCK);
 setFqn(PredictorInstance, PCK);
