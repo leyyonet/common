@@ -8,6 +8,8 @@
 /coverage/
 # idea setting file
 *.iml
+# leyyo temporary staged file
+.staged.yaml
 # .vscode directory for Visual Studio Code
 .vscode
 # Yarn Integrity file

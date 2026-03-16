@@ -1,3 +1,6 @@
-'@group': leyyo.common
-leyyo.common:
-  test: true
+ignore: true
+rules:
+  - none
+config:
+  leyyo.common:
+    foo: bar
