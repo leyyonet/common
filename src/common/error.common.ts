@@ -140,6 +140,13 @@ export class ErrorCommon implements ErrorCommonLike {
     return parts.length > 0 ? "<" + parts.join("/") + "> " : "";
   }
 
+  private _clearStat(direct?: boolean): void {
+    this._stats.clear();
+    if (!direct) {
+      setTimeout(() => this._clearStat(false), 1_000 * 60 * 60 * 24);
+    }
+  }
+
   // endregion private
 
   // region public
@@ -380,6 +387,7 @@ export class ErrorCommon implements ErrorCommonLike {
       }
       if (!this._stats) {
         this._stats = this.leyyo.repoCommon.newMap<ErrorCtor, number>(`${PCK}.error`);
+        this._clearStat(false);
       }
       num = this._stats.get(clazz);
       if (num === undefined) {
@@ -420,7 +428,7 @@ export class ErrorCommon implements ErrorCommonLike {
     if (!this._stats) {
       return;
     }
-    this._stats.clear();
+    this._clearStat(true);
   }
 
   /** @inheritDoc */

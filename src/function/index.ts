@@ -17,7 +17,6 @@ export * from "./is-obj.js";
 export * from "./is-test.js";
 export * from "./is-text.js";
 export * from "./jitter-interval.js";
-export * from "./load-config.js";
 export * from "./on-fqn-set.js";
 export * from "./one-or-more.js";
 export * from "./opt-add.js";

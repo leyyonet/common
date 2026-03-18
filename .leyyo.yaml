@@ -1,6 +1,6 @@
-ignore: true
+ignore: false
 rules:
-  - none
+  - def-component
 config:
   leyyo.common:
     foo: bar
